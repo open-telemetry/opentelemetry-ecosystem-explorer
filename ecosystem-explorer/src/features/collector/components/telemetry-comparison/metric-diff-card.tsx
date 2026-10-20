@@ -312,7 +312,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
               ).map(([field, labelKey]) => {
                 const fieldChange = changes.descriptor?.[field];
                 if (!fieldChange) return null;
-                const format = (value: unknown) =>
+                const format = (value: string | boolean | number[] | undefined) =>
                   value === undefined
                     ? "—"
                     : Array.isArray(value)

@@ -175,8 +175,12 @@ function toEntries(value: ConfigValue): MapEntry[] {
   if (!isPlainObject(value)) return [];
   return Object.entries(value).map(([k, v]) => ({
     key: k,
-    value: typeof v === "string" ? v : String(v),
+    value: typeof v === "object" && v !== null ? JSON.stringify(v) : String(v),
   }));
+}
+
+function toInputText(value: ConfigValue | undefined): string {
+  return typeof value === "string" || typeof value === "number" ? String(value) : "";
 }
 
 function fromEntries(entries: MapEntry[]): ConfigValues {
@@ -311,12 +315,7 @@ function StructuredListRenderer({
                     field: key,
                   })}
                   disabled={disabled}
-                  value={
-                    typeof (item as ConfigValues)[key] === "string" ||
-                    typeof (item as ConfigValues)[key] === "number"
-                      ? String((item as ConfigValues)[key])
-                      : ""
-                  }
+                  value={toInputText((item as ConfigValues)[key])}
                   onChange={(e) => {
                     const next = [...items];
                     next[idx] = { ...item, [key]: e.target.value };

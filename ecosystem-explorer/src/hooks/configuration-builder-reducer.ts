@@ -34,13 +34,13 @@ export const INITIAL_STATE: ConfigurationBuilderState = {
 };
 
 function cleanInstrumentation(values: ConfigValues): ConfigValues {
-  if (!values.distribution || typeof values.distribution !== "object") return values;
-  const dist = { ...values.distribution } as ConfigValues;
-  if (!dist.javaagent || typeof dist.javaagent !== "object") return values;
-  const ja = { ...dist.javaagent } as ConfigValues;
-  if (!ja.instrumentation || typeof ja.instrumentation !== "object") return values;
+  if (!isPlainObject(values.distribution)) return values;
+  const dist = { ...values.distribution };
+  if (!isPlainObject(dist.javaagent)) return values;
+  const ja = { ...dist.javaagent };
+  if (!isPlainObject(ja.instrumentation)) return values;
 
-  const inst = { ...ja.instrumentation } as ConfigValues;
+  const inst = { ...ja.instrumentation };
   let changed = false;
 
   for (const [moduleName, moduleVal] of Object.entries(inst)) {

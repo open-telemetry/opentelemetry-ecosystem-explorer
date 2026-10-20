@@ -28,7 +28,7 @@ export async function mapWithConcurrency<T, R>(
   limit: number,
   fn: (item: T, index: number) => Promise<R>
 ): Promise<R[]> {
-  const results = new Array<R>(items.length);
+  const results = Array.from<R>({ length: items.length });
   // Normalize first: a NaN, non-finite, or <= 0 limit degrades to sequential
   // (pool of 1) rather than producing zero workers, which would silently skip
   // all work and leave a holey results array. A pool larger than the work-list

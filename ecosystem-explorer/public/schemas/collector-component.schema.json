@@ -20,7 +20,7 @@
       "type": "string"
     },
     "distribution": {
-      "description": "The distribution where this component originates.",
+      "description": "The distribution where this component originates (e.g., core, contrib).",
       "type": "string"
     },
     "display_name": {

@@ -32,6 +32,10 @@ const agentDir = path.join(distDir, "agent");
 const collectorAgentDir = path.join(agentDir, "collector");
 const javaagentAgentDir = path.join(agentDir, "javaagent");
 
+// UTF-16 code-unit order, identical to a bare `sort()` on strings, so generated output is
+// unchanged. Unlike localeCompare, it does not depend on the build machine's locale.
+const byCodeUnit = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
 /**
  * The section that points at the facet and reverse-lookup artifacts. Kept out of
  * the tables themselves: adding a description column to these indexes would grow
@@ -90,7 +94,7 @@ async function buildCollectorIndex(components, publicPath) {
     // the same set `collectorSignals` derives for the facet rows (verified equal
     // for every component in the 0.160.0 release). Sorted here for a stable diff.
     md += `| ${displayName} | \`${comp.id}\` | \`${comp.stability}\` | ${escapeCell(
-      [...(comp.signals ?? [])].sort().join(", ")
+      [...(comp.signals ?? [])].sort(byCodeUnit).join(", ")
     )} | [${jsonUrl}](${jsonUrl}) |\n`;
   }
 
@@ -649,7 +653,7 @@ export function collectorSignals(component) {
     .filter(Array.isArray)
     .flat()
     .filter((signal) => typeof signal === "string" && signal !== "");
-  return [...new Set(signals)].sort();
+  return [...new Set(signals)].sort(byCodeUnit);
 }
 
 /**
@@ -663,7 +667,7 @@ export function javaSignals(instrumentation) {
     if (group?.metrics?.length) signals.add("metrics");
     if (group?.spans?.length) signals.add("spans");
   }
-  return [...signals].sort();
+  return [...signals].sort(byCodeUnit);
 }
 
 /** Stable alias URL for a component's latest-release JSON. */
@@ -773,7 +777,9 @@ async function collectStoreFacets(publicPath, store) {
       // The reverse index and facets are advertised as authoritative: an agent
       // that gets no match trusts it as a real "no". Skipping a component here
       // would publish that promise while quietly missing it, so fail the build.
-      throw new Error(`Could not read ${ecosystem}/${id} for the reverse index: ${message}`);
+      throw new Error(`Could not read ${ecosystem}/${id} for the reverse index: ${message}`, {
+        cause: e,
+      });
     }
 
     const keys = store.telemetryKeys(doc);
@@ -795,8 +801,8 @@ function buildReverseIndexJson(ecosystem, version, key, map) {
   // object literal (it sets the prototype instead of an own property), dropping
   // that metric or attribute from the index with no error.
   const entries = Object.create(null);
-  for (const name of [...map.keys()].sort()) {
-    entries[name] = [...map.get(name)].sort();
+  for (const name of [...map.keys()].sort(byCodeUnit)) {
+    entries[name] = [...map.get(name)].sort(byCodeUnit);
   }
   return `${JSON.stringify({
     ecosystem,

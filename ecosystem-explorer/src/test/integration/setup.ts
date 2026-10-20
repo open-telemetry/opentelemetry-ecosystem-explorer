@@ -68,20 +68,16 @@ void i18n.use(initReactI18next).init({
 // unconditionally (matching src/test/setup.ts) so that click handlers wired to
 // scrollToSection don't throw, and so tests can assert against them as vi mocks
 // even if a future JSDOM/polyfill provides a real implementation.
+const scrollIntoViewMock = vi.fn();
+const scrollByMock = vi.fn();
 if (typeof Element !== "undefined") {
-  Element.prototype.scrollIntoView = vi.fn();
-  Element.prototype.scrollBy = vi.fn();
+  Element.prototype.scrollIntoView = scrollIntoViewMock;
+  Element.prototype.scrollBy = scrollByMock;
 }
 
 beforeEach(async () => {
-  if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollIntoView)) {
-    // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollIntoView
-    Element.prototype.scrollIntoView.mockClear();
-  }
-  if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollBy)) {
-    // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollBy
-    Element.prototype.scrollBy.mockClear();
-  }
+  scrollIntoViewMock.mockClear();
+  scrollByMock.mockClear();
   // Clear stored entries so each test starts with a cold cache.
   await clearAllCached();
   // Reset the IDB singleton (dbInstance, dbInitPromise, dbInitFailed) so

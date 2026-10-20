@@ -90,7 +90,7 @@ function headContextWithMd(
   vi.stubGlobal(
     "fetch",
     vi.fn(async (input: URL | RequestInfo, init?: RequestInit) => {
-      expect(String(input)).toBe("https://explorer.opentelemetry.io/seo/routes.json");
+      expect(new Request(input).url).toBe("https://explorer.opentelemetry.io/seo/routes.json");
       expect(init?.method).toBe("GET");
       return new Response(JSON.stringify(routes), { status: 200 });
     })

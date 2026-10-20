@@ -113,14 +113,16 @@ describe("useActiveSection", () => {
 
   it("scrollToSection calls scrollIntoView, focuses, and sets activeKey immediately", () => {
     const a = makeSection("resource", 200);
-    a.scrollIntoView = vi.fn();
-    a.focus = vi.fn();
+    const scrollIntoView = vi.fn();
+    const focus = vi.fn();
+    a.scrollIntoView = scrollIntoView;
+    a.focus = focus;
     const { result } = renderHook(() => useActiveSection(["resource", "tracer_provider"]));
     act(() => {
       result.current.scrollToSection("resource");
     });
-    expect(a.scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
-    expect(a.focus).toHaveBeenCalledWith({ preventScroll: true });
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    expect(focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(result.current.activeKey).toBe("resource");
   });
 
@@ -209,12 +211,13 @@ describe("useActiveSection", () => {
 
   it("scrollToSection is a no-op for unknown keys", () => {
     const a = makeSection("resource", 200);
-    a.scrollIntoView = vi.fn();
+    const scrollIntoView = vi.fn();
+    a.scrollIntoView = scrollIntoView;
     const { result } = renderHook(() => useActiveSection(["resource"]));
     act(() => {
       result.current.scrollToSection("does-not-exist");
     });
-    expect(a.scrollIntoView).not.toHaveBeenCalled();
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
   it("removes the scroll listener on unmount", () => {

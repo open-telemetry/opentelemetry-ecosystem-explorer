@@ -20,7 +20,8 @@ import { useTranslation } from "react-i18next";
 import type { TimelineEventType, TimelineLaneDef } from "../types";
 
 export type TimelineScope = "major" | "all";
-export type TimelineDomainFilter = "all" | string;
+/** A domain name, or `"all"`. */
+export type TimelineDomainFilter = string;
 export type TimelineTypeFilter = "all" | TimelineEventType;
 
 interface SelectFieldProps {

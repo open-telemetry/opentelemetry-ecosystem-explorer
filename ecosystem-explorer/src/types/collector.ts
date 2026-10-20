@@ -57,8 +57,8 @@ export interface CollectorComponent {
   ecosystem: string;
   /** The functional type of the component. */
   type: "receiver" | "processor" | "exporter" | "extension" | "connector";
-  /** The distribution where this component originates. */
-  distribution: "core" | "contrib" | string;
+  /** The distribution where this component originates (e.g., core, contrib). */
+  distribution: string;
   /** Human-readable name of the component. */
   display_name?: string | null;
   /** Brief description of the component's functionality. */

@@ -32,6 +32,7 @@ beforeEach(() => {
 });
 
 function mockYamlSectionVisibility(sectionKey: string, isVisible: boolean) {
+  const scrollBySpy = vi.spyOn(Element.prototype, "scrollBy").mockImplementation(() => {});
   const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
   const getBoundingClientRectSpy = vi
     .spyOn(Element.prototype, "getBoundingClientRect")
@@ -78,8 +79,10 @@ function mockYamlSectionVisibility(sectionKey: string, isVisible: boolean) {
     });
 
   return {
+    scrollBySpy,
     restore: () => {
       getBoundingClientRectSpy.mockRestore();
+      scrollBySpy.mockRestore();
     },
   };
 }
@@ -155,13 +158,13 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
     const scrollYBefore = window.scrollY;
 
-    const { restore } = mockYamlSectionVisibility("resource", false);
+    const { scrollBySpy, restore } = mockYamlSectionVisibility("resource", false);
 
     try {
       await user.click(resourceSection!);
 
       await waitFor(() => {
-        expect(Element.prototype.scrollBy).toHaveBeenCalledWith({
+        expect(scrollBySpy).toHaveBeenCalledWith({
           top: 200,
           behavior: "smooth",
         });
@@ -181,7 +184,7 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
     expect(resourceSection).not.toBeNull();
 
-    const { restore } = mockYamlSectionVisibility("resource", true);
+    const { scrollBySpy, restore } = mockYamlSectionVisibility("resource", true);
 
     try {
       await user.click(resourceSection!);
@@ -193,7 +196,7 @@ describe("ConfigurationBuilderPage card click behavior", () => {
         expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
       });
 
-      expect(Element.prototype.scrollBy).not.toHaveBeenCalled();
+      expect(scrollBySpy).not.toHaveBeenCalled();
     } finally {
       restore();
     }

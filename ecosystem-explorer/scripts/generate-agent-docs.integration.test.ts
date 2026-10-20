@@ -82,7 +82,7 @@ describe("agent docs: fidelity against the registry corpus", () => {
     const all = { ...manifest.instrumentations, ...manifest.custom_instrumentations };
     const missing: string[] = [];
 
-    for (const [name, hash] of Object.entries(all)) {
+    for (const [name, hash] of Object.entries<string>(all)) {
       const instr = readJson(
         resolve(dataDir, `javaagent/instrumentations/${name}/${name}-${hash}.json`)
       );
@@ -107,7 +107,7 @@ describe("agent docs: fidelity against the registry corpus", () => {
     const manifest = readJson(resolve(dataDir, `collector/versions/${version}-index.json`));
     const missing: string[] = [];
 
-    for (const [id, hash] of Object.entries(manifest.components)) {
+    for (const [id, hash] of Object.entries<string>(manifest.components)) {
       const component = readJson(resolve(dataDir, `collector/components/${id}/${id}-${hash}.json`));
       const md = buildCollectorComponentPage(component, "/data/x.json");
       const names = [
@@ -211,7 +211,7 @@ describe("agent docs: reverse index and facets", () => {
         resolve(dataDir, `collector/versions/${collectorVersion}-index.json`)
       );
       const collectorDocs: Record<string, { metrics: string[]; attributes: string[] }> = {};
-      for (const [id, hash] of Object.entries(collectorManifest.components)) {
+      for (const [id, hash] of Object.entries<string>(collectorManifest.components)) {
         const doc = readJson(resolve(dataDir, `collector/components/${id}/${id}-${hash}.json`));
         // Effective names, not map keys: a metric can carry a `prefix` applied
         // at emission time, and an attribute can rename itself via
@@ -234,7 +234,7 @@ describe("agent docs: reverse index and facets", () => {
         resolve(dataDir, `javaagent/versions/${javaVersion}-index.json`)
       );
       const javaDocs: Record<string, { metrics: string[]; attributes: string[] }> = {};
-      for (const [id, hash] of Object.entries({
+      for (const [id, hash] of Object.entries<string>({
         ...javaManifest.instrumentations,
         ...javaManifest.custom_instrumentations,
       })) {

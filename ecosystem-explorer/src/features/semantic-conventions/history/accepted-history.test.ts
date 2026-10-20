@@ -255,7 +255,7 @@ describe("validateHistory references", () => {
         "utf8"
       )
     );
-    expect([...schema.properties.events.items.properties.type.enum].sort()).toEqual(
+    expect([...(schema.properties.events.items.properties.type.enum as string[])].sort()).toEqual(
       [...TIMELINE_EVENT_TYPES].sort()
     );
   });
