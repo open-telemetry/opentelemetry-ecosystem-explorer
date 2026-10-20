@@ -111,6 +111,25 @@ describe("configurationBuilderReducer", () => {
       });
       expect(resultSolo.values.distribution).toBeUndefined();
     });
+
+    it.each([
+      ["distribution", { distribution: [{ javaagent: {} }] }],
+      ["javaagent", { distribution: { javaagent: [{ instrumentation: {} }] } }],
+      ["instrumentation as []", { distribution: { javaagent: { instrumentation: [] } } }],
+      [
+        "instrumentation with a null-enabled module",
+        { distribution: { javaagent: { instrumentation: [{ enabled: null }] } } },
+      ],
+    ])("preserves an array-valued %s subtree on an unrelated edit", (_label, values) => {
+      const state = { ...baseState, values: values as ConfigValues };
+      const result = configurationBuilderReducer(state, {
+        type: "SET_VALUE",
+        path: ["file_format"],
+        value: "1.0",
+      });
+      expect(result.values).toEqual({ ...values, file_format: "1.0" });
+      expect(result.values.distribution).toBe(values.distribution);
+    });
   });
 
   describe("SET_ENABLED", () => {
