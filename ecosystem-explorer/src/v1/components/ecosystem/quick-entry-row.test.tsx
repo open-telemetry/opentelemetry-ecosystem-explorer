@@ -64,4 +64,14 @@ describe("QuickEntryRow", () => {
     expect(link).toHaveAttribute("rel", expect.stringContaining("noopener"));
     expect(link).toHaveAttribute("rel", expect.stringContaining("noreferrer"));
   });
+
+  it("tells screen readers that only the external item opens in a new tab", () => {
+    renderRow();
+    expect(screen.getByRole("link", { name: /Core vs\. Contrib/i })).toHaveAccessibleName(
+      /\(opens in a new tab\)$/
+    );
+    expect(screen.getByRole("link", { name: /Most-used components/i })).not.toHaveAccessibleName(
+      /opens in a new tab/
+    );
+  });
 });

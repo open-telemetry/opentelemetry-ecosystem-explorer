@@ -98,6 +98,22 @@ describe("Collector ecosystem landing", () => {
     expect(screen.getByRole("link", { name: /^Processors — 28 components$/ })).toBeInTheDocument();
   });
 
+  it("keeps the static lead when a total is present but the config has no total lead", () => {
+    useEcosystemLandingData.mockReturnValue(
+      success({
+        stageCounts: { receiver: 116 },
+        total: 268,
+        release: { version: "v0.154.0", deltas: null },
+      })
+    );
+    renderRouter(<CollectorLandingV1 />);
+
+    expect(
+      screen.getByText(i18n.t("landingV1.pipeline.lead", { ns: "collector" }))
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/WithTotal/)).not.toBeInTheDocument();
+  });
+
   it("renders breadcrumbs Explorer › Ecosystems › Collector", () => {
     useEcosystemLandingData.mockReturnValue(errorState);
     renderRouter(<CollectorLandingV1 />);

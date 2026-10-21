@@ -63,6 +63,7 @@ export const javaAgentConfig: EcosystemConfig = {
   },
   pipelineTitle: "landingV1.pipeline.title",
   pipelineLead: "landingV1.pipeline.lead",
+  pipelineLeadWithTotal: "landingV1.pipeline.leadWithTotal",
   pipelineNoFlow: true,
   stages: [
     {

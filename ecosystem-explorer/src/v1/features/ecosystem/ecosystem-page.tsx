@@ -56,8 +56,16 @@ function searchTermsByStageId(config: EcosystemConfig): Record<string, string> {
 }
 
 export function EcosystemPage({ config }: EcosystemPageProps) {
-  const { hero, release, stages, quickEntries, pipelineTitle, pipelineLead, pipelineNoFlow } =
-    config;
+  const {
+    hero,
+    release,
+    stages,
+    quickEntries,
+    pipelineTitle,
+    pipelineLead,
+    pipelineLeadWithTotal,
+    pipelineNoFlow,
+  } = config;
 
   // Per-ecosystem copy lives in the config's own namespace (`collector` /
   // `java-agent`); config fields hold i18n keys, resolved here via `t`.
@@ -93,14 +101,15 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
   }));
 
   const resolvedPipelineTitle = pipelineTitle ? t(pipelineTitle) : undefined;
-  // With a live total, the lead gets a pluralised "N instrumentations" variant
-  // (`<pipelineLead>WithTotal_*` keys); otherwise it falls back to the static lead
-  // so no number is hard-coded.
-  const resolvedPipelineLead = pipelineLead
-    ? data?.total !== undefined
-      ? t(`${pipelineLead}WithTotal`, { count: data.total })
-      : t(pipelineLead)
-    : undefined;
+  // With a live total and an opted-in `pipelineLeadWithTotal`, the lead gets the
+  // pluralised "N instrumentations" variant; otherwise it falls back to the static
+  // lead so no number is hard-coded.
+  const resolvedPipelineLead =
+    pipelineLeadWithTotal && data?.total !== undefined
+      ? t(pipelineLeadWithTotal, { count: data.total })
+      : pipelineLead
+        ? t(pipelineLead)
+        : undefined;
 
   const resolvedVersion = data?.release.version ?? release.version;
   const resolvedDeltas = data?.release.deltas ?? release.deltas ?? null;

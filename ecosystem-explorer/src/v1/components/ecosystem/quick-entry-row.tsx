@@ -15,15 +15,17 @@
  */
 
 /*
- * QuickEntryRow — three small "shortcut" cards on the ecosystem landing,
- * below the pipeline anatomy. Each item is a deep-link (internal or
- * external) into a curated view (e.g. "Most-used components", "Core vs.
- * Contrib", "Diff across versions").
+ * QuickEntryRow — small "shortcut" cards on the ecosystem landing, below
+ * the pipeline anatomy. Each item is a deep-link (internal or external)
+ * into a curated view (e.g. "Most-used components", "Core vs. Contrib",
+ * "Diff across versions").
  *
- * The component accepts 1-4 items; layout collapses to a responsive grid.
+ * Items lay out in a responsive grid of up to three columns, wrapping onto
+ * further rows. External items open in a new tab and show an external-link
+ * icon plus screen-reader text saying so.
  */
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -65,9 +67,10 @@ export function QuickEntryRow({ title, items }: QuickEntryRowProps) {
               {item.icon && <div className="td-quick-entry__icon">{item.icon}</div>}
               <div className="td-quick-entry__head">
                 <h3 className="td-quick-entry__card-title">{item.title}</h3>
-                <ArrowRight className="td-quick-entry__arrow" aria-hidden focusable="false" />
+                <ExternalLink className="td-quick-entry__arrow" aria-hidden focusable="false" />
               </div>
               <p className="td-quick-entry__description">{item.description}</p>
+              <span className="sr-only">{t("quickEntry.opensInNewTab")}</span>
             </a>
           ) : (
             <Link key={item.id} to={item.href} className="td-quick-entry__card">

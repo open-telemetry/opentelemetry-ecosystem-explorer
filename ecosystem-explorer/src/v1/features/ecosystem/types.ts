@@ -58,6 +58,11 @@ export interface EcosystemConfig {
   /** Pipeline anatomy lead sentence. */
   pipelineLead?: string;
   /**
+   * Pluralised lead (`_one`/`_other` keys) used instead of `pipelineLead` when the
+   * landing data has a live total. Opt-in: without it the static lead renders.
+   */
+  pipelineLeadWithTotal?: string;
+  /**
    * When true, the pipeline renders as a grid (no chevrons) — used by
    * Java Agent's category-style diagram where order doesn't imply flow.
    */
