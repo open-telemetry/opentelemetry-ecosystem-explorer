@@ -53,7 +53,7 @@ coralogixexporter: coralogixexporter-205673eb3b2d.md
 coralogixprocessor: coralogixprocessor-06d527c94dc7.md
 couchdbreceiver: couchdbreceiver-8f8ae18ff7e8.md
 countconnector: countconnector-1ea801c643fa.md
-cumulativetodeltaprocessor: cumulativetodeltaprocessor-63f71fbe62d5.md
+cumulativetodeltaprocessor: cumulativetodeltaprocessor-31782c6170ef.md
 datadogconnector: datadogconnector-947c512b4f56.md
 datadogexporter: datadogexporter-be19074ed62d.md
 datadogextension: datadogextension-aac1e0ff2c23.md
@@ -63,12 +63,12 @@ dbstorage: dbstorage-23315e5e2cc6.md
 deltatocumulativeprocessor: deltatocumulativeprocessor-037c79aa55ed.md
 deltatorateprocessor: deltatorateprocessor-6fba92c550ec.md
 dnscheckreceiver: dnscheckreceiver-9e47ec833f6d.md
-dockerobserver: dockerobserver-971e80bb7ca0.md
+dockerobserver: dockerobserver-130d30906edd.md
 dockerstatsreceiver: dockerstatsreceiver-a5542b7cee7c.md
 dorisexporter: dorisexporter-bbbde6730da5.md
 drainprocessor: drainprocessor-74e62066492a.md
 ecsobserver: ecsobserver-6f9d535058dd.md
-elasticsearchexporter: elasticsearchexporter-4f9fefe1f9a2.md
+elasticsearchexporter: elasticsearchexporter-e202a5b0142a.md
 elasticsearchreceiver: elasticsearchreceiver-2410ca03b7ea.md
 envoyalsreceiver: envoyalsreceiver-024720e32435.md
 exceptionsconnector: exceptionsconnector-8b4d5832dd69.md
@@ -81,7 +81,7 @@ filelogreceiver: filelogreceiver-dc2c05a539d3.md
 filestatsreceiver: filestatsreceiver-d5a57c615231.md
 filestorage: filestorage-8dab4f25ccf1.md
 filetelemetrypolicyextension: filetelemetrypolicyextension-41699cbadc0a.md
-filterprocessor: filterprocessor-1e99247d1ebe.md
+filterprocessor: filterprocessor-b3af643636df.md
 flinkmetricsreceiver: flinkmetricsreceiver-c7c3d8ea0097.md
 fluentforwardreceiver: fluentforwardreceiver-0969e2de1b59.md
 genainormalizerprocessor: genainormalizerprocessor-d414d53b2706.md
@@ -89,7 +89,7 @@ geoipprocessor: geoipprocessor-bd4590c73d66.md
 githubreceiver: githubreceiver-53c6b9c34160.md
 gitlabreceiver: gitlabreceiver-ec4743c7d02c.md
 gnmireceiver: gnmireceiver-baa2a9ca7757.md
-googleclientauthextension: googleclientauthextension-249b36f6d740.md
+googleclientauthextension: googleclientauthextension-2f7b441de980.md
 googlecloudexporter: googlecloudexporter-6e563a24edaa.md
 googlecloudlogentryencodingextension: googlecloudlogentryencodingextension-5dde19e984b4.md
 googlecloudmonitoringreceiver: googlecloudmonitoringreceiver-a73a0c71dea5.md
@@ -136,7 +136,7 @@ kubeletstatsreceiver: kubeletstatsreceiver-000955ad6d86.md
 libhoneyreceiver: libhoneyreceiver-56d3322b6dc1.md
 loadbalancingexporter: loadbalancingexporter-036723484433.md
 logdedupprocessor: logdedupprocessor-c19ff96e2693.md
-logicmonitorexporter: logicmonitorexporter-0c5ef0f19972.md
+logicmonitorexporter: logicmonitorexporter-3973166df13f.md
 logstransformprocessor: logstransformprocessor-fc6f230f5535.md
 logzioexporter: logzioexporter-f959a4d3db20.md
 lokireceiver: lokireceiver-49b1b8e14d87.md
@@ -177,7 +177,7 @@ pprofreceiver: pprofreceiver-e4fb21cb46c1.md
 probabilisticsamplerprocessor: probabilisticsamplerprocessor-b09e1f007a3f.md
 prometheusexporter: prometheusexporter-2c7fb860a00b.md
 prometheusreceiver: prometheusreceiver-2792406ac353.md
-prometheusremotewriteexporter: prometheusremotewriteexporter-12a0cf641684.md
+prometheusremotewriteexporter: prometheusremotewriteexporter-44cb26763d6f.md
 prometheusremotewritereceiver: prometheusremotewritereceiver-a991c0076cb7.md
 pulsarexporter: pulsarexporter-4b4557e8de30.md
 pulsarreceiver: pulsarreceiver-a47d78ad45ce.md
@@ -194,7 +194,7 @@ remotetapextension: remotetapextension-01716b8c7d82.md
 remotetapprocessor: remotetapprocessor-3132e6579248.md
 resourcedetectionprocessor: resourcedetectionprocessor-ec557cc42904.md
 resourceprocessor: resourceprocessor-49c236801aec.md
-riakreceiver: riakreceiver-15d07954f4c1.md
+riakreceiver: riakreceiver-daac8cc354fc.md
 rollingspanlatencyprocessor: rollingspanlatencyprocessor-ab77ddf4eb8c.md
 roundrobinconnector: roundrobinconnector-87d841e8ada1.md
 routingconnector: routingconnector-8ceb6a08d05c.md
@@ -233,7 +233,7 @@ sumconnector: sumconnector-4e4830bfaad9.md
 sumologicexporter: sumologicexporter-57f33d74683e.md
 sumologicextension: sumologicextension-a00ca3063dd7.md
 sumologicprocessor: sumologicprocessor-d5cd73e97908.md
-syslogexporter: syslogexporter-136aba8284c7.md
+syslogexporter: syslogexporter-87b1a931eb93.md
 syslogreceiver: syslogreceiver-c0126cbe41dd.md
 systemdreceiver: systemdreceiver-38b3bd052b3c.md
 tailsamplingprocessor: tailsamplingprocessor-cc848d941b44.md

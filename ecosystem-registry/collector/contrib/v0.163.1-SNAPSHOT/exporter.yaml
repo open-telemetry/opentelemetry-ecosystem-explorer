@@ -404,6 +404,12 @@ components:
 - name: elasticsearchexporter
   metadata:
     attributes:
+      db.collection.name:
+        description: The index or data stream documents were written to, as reported
+          in the bulk response `_index`, with backing and failure store indices folded
+          into their data stream name. Only set when `telemetry::include_destination_index`
+          is enabled.
+        type: string
       error.type:
         description: The type of error that occurred when processing the documents.
         type: string
@@ -514,6 +520,7 @@ components:
           unit: s
         elasticsearch.docs.processed:
           attributes:
+          - db.collection.name
           - error.type
           - failure_store
           - http.response.status_code
@@ -1157,15 +1164,14 @@ components:
     status:
       class: exporter
       codeowners:
-        active:
-        - bogdandrutu
         emeritus:
         - khyatigandhi6
         - avadhut123pisal
+        - bogdandrutu
       distributions:
       - contrib
       stability:
-        alpha:
+        unmaintained:
         - logs
         - traces
     type: logicmonitor
@@ -1761,9 +1767,10 @@ components:
       class: exporter
       codeowners:
         active:
-        - kasia-kujawa
         - rnishtala-sumo
         - andrzej-stencel
+        emeritus:
+        - kasia-kujawa
       distributions:
       - contrib
       stability:

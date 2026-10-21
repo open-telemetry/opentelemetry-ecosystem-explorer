@@ -426,6 +426,7 @@ components:
     type: file_telemetry_policy
 - name: googleclientauthextension
   metadata:
+    deprecated_type: googleclientauth
     description: This extension provides Google OAuth2 Client Credentials and Metadata
       for gRPC and http based exporters.
     display_name: Google Client Auth Extension
@@ -444,7 +445,7 @@ components:
       stability:
         beta:
         - extension
-    type: googleclientauth
+    type: google_client_auth
 - name: headerssetterextension
   metadata:
     display_name: Headers Setter Extension

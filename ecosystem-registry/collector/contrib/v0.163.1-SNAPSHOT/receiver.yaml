@@ -16581,13 +16581,6 @@ components:
       id: receiver.prometheusreceiver.EnableCreatedTimestampZeroIngestion
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40355
       stage: alpha
-    - description: When enabled, the `otel_scope_info` metric is ignored for scope
-        attribute extraction.
-      from_version: v0.148.0
-      id: receiver.prometheusreceiver.IgnoreScopeInfoMetric
-      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41502
-      stage: stable
-      to_version: v0.164.0
     status:
       class: receiver
       codeowners:
@@ -18473,13 +18466,13 @@ components:
     status:
       class: receiver
       codeowners:
-        active:
+        emeritus:
         - armstrmi
         seeking_new: true
       distributions:
       - contrib
       stability:
-        beta:
+        unmaintained:
         - metrics
     type: riak
 - name: saphanareceiver

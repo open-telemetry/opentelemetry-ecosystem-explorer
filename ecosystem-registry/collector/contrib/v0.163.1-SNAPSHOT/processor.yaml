@@ -1761,6 +1761,13 @@ components:
     type: metrics_transform
 - name: partitioningprocessor
   metadata:
+    attributes:
+      error.type:
+        description: Why key evaluation failed.
+        enum:
+        - evaluation_failed
+        - invalid_value_type
+        type: string
     description: The `partitioning` processor splits incoming batches into sub-batches
       using OTTL value expressions, and forwards each sub-batch with the evaluated
       partition keys added to the outgoing request metadata.
@@ -1780,6 +1787,39 @@ components:
         - metrics
         - profiles
         - traces
+    telemetry:
+      metrics:
+        processor.partitioning.key_evaluation.errors:
+          attributes:
+          - error.type
+          description: Number of batches rejected because a key expression failed
+            to evaluate or returned a non-string value.
+          enabled: true
+          prefix: otelcol.
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{batch}'
+        processor.partitioning.partitions:
+          description: Number of partitions each incoming batch was split into.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 1
+            - 2
+            - 3
+            - 5
+            - 10
+            - 20
+            - 50
+            - 100
+            - 250
+            - 1000
+            value_type: int
+          prefix: otelcol.
+          stability: development
+          unit: '{partition}'
     type: partitioning
 - name: probabilisticsamplerprocessor
   metadata:
@@ -1811,10 +1851,22 @@ components:
             monotonic: true
             value_type: int
           unit: '1'
-        processor_probabilistic_sampler_count_traces_sampled:
-          description: Count of traces that were sampled or not
+        processor_probabilistic_sampler_count_spans_processed:
+          description: Count of spans that were sampled or not
           enabled: true
           stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        processor_probabilistic_sampler_count_traces_sampled:
+          deprecated:
+            note: Use processor_probabilistic_sampler_count_spans_processed_total
+              instead
+            since: 0.161.0
+          description: '[DEPRECATED] Count of spans that were sampled or not'
+          enabled: true
+          stability: deprecated
           sum:
             monotonic: true
             value_type: int
