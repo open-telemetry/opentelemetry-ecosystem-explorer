@@ -1,0 +1,21 @@
+component_owners:
+- hectorhdzg
+- yiyuan-he
+- mxiamxia
+description: OpenTelemetry instrumentation for the `langchain` LangChain.js library
+in_auto_instrumentations_node: false
+name: instrumentation-langchain
+node_engine: '>=22.15.0'
+npm_package: '@opentelemetry/instrumentation-langchain'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-langchain
+supported_versions:
+- package: '@langchain/core'
+  source: README.md
+  version_range: '>=1.0.0 <2'
+tested_versions:
+- mode: max-5
+  package: '@langchain/core'
+  range: '>=1.0.0 <2'
+  source: .tav.yml
+version: 0.14.0
