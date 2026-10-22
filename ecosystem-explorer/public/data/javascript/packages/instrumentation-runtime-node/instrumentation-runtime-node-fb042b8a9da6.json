@@ -1,0 +1,11 @@
+{
+  "description": "OpenTelemetry instrumentation for Node.js Performance measurement API",
+  "in_auto_instrumentations_node": true,
+  "name": "instrumentation-runtime-node",
+  "node_engine": ">=22.15.0",
+  "npm_package": "@opentelemetry/instrumentation-runtime-node",
+  "repository": "open-telemetry/opentelemetry-js-contrib",
+  "source_path": "packages/instrumentation-runtime-node",
+  "supported_versions": [],
+  "tested_versions": []
+}

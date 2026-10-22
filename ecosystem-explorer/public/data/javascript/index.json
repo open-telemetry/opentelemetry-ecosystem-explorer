@@ -61,6 +61,10 @@
       "npm_package": "@opentelemetry/instrumentation-amqplib",
       "releases": [
         {
+          "hash": "a487e41ebeeb",
+          "version": "0.71.0"
+        },
+        {
           "hash": "4da3372671ca",
           "version": "0.70.0"
         },
@@ -85,7 +89,7 @@
           "version": "0.65.0"
         }
       ],
-      "version": "0.70.0"
+      "version": "0.71.0"
     },
     {
       "description": "OpenTelemetry instrumentation for AWS Lambda function invocations",
@@ -93,6 +97,10 @@
       "name": "instrumentation-aws-lambda",
       "npm_package": "@opentelemetry/instrumentation-aws-lambda",
       "releases": [
+        {
+          "hash": "584ad794b523",
+          "version": "0.76.0"
+        },
         {
           "hash": "fabec5c119c2",
           "version": "0.75.0"
@@ -118,7 +126,7 @@
           "version": "0.70.0"
         }
       ],
-      "version": "0.75.0"
+      "version": "0.76.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `aws-sdk` and `@aws-sdk/client-*` clients for various AWS services",
@@ -126,6 +134,10 @@
       "name": "instrumentation-aws-sdk",
       "npm_package": "@opentelemetry/instrumentation-aws-sdk",
       "releases": [
+        {
+          "hash": "6c45a46de161",
+          "version": "0.79.0"
+        },
         {
           "hash": "3b8e5afbb0ff",
           "version": "0.78.0"
@@ -151,7 +163,7 @@
           "version": "0.73.0"
         }
       ],
-      "version": "0.78.0"
+      "version": "0.79.0"
     },
     {
       "description": "OpenTelemetry instrumentation for browser navigation events (page load and same-document navigations)",
@@ -159,6 +171,10 @@
       "name": "instrumentation-browser-navigation",
       "npm_package": "@opentelemetry/instrumentation-browser-navigation",
       "releases": [
+        {
+          "hash": "89c1bca12bbe",
+          "version": "0.17.0"
+        },
         {
           "hash": "39e595930621",
           "version": "0.16.0"
@@ -184,7 +200,7 @@
           "version": "0.11.0"
         }
       ],
-      "version": "0.16.0"
+      "version": "0.17.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `bunyan` logger",
@@ -193,6 +209,10 @@
       "npm_package": "@opentelemetry/instrumentation-bunyan",
       "releases": [
         {
+          "hash": "7a2b38deb521",
+          "version": "0.69.0"
+        },
+        {
           "hash": "b68bfec69fb2",
           "version": "0.68.0"
         },
@@ -217,7 +237,7 @@
           "version": "0.63.0"
         }
       ],
-      "version": "0.68.0"
+      "version": "0.69.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `cassandra-driver` database client library for Apache Cassandra",
@@ -226,6 +246,10 @@
       "npm_package": "@opentelemetry/instrumentation-cassandra-driver",
       "releases": [
         {
+          "hash": "2e583ca94a2f",
+          "version": "0.69.0"
+        },
+        {
           "hash": "cf9186526b48",
           "version": "0.68.0"
         },
@@ -250,7 +274,7 @@
           "version": "0.63.0"
         }
       ],
-      "version": "0.68.0"
+      "version": "0.69.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `connect` http middleware framework",
@@ -258,6 +282,10 @@
       "name": "instrumentation-connect",
       "npm_package": "@opentelemetry/instrumentation-connect",
       "releases": [
+        {
+          "hash": "449bee5a925d",
+          "version": "0.67.0"
+        },
         {
           "hash": "41b2184c4da4",
           "version": "0.66.0"
@@ -283,7 +311,7 @@
           "version": "0.61.0"
         }
       ],
-      "version": "0.66.0"
+      "version": "0.67.0"
     },
     {
       "description": "OpenTelemetry instrumentation for Node.js `console`",
@@ -291,6 +319,10 @@
       "name": "instrumentation-console",
       "npm_package": "@opentelemetry/instrumentation-console",
       "releases": [
+        {
+          "hash": "7f117328cc8c",
+          "version": "0.6.0"
+        },
         {
           "hash": "4297ba01f190",
           "version": "0.5.0"
@@ -312,7 +344,7 @@
           "version": "0.1.0"
         }
       ],
-      "version": "0.5.0"
+      "version": "0.6.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `@cucumber/cucumber` automated tests runner",
@@ -320,6 +352,10 @@
       "name": "instrumentation-cucumber",
       "npm_package": "@opentelemetry/instrumentation-cucumber",
       "releases": [
+        {
+          "hash": "de2b04dc6ed8",
+          "version": "0.40.0"
+        },
         {
           "hash": "81cae89b5020",
           "version": "0.39.0"
@@ -345,7 +381,7 @@
           "version": "0.34.0"
         }
       ],
-      "version": "0.39.0"
+      "version": "0.40.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `dataloader` data fetching layer",
@@ -353,6 +389,10 @@
       "name": "instrumentation-dataloader",
       "npm_package": "@opentelemetry/instrumentation-dataloader",
       "releases": [
+        {
+          "hash": "db5e419458ff",
+          "version": "0.41.0"
+        },
         {
           "hash": "09a528edada8",
           "version": "0.40.0"
@@ -378,7 +418,7 @@
           "version": "0.35.0"
         }
       ],
-      "version": "0.40.0"
+      "version": "0.41.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `node:dns` name resolution module",
@@ -386,6 +426,10 @@
       "name": "instrumentation-dns",
       "npm_package": "@opentelemetry/instrumentation-dns",
       "releases": [
+        {
+          "hash": "6b89dc1083d1",
+          "version": "0.67.0"
+        },
         {
           "hash": "debfd921f68b",
           "version": "0.66.0"
@@ -411,7 +455,7 @@
           "version": "0.61.0"
         }
       ],
-      "version": "0.66.0"
+      "version": "0.67.0"
     },
     {
       "description": "OpenTelemetry instrumentation for document load operations in browser applications",
@@ -419,6 +463,10 @@
       "name": "instrumentation-document-load",
       "npm_package": "@opentelemetry/instrumentation-document-load",
       "releases": [
+        {
+          "hash": "0e1badb69d74",
+          "version": "0.69.0"
+        },
         {
           "hash": "ff70ec12375a",
           "version": "0.68.0"
@@ -444,7 +492,7 @@
           "version": "0.63.0"
         }
       ],
-      "version": "0.68.0"
+      "version": "0.69.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `express` http web application framework",
@@ -452,6 +500,10 @@
       "name": "instrumentation-express",
       "npm_package": "@opentelemetry/instrumentation-express",
       "releases": [
+        {
+          "hash": "e8c022e90335",
+          "version": "0.72.0"
+        },
         {
           "hash": "bebf75b527e7",
           "version": "0.71.1"
@@ -481,7 +533,7 @@
           "version": "0.66.0"
         }
       ],
-      "version": "0.71.1"
+      "version": "0.72.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `node:fs` file system interactions module",
@@ -489,6 +541,10 @@
       "name": "instrumentation-fs",
       "npm_package": "@opentelemetry/instrumentation-fs",
       "releases": [
+        {
+          "hash": "3fa627c1318f",
+          "version": "0.43.0"
+        },
         {
           "hash": "7400a376dfba",
           "version": "0.42.0"
@@ -514,7 +570,7 @@
           "version": "0.37.0"
         }
       ],
-      "version": "0.42.0"
+      "version": "0.43.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `generic-pool` resource pool for managing expensive resources",
@@ -522,6 +578,10 @@
       "name": "instrumentation-generic-pool",
       "npm_package": "@opentelemetry/instrumentation-generic-pool",
       "releases": [
+        {
+          "hash": "9cf8b22b6063",
+          "version": "0.67.0"
+        },
         {
           "hash": "fda43638d7d3",
           "version": "0.66.0"
@@ -547,7 +607,7 @@
           "version": "0.61.0"
         }
       ],
-      "version": "0.66.0"
+      "version": "0.67.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `graphql` gql query language and runtime for GraphQL",
@@ -555,6 +615,10 @@
       "name": "instrumentation-graphql",
       "npm_package": "@opentelemetry/instrumentation-graphql",
       "releases": [
+        {
+          "hash": "61b75896e142",
+          "version": "0.72.0"
+        },
         {
           "hash": "10a1749d034e",
           "version": "0.71.0"
@@ -580,7 +644,7 @@
           "version": "0.66.0"
         }
       ],
-      "version": "0.71.0"
+      "version": "0.72.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `@hapi/hapi` http web application framework",
@@ -588,6 +652,10 @@
       "name": "instrumentation-hapi",
       "npm_package": "@opentelemetry/instrumentation-hapi",
       "releases": [
+        {
+          "hash": "0e280a75d4be",
+          "version": "0.70.0"
+        },
         {
           "hash": "e6272f0421a3",
           "version": "0.69.0"
@@ -613,7 +681,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.0"
+      "version": "0.70.0"
     },
     {
       "description": "OpenTelemetry Host Metrics instrumentation for Node.js",
@@ -621,6 +689,10 @@
       "name": "instrumentation-host-metrics",
       "npm_package": "@opentelemetry/instrumentation-host-metrics",
       "releases": [
+        {
+          "hash": "ef3e1ac581e3",
+          "version": "0.7.0"
+        },
         {
           "hash": "ac95fca44462",
           "version": "0.6.0"
@@ -642,7 +714,7 @@
           "version": "0.2.0"
         }
       ],
-      "version": "0.6.0"
+      "version": "0.7.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `ioredis` database redis client for Redis",
@@ -650,6 +722,10 @@
       "name": "instrumentation-ioredis",
       "npm_package": "@opentelemetry/instrumentation-ioredis",
       "releases": [
+        {
+          "hash": "d9f81b5a5621",
+          "version": "0.72.0"
+        },
         {
           "hash": "89758e666e31",
           "version": "0.71.0"
@@ -675,7 +751,7 @@
           "version": "0.66.0"
         }
       ],
-      "version": "0.71.0"
+      "version": "0.72.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `kafkajs` messaging client for Apache Kafka",
@@ -683,6 +759,10 @@
       "name": "instrumentation-kafkajs",
       "npm_package": "@opentelemetry/instrumentation-kafkajs",
       "releases": [
+        {
+          "hash": "aed5254dbb39",
+          "version": "0.33.0"
+        },
         {
           "hash": "23f87fbf9279",
           "version": "0.32.0"
@@ -708,7 +788,7 @@
           "version": "0.27.0"
         }
       ],
-      "version": "0.32.0"
+      "version": "0.33.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `knex` database SQL query builder",
@@ -716,6 +796,10 @@
       "name": "instrumentation-knex",
       "npm_package": "@opentelemetry/instrumentation-knex",
       "releases": [
+        {
+          "hash": "2ab9f6be9dfc",
+          "version": "0.68.0"
+        },
         {
           "hash": "7005c50c71de",
           "version": "0.67.0"
@@ -741,7 +825,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `koa` http web application framework",
@@ -749,6 +833,10 @@
       "name": "instrumentation-koa",
       "npm_package": "@opentelemetry/instrumentation-koa",
       "releases": [
+        {
+          "hash": "956a60c0833c",
+          "version": "0.72.0"
+        },
         {
           "hash": "c629f210ff24",
           "version": "0.71.0"
@@ -774,7 +862,7 @@
           "version": "0.66.0"
         }
       ],
-      "version": "0.71.0"
+      "version": "0.72.0"
     },
     {
       "description": "OpenTelemetry instrumentation for the `langchain` LangChain.js library",
@@ -782,6 +870,10 @@
       "name": "instrumentation-langchain",
       "npm_package": "@opentelemetry/instrumentation-langchain",
       "releases": [
+        {
+          "hash": "e3bfa34d12ac",
+          "version": "0.14.0"
+        },
         {
           "hash": "7c909838341f",
           "version": "0.13.0"
@@ -815,7 +907,7 @@
           "version": "0.6.0"
         }
       ],
-      "version": "0.13.0"
+      "version": "0.14.0"
     },
     {
       "description": "OpenTelemetry instrumentation for long task Web API",
@@ -824,6 +916,10 @@
       "npm_package": "@opentelemetry/instrumentation-long-task",
       "releases": [
         {
+          "hash": "9da344580ea2",
+          "version": "0.68.0"
+        },
+        {
           "hash": "fca25baf5344",
           "version": "0.67.0"
         },
@@ -848,7 +944,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `lru-memoizer` function memoization using lru-cache",
@@ -857,6 +953,10 @@
       "npm_package": "@opentelemetry/instrumentation-lru-memoizer",
       "releases": [
         {
+          "hash": "a113ce448492",
+          "version": "0.68.0"
+        },
+        {
           "hash": "be5fd318592c",
           "version": "0.67.0"
         },
@@ -881,7 +981,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `memcached` database client for memcached",
@@ -889,6 +989,10 @@
       "name": "instrumentation-memcached",
       "npm_package": "@opentelemetry/instrumentation-memcached",
       "releases": [
+        {
+          "hash": "9cef76042d37",
+          "version": "0.67.0"
+        },
         {
           "hash": "7fe3910cae63",
           "version": "0.66.0"
@@ -914,7 +1018,7 @@
           "version": "0.61.0"
         }
       ],
-      "version": "0.66.0"
+      "version": "0.67.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `mongodb` database client for MongoDB",
@@ -922,6 +1026,10 @@
       "name": "instrumentation-mongodb",
       "npm_package": "@opentelemetry/instrumentation-mongodb",
       "releases": [
+        {
+          "hash": "3e6c355ffdbf",
+          "version": "0.77.0"
+        },
         {
           "hash": "882b8431f616",
           "version": "0.76.0"
@@ -947,7 +1055,7 @@
           "version": "0.71.0"
         }
       ],
-      "version": "0.76.0"
+      "version": "0.77.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `mongoose` database object data modeling (ODM) library for MongoDB",
@@ -955,6 +1063,10 @@
       "name": "instrumentation-mongoose",
       "npm_package": "@opentelemetry/instrumentation-mongoose",
       "releases": [
+        {
+          "hash": "660e63a87e6a",
+          "version": "0.70.0"
+        },
         {
           "hash": "813c9204d433",
           "version": "0.69.0"
@@ -980,7 +1092,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.0"
+      "version": "0.70.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `mysql` database client for MySQL",
@@ -988,6 +1100,10 @@
       "name": "instrumentation-mysql",
       "npm_package": "@opentelemetry/instrumentation-mysql",
       "releases": [
+        {
+          "hash": "4196b46db5e8",
+          "version": "0.70.0"
+        },
         {
           "hash": "115a67f086e8",
           "version": "0.69.1"
@@ -1017,7 +1133,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.1"
+      "version": "0.70.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `mysql2` database client for MySQL",
@@ -1025,6 +1141,10 @@
       "name": "instrumentation-mysql2",
       "npm_package": "@opentelemetry/instrumentation-mysql2",
       "releases": [
+        {
+          "hash": "0ed880e8c1ff",
+          "version": "0.70.0"
+        },
         {
           "hash": "0e4a038262ba",
           "version": "0.69.0"
@@ -1050,7 +1170,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.0"
+      "version": "0.70.0"
     },
     {
       "description": "OpenTelemetry instrumentation for NestJS server side applications framework",
@@ -1058,6 +1178,10 @@
       "name": "instrumentation-nestjs-core",
       "npm_package": "@opentelemetry/instrumentation-nestjs-core",
       "releases": [
+        {
+          "hash": "09960043773b",
+          "version": "0.71.0"
+        },
         {
           "hash": "c2a61774284e",
           "version": "0.70.0"
@@ -1087,7 +1211,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.70.0"
+      "version": "0.71.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `node:net` network API module",
@@ -1095,6 +1219,10 @@
       "name": "instrumentation-net",
       "npm_package": "@opentelemetry/instrumentation-net",
       "releases": [
+        {
+          "hash": "a83651b604da",
+          "version": "0.68.0"
+        },
         {
           "hash": "d6a669e380cf",
           "version": "0.67.0"
@@ -1120,7 +1248,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     },
     {
       "description": "OpenTelemetry instrumentation for the `openai` OpenAI client library",
@@ -1128,6 +1256,10 @@
       "name": "instrumentation-openai",
       "npm_package": "@opentelemetry/instrumentation-openai",
       "releases": [
+        {
+          "hash": "f7eabb89a418",
+          "version": "0.22.0"
+        },
         {
           "hash": "80af5be8103a",
           "version": "0.21.0"
@@ -1153,7 +1285,7 @@
           "version": "0.16.0"
         }
       ],
-      "version": "0.21.0"
+      "version": "0.22.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `oracledb` database client for Oracle DB",
@@ -1161,6 +1293,10 @@
       "name": "instrumentation-oracledb",
       "npm_package": "@opentelemetry/instrumentation-oracledb",
       "releases": [
+        {
+          "hash": "94741b0cca24",
+          "version": "0.49.0"
+        },
         {
           "hash": "b2e9b5182bb5",
           "version": "0.48.0"
@@ -1186,7 +1322,7 @@
           "version": "0.43.0"
         }
       ],
-      "version": "0.48.0"
+      "version": "0.49.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `pg` and `pg-pool` database client for PostgreSQL",
@@ -1194,6 +1330,10 @@
       "name": "instrumentation-pg",
       "npm_package": "@opentelemetry/instrumentation-pg",
       "releases": [
+        {
+          "hash": "0ee779a993ea",
+          "version": "0.77.0"
+        },
         {
           "hash": "e76a25a31bc7",
           "version": "0.76.0"
@@ -1223,7 +1363,7 @@
           "version": "0.70.0"
         }
       ],
-      "version": "0.76.0"
+      "version": "0.77.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `pino` logger",
@@ -1231,6 +1371,10 @@
       "name": "instrumentation-pino",
       "npm_package": "@opentelemetry/instrumentation-pino",
       "releases": [
+        {
+          "hash": "2d1a02f18b95",
+          "version": "0.70.0"
+        },
         {
           "hash": "326e6cc9e554",
           "version": "0.69.0"
@@ -1256,7 +1400,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.0"
+      "version": "0.70.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `redis` database client for Redis",
@@ -1264,6 +1408,10 @@
       "name": "instrumentation-redis",
       "npm_package": "@opentelemetry/instrumentation-redis",
       "releases": [
+        {
+          "hash": "ba8b1983aa08",
+          "version": "0.72.0"
+        },
         {
           "hash": "b53399afe0fa",
           "version": "0.71.0"
@@ -1289,7 +1437,7 @@
           "version": "0.66.0"
         }
       ],
-      "version": "0.71.0"
+      "version": "0.72.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `restify` http web application framework",
@@ -1297,6 +1445,10 @@
       "name": "instrumentation-restify",
       "npm_package": "@opentelemetry/instrumentation-restify",
       "releases": [
+        {
+          "hash": "487e7607c2b8",
+          "version": "0.69.0"
+        },
         {
           "hash": "c1d32943abb3",
           "version": "0.68.0"
@@ -1322,7 +1474,7 @@
           "version": "0.63.0"
         }
       ],
-      "version": "0.68.0"
+      "version": "0.69.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `router` http middleware router",
@@ -1330,6 +1482,10 @@
       "name": "instrumentation-router",
       "npm_package": "@opentelemetry/instrumentation-router",
       "releases": [
+        {
+          "hash": "3bda97fb147a",
+          "version": "0.68.0"
+        },
         {
           "hash": "3dc25490ec88",
           "version": "0.67.0"
@@ -1355,7 +1511,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     },
     {
       "description": "OpenTelemetry instrumentation for Node.js Performance measurement API",
@@ -1363,6 +1519,10 @@
       "name": "instrumentation-runtime-node",
       "npm_package": "@opentelemetry/instrumentation-runtime-node",
       "releases": [
+        {
+          "hash": "fb042b8a9da6",
+          "version": "0.37.0"
+        },
         {
           "hash": "4617d5a92f77",
           "version": "0.36.1"
@@ -1392,7 +1552,7 @@
           "version": "0.31.0"
         }
       ],
-      "version": "0.36.1"
+      "version": "0.37.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `sequelize` ORM",
@@ -1400,6 +1560,10 @@
       "name": "instrumentation-sequelize",
       "npm_package": "@opentelemetry/instrumentation-sequelize",
       "releases": [
+        {
+          "hash": "4e9570b74b19",
+          "version": "0.17.0"
+        },
         {
           "hash": "0bcc540bd13b",
           "version": "0.16.0"
@@ -1425,7 +1589,7 @@
           "version": "0.11.0"
         }
       ],
-      "version": "0.16.0"
+      "version": "0.17.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `socket.io` messaging server implementation for Socket.IO communication",
@@ -1433,6 +1597,10 @@
       "name": "instrumentation-socket.io",
       "npm_package": "@opentelemetry/instrumentation-socket.io",
       "releases": [
+        {
+          "hash": "c646e242e779",
+          "version": "0.71.0"
+        },
         {
           "hash": "cd5eb98bde3f",
           "version": "0.70.0"
@@ -1458,7 +1626,7 @@
           "version": "0.65.0"
         }
       ],
-      "version": "0.70.0"
+      "version": "0.71.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `tedious` database client for Microsoft SQL Server",
@@ -1466,6 +1634,10 @@
       "name": "instrumentation-tedious",
       "npm_package": "@opentelemetry/instrumentation-tedious",
       "releases": [
+        {
+          "hash": "6ad8cbe96f20",
+          "version": "0.43.0"
+        },
         {
           "hash": "d50db52d9c28",
           "version": "0.42.0"
@@ -1491,7 +1663,7 @@
           "version": "0.37.0"
         }
       ],
-      "version": "0.42.0"
+      "version": "0.43.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `typeorm` database data-mapper ORM",
@@ -1499,6 +1671,10 @@
       "name": "instrumentation-typeorm",
       "npm_package": "@opentelemetry/instrumentation-typeorm",
       "releases": [
+        {
+          "hash": "aeae02b7ea10",
+          "version": "0.24.0"
+        },
         {
           "hash": "2adc4c11ff92",
           "version": "0.23.0"
@@ -1524,7 +1700,7 @@
           "version": "0.18.0"
         }
       ],
-      "version": "0.23.0"
+      "version": "0.24.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `undici` http client and Node.js fetch()",
@@ -1532,6 +1708,10 @@
       "name": "instrumentation-undici",
       "npm_package": "@opentelemetry/instrumentation-undici",
       "releases": [
+        {
+          "hash": "246648609ff6",
+          "version": "0.34.0"
+        },
         {
           "hash": "c229458323c7",
           "version": "0.33.0"
@@ -1557,7 +1737,7 @@
           "version": "0.28.0"
         }
       ],
-      "version": "0.33.0"
+      "version": "0.34.0"
     },
     {
       "description": "OpenTelemetry instrumentation for user interactions as click events in a web application",
@@ -1565,6 +1745,10 @@
       "name": "instrumentation-user-interaction",
       "npm_package": "@opentelemetry/instrumentation-user-interaction",
       "releases": [
+        {
+          "hash": "8c7c2fe5c22f",
+          "version": "0.68.0"
+        },
         {
           "hash": "6dbcf7d483b0",
           "version": "0.67.0"
@@ -1590,7 +1774,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     },
     {
       "description": "OpenTelemetry instrumentation for web exceptions",
@@ -1598,6 +1782,10 @@
       "name": "instrumentation-web-exception",
       "npm_package": "@opentelemetry/instrumentation-web-exception",
       "releases": [
+        {
+          "hash": "7b740219f5ef",
+          "version": "0.17.0"
+        },
         {
           "hash": "9cb51536a920",
           "version": "0.16.0"
@@ -1623,7 +1811,7 @@
           "version": "0.11.0"
         }
       ],
-      "version": "0.16.0"
+      "version": "0.17.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `winston` logger",
@@ -1631,6 +1819,10 @@
       "name": "instrumentation-winston",
       "npm_package": "@opentelemetry/instrumentation-winston",
       "releases": [
+        {
+          "hash": "574d81351b3c",
+          "version": "0.69.0"
+        },
         {
           "hash": "276fb81a5b7b",
           "version": "0.68.1"
@@ -1664,7 +1856,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.68.1"
+      "version": "0.69.0"
     }
   ]
 }
