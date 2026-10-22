@@ -33,6 +33,7 @@
  * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` chrome
  * - pipeline-anatomy.css — v1 ecosystem-landing pipeline strip (`.td-pipeline-anatomy*`, `.td-pipeline-stage*`)
  * - quick-entry-row.css — v1 ecosystem-landing quick-entry row (`.td-quick-entry*`)
+ * - announcements.css — v1 ecosystem-landing news band (`.td-announcements*`)
  * - facets.css       — v1 list-page facet primitives (`.td-facet*`, minus `.td-facet-panel*`)
  * - facet-panel.css  — v1 list-page facet panel chrome (`.td-facet-panel*`)
  * - list-controls.css — v1 list-page controls (`.td-chip*`, `.td-density*`, `.td-sort*`, `.td-pagination*`, `.td-empty*`, `.td-facet-toggle*`)
@@ -64,6 +65,7 @@
 @import "./home.css";
 @import "./pipeline-anatomy.css";
 @import "./quick-entry-row.css";
+@import "./announcements.css";
 @import "./facets.css";
 @import "./facet-panel.css";
 @import "./list-controls.css";

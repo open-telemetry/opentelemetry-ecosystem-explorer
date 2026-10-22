@@ -13,6 +13,11 @@
         "github": "GitHub"
       }
     },
+    "announcements": {
+      "heading": "Noticias y Anuncios",
+      "loading": "Cargando anuncios...",
+      "readMore": "Leer más"
+    },
     "pipeline": {
       "title": "Categorías de instrumentación",
       "lead": "Las auto-instrumentaciones de Java se agrupan por categoría. Haz clic en cualquier categoría para filtrar la lista de instrumentaciones.",

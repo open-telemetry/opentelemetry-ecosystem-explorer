@@ -16,8 +16,9 @@
 import { render, screen } from "@testing-library/react";
 import i18n from "i18next";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
+import type { Announcement } from "@/features/java-agent/hooks/use-java-agent-announcements";
 import type { DataState } from "@/hooks/data-state";
 import { CollectorLandingV1 } from "./collector-landing";
 import { JavaAgentLandingV1 } from "./java-agent-landing";
@@ -28,6 +29,12 @@ import type { EcosystemLandingData } from "./use-ecosystem-landing-data";
 const useEcosystemLandingData = vi.fn<() => DataState<EcosystemLandingData>>();
 vi.mock("./use-ecosystem-landing-data", () => ({
   useEcosystemLandingData: () => useEcosystemLandingData(),
+}));
+
+// Mock the announcements feed too, so no landing test depends on a network fetch.
+const useJavaAgentAnnouncements = vi.fn<() => DataState<Announcement[]>>();
+vi.mock("@/features/java-agent/hooks/use-java-agent-announcements", () => ({
+  useJavaAgentAnnouncements: () => useJavaAgentAnnouncements(),
 }));
 
 function renderRouter(node: React.ReactNode) {
@@ -45,8 +52,21 @@ const errorState: DataState<EcosystemLandingData> = {
   error: new Error("boom"),
 };
 
+const announcement: Announcement = {
+  id: "welcome",
+  date: "2026-09-12",
+  title: "Welcome to the Java Agent Explorer",
+  body: "Announcements are now shown on the landing page.",
+};
+
+beforeEach(() => {
+  // No announcements unless a test opts in.
+  useJavaAgentAnnouncements.mockReturnValue({ data: [], loading: false, error: null });
+});
+
 afterEach(() => {
   useEcosystemLandingData.mockReset();
+  useJavaAgentAnnouncements.mockReset();
 });
 
 describe("Collector ecosystem landing", () => {
@@ -232,6 +252,52 @@ describe("Java Agent ecosystem landing", () => {
     );
     expect(reference).toHaveAttribute("target", "_blank");
     expect(reference).toHaveAttribute("rel", expect.stringContaining("noopener"));
+  });
+});
+
+describe("Ecosystem landing announcements", () => {
+  it("shows the Java Agent news band between the hero and the categories", () => {
+    useEcosystemLandingData.mockReturnValue(errorState);
+    useJavaAgentAnnouncements.mockReturnValue({
+      data: [announcement],
+      loading: false,
+      error: null,
+    });
+    renderRouter(<JavaAgentLandingV1 />);
+
+    const news = screen.getByRole("heading", { level: 2, name: "News & Announcements" });
+    expect(screen.getByRole("heading", { level: 3, name: announcement.title })).toBeInTheDocument();
+
+    const hero = screen.getByRole("heading", { level: 1, name: /OpenTelemetry Java Agent/i });
+    const categories = screen.getByRole("heading", { name: "Instrumentation categories" });
+    expect(hero.compareDocumentPosition(news) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      news.compareDocumentPosition(categories) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
+  it("leaves the Java Agent page unchanged when there are no announcements", () => {
+    useEcosystemLandingData.mockReturnValue(errorState);
+    renderRouter(<JavaAgentLandingV1 />);
+
+    expect(screen.queryByRole("heading", { name: "News & Announcements" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Instrumentation categories" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Quick entries" })).toBeInTheDocument();
+  });
+
+  it("does not show or fetch announcements on the Collector landing", () => {
+    useEcosystemLandingData.mockReturnValue(errorState);
+    useJavaAgentAnnouncements.mockReturnValue({
+      data: [announcement],
+      loading: false,
+      error: null,
+    });
+    renderRouter(<CollectorLandingV1 />);
+
+    expect(screen.queryByRole("heading", { name: "News & Announcements" })).not.toBeInTheDocument();
+    expect(screen.queryByText(announcement.title)).not.toBeInTheDocument();
+    // Collector never opts in, so the Java Agent feed is not even requested.
+    expect(useJavaAgentAnnouncements).not.toHaveBeenCalled();
   });
 });
 

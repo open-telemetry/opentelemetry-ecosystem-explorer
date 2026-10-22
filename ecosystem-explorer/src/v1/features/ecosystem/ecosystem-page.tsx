@@ -27,6 +27,7 @@ import { Link } from "react-router-dom";
 
 import { SubNav } from "@/v1/components/layout/sub-nav";
 import { CoverBlock } from "@/v1/components/home/cover-block";
+import { AnnouncementsSection } from "@/v1/components/ecosystem/announcements-section";
 import { PipelineAnatomy } from "@/v1/components/ecosystem/pipeline-anatomy";
 import { QuickEntryRow } from "@/v1/components/ecosystem/quick-entry-row";
 import { ReleaseCard } from "@/v1/components/ecosystem/release-card";
@@ -61,6 +62,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
     release,
     stages,
     quickEntries,
+    announcements,
     pipelineTitle,
     pipelineLead,
     pipelineLeadWithTotal,
@@ -162,6 +164,14 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
           )
         }
       />
+
+      {announcements && (
+        <AnnouncementsSection
+          heading={t(announcements.heading)}
+          loadingLabel={t(announcements.loading)}
+          readMoreLabel={t(announcements.readMore)}
+        />
+      )}
 
       <section className="td-box td-box--light">
         <div className="td-box__container">
