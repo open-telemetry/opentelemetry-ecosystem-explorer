@@ -8,9 +8,9 @@ alibabacloudlogserviceexporter: alibabacloudlogserviceexporter-065b018f810e.md
 apachereceiver: apachereceiver-75dff7a694b1.md
 apachesparkreceiver: apachesparkreceiver-81e798a028e1.md
 asapauthextension: asapauthextension-581feb28e5da.md
-attributesprocessor: attributesprocessor-88cada31bed4.md
+attributesprocessor: attributesprocessor-58b6f67cac38.md
 avrologencodingextension: avrologencodingextension-5728c9bf4dc7.md
-awscloudwatchlogsexporter: awscloudwatchlogsexporter-4d6c79607abb.md
+awscloudwatchlogsexporter: awscloudwatchlogsexporter-54c739c33221.md
 awscloudwatchmetricstreamsencodingextension: awscloudwatchmetricstreamsencodingextension-4fad24686b71.md
 awscloudwatchreceiver: awscloudwatchreceiver-1cf5f014ae2d.md
 awscontainerinsightreceiver: awscontainerinsightreceiver-f84da2162e0f.md
@@ -22,7 +22,7 @@ awskinesisexporter: awskinesisexporter-d39966e61835.md
 awslambdareceiver: awslambdareceiver-d4c78320e5fc.md
 awslogsencodingextension: awslogsencodingextension-d1175c92e78c.md
 awsproxy: awsproxy-82b943a6740b.md
-awss3exporter: awss3exporter-1722aa1f4eb8.md
+awss3exporter: awss3exporter-8cd3ae1f024c.md
 awss3receiver: awss3receiver-82939cfbf5f5.md
 awsxrayexporter: awsxrayexporter-2a22b6f15062.md
 awsxrayreceiver: awsxrayreceiver-de4147e74e5d.md
@@ -39,7 +39,7 @@ basicauthextension: basicauthextension-8fcb57b5d102.md
 bearertokenauthextension: bearertokenauthextension-e6bf0a60fe6b.md
 bmchelixexporter: bmchelixexporter-acce4a4b9fce.md
 carbonreceiver: carbonreceiver-86d662c7520e.md
-cardinalityguardianprocessor: cardinalityguardianprocessor-d32a2f12cc8b.md
+cardinalityguardianprocessor: cardinalityguardianprocessor-59a44faac60c.md
 cassandraexporter: cassandraexporter-d5a68683a543.md
 cfgardenobserver: cfgardenobserver-c37df856f13c.md
 cgroupruntimeextension: cgroupruntimeextension-7caa49d589cc.md
@@ -58,7 +58,7 @@ datadogconnector: datadogconnector-947c512b4f56.md
 datadogexporter: datadogexporter-be19074ed62d.md
 datadogextension: datadogextension-aac1e0ff2c23.md
 datadogreceiver: datadogreceiver-82eab2df3fcf.md
-datasetexporter: datasetexporter-086a44648975.md
+datasetexporter: datasetexporter-53425fec9211.md
 dbstorage: dbstorage-23315e5e2cc6.md
 deltatocumulativeprocessor: deltatocumulativeprocessor-037c79aa55ed.md
 deltatorateprocessor: deltatorateprocessor-6fba92c550ec.md
@@ -68,7 +68,7 @@ dockerstatsreceiver: dockerstatsreceiver-a5542b7cee7c.md
 dorisexporter: dorisexporter-bbbde6730da5.md
 drainprocessor: drainprocessor-74e62066492a.md
 ecsobserver: ecsobserver-6f9d535058dd.md
-elasticsearchexporter: elasticsearchexporter-e202a5b0142a.md
+elasticsearchexporter: elasticsearchexporter-4f5bfe9b7903.md
 elasticsearchreceiver: elasticsearchreceiver-2410ca03b7ea.md
 envoyalsreceiver: envoyalsreceiver-024720e32435.md
 exceptionsconnector: exceptionsconnector-8b4d5832dd69.md
@@ -81,7 +81,7 @@ filelogreceiver: filelogreceiver-dc2c05a539d3.md
 filestatsreceiver: filestatsreceiver-d5a57c615231.md
 filestorage: filestorage-8dab4f25ccf1.md
 filetelemetrypolicyextension: filetelemetrypolicyextension-41699cbadc0a.md
-filterprocessor: filterprocessor-b3af643636df.md
+filterprocessor: filterprocessor-a97dcc1c48d0.md
 flinkmetricsreceiver: flinkmetricsreceiver-c7c3d8ea0097.md
 fluentforwardreceiver: fluentforwardreceiver-0969e2de1b59.md
 genainormalizerprocessor: genainormalizerprocessor-d414d53b2706.md
@@ -100,7 +100,7 @@ googlecloudspannerreceiver: googlecloudspannerreceiver-4515c7874d08.md
 googlecloudstorageexporter: googlecloudstorageexporter-5cc80bbbfaf1.md
 googlemanagedprometheusexporter: googlemanagedprometheusexporter-ad7269e7b20d.md
 grafanacloudconnector: grafanacloudconnector-a19abf6ad054.md
-groupbyattrsprocessor: groupbyattrsprocessor-1d7a9b8c9fff.md
+groupbyattrsprocessor: groupbyattrsprocessor-cf7f1a0a6d02.md
 groupbytraceprocessor: groupbytraceprocessor-1de7b722b55a.md
 haproxyreceiver: haproxyreceiver-45e0eab51f04.md
 headerssetterextension: headerssetterextension-29df9ba7ea21.md
@@ -122,7 +122,7 @@ jaegerencodingextension: jaegerencodingextension-1f641bf8d061.md
 jaegerreceiver: jaegerreceiver-3251cc563d4a.md
 jaegerremotesampling: jaegerremotesampling-6b679f9f2945.md
 journaldreceiver: journaldreceiver-56e912ee2790.md
-jsonlogencodingextension: jsonlogencodingextension-37c67602dcbd.md
+jsonlogencodingextension: jsonlogencodingextension-88d6a35b85eb.md
 k8sattributesprocessor: k8sattributesprocessor-1720c448f950.md
 k8sclusterreceiver: k8sclusterreceiver-d8e52b724742.md
 k8seventsreceiver: k8seventsreceiver-e2fb062682e1.md
@@ -181,8 +181,8 @@ prometheusremotewriteexporter: prometheusremotewriteexporter-44cb26763d6f.md
 prometheusremotewritereceiver: prometheusremotewritereceiver-a991c0076cb7.md
 pulsarexporter: pulsarexporter-4b4557e8de30.md
 pulsarreceiver: pulsarreceiver-a47d78ad45ce.md
-purefareceiver: purefareceiver-477fab42d3de.md
-purefbreceiver: purefbreceiver-690ebe81c526.md
+purefareceiver: purefareceiver-43857317b620.md
+purefbreceiver: purefbreceiver-84c425c5a1a9.md
 rabbitmqexporter: rabbitmqexporter-b690daf53cbf.md
 rabbitmqreceiver: rabbitmqreceiver-40c743eefe21.md
 receivercreator: receivercreator-7e9dded1c2c8.md
@@ -193,7 +193,7 @@ redisstorageextension: redisstorageextension-2500d7d09b20.md
 remotetapextension: remotetapextension-01716b8c7d82.md
 remotetapprocessor: remotetapprocessor-3132e6579248.md
 resourcedetectionprocessor: resourcedetectionprocessor-ec557cc42904.md
-resourceprocessor: resourceprocessor-49c236801aec.md
+resourceprocessor: resourceprocessor-0f2924abf3ba.md
 riakreceiver: riakreceiver-daac8cc354fc.md
 rollingspanlatencyprocessor: rollingspanlatencyprocessor-ab77ddf4eb8c.md
 roundrobinconnector: roundrobinconnector-87d841e8ada1.md
@@ -218,7 +218,7 @@ snowflakereceiver: snowflakereceiver-93f0790ff769.md
 solacereceiver: solacereceiver-cbb6494ddb14.md
 solarwindsapmsettingsextension: solarwindsapmsettingsextension-d1cacc091c78.md
 spanmetricsconnector: spanmetricsconnector-ae95c2ce1a96.md
-spanprocessor: spanprocessor-a666e9871dca.md
+spanprocessor: spanprocessor-b1947e227ae5.md
 spanpruningprocessor: spanpruningprocessor-6cccb257fae4.md
 splunkenterprisereceiver: splunkenterprisereceiver-a185ec5951d6.md
 splunkhecexporter: splunkhecexporter-1668091b3125.md
@@ -244,7 +244,7 @@ tencentcloudlogserviceexporter: tencentcloudlogserviceexporter-1a26be4309cc.md
 textencodingextension: textencodingextension-b7fd9642bd51.md
 tinybirdexporter: tinybirdexporter-baaf55f56413.md
 tlscheckreceiver: tlscheckreceiver-4a247b27cd04.md
-transformprocessor: transformprocessor-c04713b0f987.md
+transformprocessor: transformprocessor-d91c6db78279.md
 udplogreceiver: udplogreceiver-4a5286ba32ce.md
 unrollprocessor: unrollprocessor-7421d6ff0f0a.md
 vcenterreceiver: vcenterreceiver-b391850b0976.md

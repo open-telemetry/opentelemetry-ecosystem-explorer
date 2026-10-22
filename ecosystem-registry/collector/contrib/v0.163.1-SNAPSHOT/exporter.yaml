@@ -129,8 +129,9 @@ components:
       codeowners:
         active:
         - atoulme
-        - pdelewski
         - Erog38
+        emeritus:
+        - pdelewski
       distributions:
       - contrib
       stability:
@@ -369,10 +370,10 @@ components:
       codeowners:
         active:
         - atoulme
-        - martin-majlis-s1
         emeritus:
         - zdaratom-s1
         - tomaz-s1
+        - martin-majlis-s1
       distributions:
       - contrib
       stability:

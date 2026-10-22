@@ -16648,10 +16648,10 @@ components:
       class: receiver
       codeowners:
         active:
-        - dgoscn
         - chrroberts-pure
         emeritus:
         - jpkrohling
+        - dgoscn
       distributions:
       - contrib
       stability:
@@ -16667,10 +16667,10 @@ components:
       class: receiver
       codeowners:
         active:
-        - dgoscn
         - chrroberts-pure
         emeritus:
         - jpkrohling
+        - dgoscn
       distributions:
       - contrib
       stability:

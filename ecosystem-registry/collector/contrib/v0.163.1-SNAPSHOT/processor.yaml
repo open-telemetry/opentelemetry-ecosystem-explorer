@@ -518,14 +518,6 @@ components:
     description: The Filter Processor allows dropping spans, span events, metrics,
       datapoints, and logs from the collector.
     display_name: Filter Processor
-    feature_gates:
-    - description: Changes the default error_mode of the filter processor from propagate
-        to ignore
-      from_version: v0.150.0
-      id: processor.filter.defaultErrorModeIgnore
-      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47232
-      stage: stable
-      to_version: v0.159.0
     status:
       class: processor
       codeowners:
@@ -634,9 +626,9 @@ components:
       codeowners:
         active:
         - rnishtala-sumo
-        - amdprophet
         emeritus:
         - echlebek
+        - amdprophet
       distributions:
       - contrib
       - k8s
