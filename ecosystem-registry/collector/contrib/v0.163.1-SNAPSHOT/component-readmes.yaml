@@ -22,16 +22,16 @@ awskinesisexporter: awskinesisexporter-d39966e61835.md
 awslambdareceiver: awslambdareceiver-d4c78320e5fc.md
 awslogsencodingextension: awslogsencodingextension-d1175c92e78c.md
 awsproxy: awsproxy-82b943a6740b.md
-awss3exporter: awss3exporter-8cd3ae1f024c.md
+awss3exporter: awss3exporter-b1829440fcb9.md
 awss3receiver: awss3receiver-82939cfbf5f5.md
 awsxrayexporter: awsxrayexporter-2a22b6f15062.md
 awsxrayreceiver: awsxrayreceiver-de4147e74e5d.md
 azureauthextension: azureauthextension-b03d0fb009bc.md
 azureblobexporter: azureblobexporter-a7fa067d3c08.md
 azureblobreceiver: azureblobreceiver-5a2414b353f9.md
-azuredataexplorerexporter: azuredataexplorerexporter-63c1f9d011fb.md
+azuredataexplorerexporter: azuredataexplorerexporter-8b62ee32b729.md
 azureencodingextension: azureencodingextension-1bbf814acd08.md
-azureeventhubreceiver: azureeventhubreceiver-ae75090054ad.md
+azureeventhubreceiver: azureeventhubreceiver-369d67cfc753.md
 azurefunctionsreceiver: azurefunctionsreceiver-7366ec9c7068.md
 azuremonitorexporter: azuremonitorexporter-8e7e77a71457.md
 azuremonitorreceiver: azuremonitorreceiver-98d3b08f710e.md
@@ -68,7 +68,7 @@ dockerstatsreceiver: dockerstatsreceiver-a5542b7cee7c.md
 dorisexporter: dorisexporter-bbbde6730da5.md
 drainprocessor: drainprocessor-74e62066492a.md
 ecsobserver: ecsobserver-6f9d535058dd.md
-elasticsearchexporter: elasticsearchexporter-4f5bfe9b7903.md
+elasticsearchexporter: elasticsearchexporter-ce4a2d76ff3c.md
 elasticsearchreceiver: elasticsearchreceiver-2410ca03b7ea.md
 envoyalsreceiver: envoyalsreceiver-024720e32435.md
 exceptionsconnector: exceptionsconnector-8b4d5832dd69.md
@@ -131,8 +131,8 @@ k8sobjectsreceiver: k8sobjectsreceiver-0ca2b37eaebb.md
 k8sobserver: k8sobserver-954a2f372e56.md
 kafkaexporter: kafkaexporter-7d6c3aa540b4.md
 kafkametricsreceiver: kafkametricsreceiver-563454e2cbd3.md
-kafkareceiver: kafkareceiver-0d6f7ee2a31b.md
-kubeletstatsreceiver: kubeletstatsreceiver-000955ad6d86.md
+kafkareceiver: kafkareceiver-acd2a3361139.md
+kubeletstatsreceiver: kubeletstatsreceiver-c0ccd96c7219.md
 libhoneyreceiver: libhoneyreceiver-56d3322b6dc1.md
 loadbalancingexporter: loadbalancingexporter-036723484433.md
 logdedupprocessor: logdedupprocessor-c19ff96e2693.md
@@ -169,7 +169,7 @@ otelarrowreceiver: otelarrowreceiver-047ae5449620.md
 otlpencodingextension: otlpencodingextension-e2a44593b306.md
 otlpjsonconnector: otlpjsonconnector-981c27fe5515.md
 otlpjsonfilereceiver: otlpjsonfilereceiver-dd45637b669f.md
-partitioningprocessor: partitioningprocessor-fc1401c7217e.md
+partitioningprocessor: partitioningprocessor-40f6d6494f70.md
 podmanreceiver: podmanreceiver-88fe9c256d04.md
 postgresqlreceiver: postgresqlreceiver-b43f94c4dde2.md
 pprofextension: pprofextension-9fa7804ade7e.md
@@ -249,6 +249,7 @@ udplogreceiver: udplogreceiver-4a5286ba32ce.md
 unrollprocessor: unrollprocessor-7421d6ff0f0a.md
 vcenterreceiver: vcenterreceiver-b391850b0976.md
 vcrreceiver: vcrreceiver-226c96ee4c45.md
+verifyprocessor: verifyprocessor-6653c879116f.md
 webhookeventreceiver: webhookeventreceiver-abab38931b98.md
 windowseventlogreceiver: windowseventlogreceiver-429d622f1d9d.md
 windowsperfcountersreceiver: windowsperfcountersreceiver-b1ed02244cf4.md

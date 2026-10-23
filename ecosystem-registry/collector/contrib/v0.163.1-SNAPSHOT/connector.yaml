@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.163.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: connector
-schema_hash: 0faf6634f107
+schema_hash: a13cd490860c
 components:
 - name: countconnector
   metadata:
@@ -233,14 +233,6 @@ components:
       id: connector.servicegraph.legacyLatencyUnitMs
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27488
       stage: deprecated
-      to_version: v0.154.0
-    - description: When enabled and setting `virtual_node_peer_attributes` is not
-        empty, the connector looks for the presence of these attributes in span to
-        create virtual server nodes.
-      from_version: v0.73.0
-      id: connector.servicegraph.virtualNode
-      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/17196
-      stage: stable
       to_version: v0.154.0
     status:
       class: connector

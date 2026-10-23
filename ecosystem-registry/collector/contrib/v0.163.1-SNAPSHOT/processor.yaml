@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.163.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: 0faf6634f107
+schema_hash: a13cd490860c
 components:
 - name: adaptivetailsamplingprocessor
   metadata:
@@ -1772,13 +1772,15 @@ components:
         - dmitryax
         emeritus:
         - axw
-      distributions: []
+      distributions:
+      - contrib
       stability:
-        development:
+        alpha:
         - logs
         - metrics
-        - profiles
         - traces
+        development:
+        - profiles
     telemetry:
       metrics:
         processor.partitioning.key_evaluation.errors:
@@ -2818,3 +2820,17 @@ components:
         alpha:
         - logs
     type: unroll
+- name: verifyprocessor
+  metadata:
+    status:
+      class: processor
+      codeowners:
+        active:
+        - hilmarf
+        - jmacd
+      distributions: []
+      stability:
+        development:
+        - logs
+      warnings: []
+    type: verify

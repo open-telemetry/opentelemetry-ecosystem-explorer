@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.163.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: 0faf6634f107
+schema_hash: a13cd490860c
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -8603,7 +8603,9 @@ components:
         description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node
           since its creation
         enabled: true
-        stability: development
+        semantic_convention:
+          ref: system/container-metrics.md#metric-containercputime
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           monotonic: true
@@ -9295,6 +9297,7 @@ components:
         type: string
         warnings:
           if_enabled: This resource_attribute is deprecated and will be removed soon
+    sem_conv_version: 1.43.0
     status:
       class: receiver
       codeowners:

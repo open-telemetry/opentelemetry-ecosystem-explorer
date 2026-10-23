@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.163.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
-schema_hash: 0faf6634f107
+schema_hash: a13cd490860c
 components:
 - name: alertmanagerexporter
   metadata:
@@ -195,14 +195,13 @@ components:
     status:
       class: exporter
       codeowners:
-        active:
-        - ag-ramachandran
         emeritus:
         - asaharn
+        - ag-ramachandran
       distributions:
       - contrib
       stability:
-        beta:
+        unmaintained:
         - logs
         - metrics
         - traces
