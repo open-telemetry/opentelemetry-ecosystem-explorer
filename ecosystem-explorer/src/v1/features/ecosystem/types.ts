@@ -39,6 +39,15 @@ export interface EcosystemHeroCopy {
   logo: ReactNode;
 }
 
+/** i18n keys for the optional announcements band; items come from the announcements feed. */
+export interface EcosystemAnnouncementsCopy {
+  heading: string;
+  /** Screen-reader text announced while the loading skeleton is shown. */
+  loading: string;
+  /** Label of each card's link. */
+  readMore: string;
+}
+
 export interface EcosystemReleaseInfo {
   version: string | null;
   releaseDate?: string | null;
@@ -69,6 +78,12 @@ export interface EcosystemConfig {
   pipelineNoFlow?: boolean;
   stages: PipelineStage[];
   quickEntries: QuickEntryItem[];
+  /**
+   * Opt-in "News & Announcements" band rendered right below the hero. The feed is the
+   * Java Agent one (its path is fixed in the hook), so only Java Agent sets this; without
+   * it no section renders and no feed is fetched.
+   */
+  announcements?: EcosystemAnnouncementsCopy;
   /**
    * Static release fallback shown when the data layer is unavailable. The
    * actual latest version may be loaded asynchronously by the page; this

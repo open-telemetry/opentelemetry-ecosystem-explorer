@@ -1,0 +1,64 @@
+/* ---------- Announcements ---------- */
+
+.td-announcements__title {
+  margin: 0 0 1.5rem;
+  font-size: var(--td-fs-h3);
+  font-weight: 700;
+}
+
+/* auto-fill keeps a lone card at one column's width instead of stretching it across the band. */
+.td-announcements__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+}
+
+.td-announcements__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background-color: hsl(var(--background-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  color: hsl(var(--foreground-hsl));
+}
+
+.td-announcements__date {
+  font-size: var(--td-fs-sm);
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-announcements__card-title {
+  margin: 0;
+  font-size: var(--td-fs-base);
+  font-weight: 700;
+}
+
+.td-announcements__body {
+  margin: 0;
+  font-size: var(--td-fs-sm);
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-announcements__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-size: var(--td-fs-sm);
+  font-weight: 600;
+  color: hsl(var(--secondary-hsl));
+  text-decoration: none;
+}
+
+.td-announcements__link:hover,
+.td-announcements__link:focus-visible {
+  text-decoration: underline;
+}
+
+.td-announcements__link-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}

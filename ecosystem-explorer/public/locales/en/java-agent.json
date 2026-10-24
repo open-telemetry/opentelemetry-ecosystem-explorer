@@ -13,6 +13,11 @@
         "github": "GitHub"
       }
     },
+    "announcements": {
+      "heading": "News & Announcements",
+      "loading": "Loading announcements...",
+      "readMore": "Read more"
+    },
     "pipeline": {
       "title": "Instrumentation categories",
       "lead": "Java auto-instrumentations are grouped by category. Click any category to filter the instrumentation list.",

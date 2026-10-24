@@ -16,7 +16,8 @@
 
 /*
  * Java Agent landing config. Copy fields (eyebrow, lead, CTA labels, pipeline
- * title/lead, stage label/description, quick-entry title/description) hold
+ * title/lead, stage label/description, quick-entry title/description, announcements
+ * heading/labels) hold
  * i18next KEYS, not literal English — `EcosystemPage` resolves them via
  * `useTranslation("java-agent")` against the `landingV1.*` block. The hero
  * `title` stays JSX because it carries the gradient-accent span.
@@ -158,6 +159,11 @@ export const javaAgentConfig: EcosystemConfig = {
       icon: <FileText className="h-5 w-5" aria-hidden />,
     },
   ],
+  announcements: {
+    heading: "landingV1.announcements.heading",
+    loading: "landingV1.announcements.loading",
+    readMore: "landingV1.announcements.readMore",
+  },
   release: {
     version: "v2.10.0",
     // No release date until the watcher captures git tag dates (follow-up). Java
