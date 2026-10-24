@@ -3,8 +3,12 @@ package instrumentation
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"slices"
+	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 )
@@ -240,6 +244,207 @@ instalation: # typo should fail strict decoding
 		})
 	}
 }
+
+func TestScanMetadataRepoConfigurationEntryShape(t *testing.T) {
+	tests := []struct {
+		name         string
+		config       string
+		wantError    string
+		wantName     string
+		wantType     string
+		wantDefault  string
+		checkDefault bool
+		wantInline   bool
+		wantRef      bool
+		wantSchema   bool
+		wantLegacy   bool
+	}{
+		{
+			name: "inline declarative configuration",
+			config: `- name: otel.instrumentation.http.enabled
+  declarative_name: go.net_http.enabled
+  description: Enables HTTP instrumentation.
+  type: boolean
+  default: true`,
+			wantName:     "otel.instrumentation.http.enabled",
+			wantType:     "boolean",
+			wantDefault:  "true",
+			checkDefault: true,
+			wantInline:   true,
+		},
+		{
+			name: "structured declarative configuration",
+			config: `- declarative_name: go.http.client.rules
+  description: HTTP client rules.
+  type: list
+  default: ""
+  declarative_type: structured_list
+  declarative_schema:
+    type: object
+    required: [pattern]
+    properties:
+      pattern:
+        type: string
+        example: "/users/{id}"
+      enabled:
+        type: boolean
+        default: false`,
+			wantInline: true,
+			wantSchema: true,
+		},
+		{
+			name:    "shared reference",
+			config:  `- ref: http.client.capture-request-headers`,
+			wantRef: true,
+		},
+		{
+			name: "both selectors",
+			config: `- declarative_name: go.net_http.enabled
+  ref: http.client.capture-request-headers`,
+			wantError: "exactly one of declarative_name or ref",
+		},
+		{
+			name: "shared reference with inline fields",
+			config: `- ref: http.client.capture-request-headers
+  type: list`,
+			wantError: "a ref entry must not include inline configuration fields",
+		},
+		{
+			name: "legacy Go-only configuration without selectors",
+			config: `- name: otel.instrumentation.http.enabled
+  type: bool
+  default: "true"`,
+			wantName:     "otel.instrumentation.http.enabled",
+			wantType:     "bool",
+			wantDefault:  "true",
+			checkDefault: true,
+			wantLegacy:   true,
+		},
+		{
+			name:      "empty declarative name",
+			config:    `- declarative_name: ""`,
+			wantError: "declarative_name must not be empty",
+		},
+		{
+			name:      "empty ref",
+			config:    `- ref: ""`,
+			wantError: "ref must not be empty",
+		},
+		{
+			name:      "declarative fields require a selector",
+			config:    `- declarative_type: boolean`,
+			wantError: "declarative_type or declarative_schema requires declarative_name or ref",
+		},
+		{
+			name:      "declarative name with surrounding whitespace",
+			config:    `- declarative_name: " go.net_http.enabled "`,
+			wantError: "declarative_name must not have leading or trailing whitespace",
+		},
+		{
+			name:      "ref with surrounding whitespace",
+			config:    `- ref: " http.client.capture-request-headers "`,
+			wantError: "ref must not have leading or trailing whitespace",
+		},
+		{
+			name: "unknown declarative type",
+			config: `- declarative_name: go.net_http.enabled
+  declarative_type: str`,
+			wantError: "unsupported declarative_type \"str\"",
+		},
+		{
+			name: "schema on scalar declarative type",
+			config: `- declarative_name: go.net_http.enabled
+  declarative_type: boolean
+  declarative_schema:
+    type: object
+    properties: {}`,
+			wantError: "declarative_schema requires declarative_type structured_list",
+		},
+		{
+			name: "structured list requires schema",
+			config: `- declarative_name: go.http.client.rules
+  declarative_type: structured_list`,
+			wantError: "structured_list requires declarative_schema",
+		},
+		{
+			name: "schema must describe an object",
+			config: `- declarative_name: go.http.client.rules
+  declarative_type: structured_list
+  declarative_schema:
+    type: string
+    properties: {}`,
+			wantError: "declarative_schema type must be object",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := t.TempDir()
+			writeGoMod(t, root, "instrumentation/dummy", "module go.opentelemetry.io/otelc/dummy\n\ngo 1.25.0\n")
+			writeMetadata(t, root, "instrumentation/dummy", "name: test-lib\nconfigurations:\n"+tt.config+"\n")
+
+			result, err := ScanMetadataRepo(root)
+			if tt.wantError != "" {
+				if err == nil || !strings.Contains(err.Error(), tt.wantError) {
+					t.Fatalf("ScanMetadataRepo() error = %v, want error containing %q", err, tt.wantError)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("ScanMetadataRepo() error = %v", err)
+			}
+			if len(result.Libraries) != 1 {
+				t.Fatalf("libraries = %d, want 1", len(result.Libraries))
+			}
+			configurations := result.Libraries[0].Configurations
+			if len(configurations) != 1 {
+				t.Fatalf("configurations = %d, want 1", len(configurations))
+			}
+			configuration := configurations[0]
+			if got := configuration.DeclarativeName != nil; got != tt.wantInline {
+				t.Errorf("declarative_name present = %v, want %v", got, tt.wantInline)
+			}
+			if got := configuration.Ref != nil; got != tt.wantRef {
+				t.Errorf("ref present = %v, want %v", got, tt.wantRef)
+			}
+			if tt.wantInline || tt.wantLegacy {
+				if configuration.Name != tt.wantName {
+					t.Errorf("name = %q, want %q", configuration.Name, tt.wantName)
+				}
+				if tt.wantType != "" && configuration.Type != tt.wantType {
+					t.Errorf("type = %q, want %q", configuration.Type, tt.wantType)
+				}
+				if tt.checkDefault && (configuration.Default == nil || *configuration.Default != tt.wantDefault) {
+					t.Errorf("default = %v, want string %q", configuration.Default, tt.wantDefault)
+				}
+				if tt.wantSchema {
+					if configuration.DeclarativeSchema == nil {
+						t.Fatal("declarative_schema = nil, want schema")
+					}
+					if got := configuration.DeclarativeSchema.Properties["enabled"].Default; got != false {
+						t.Errorf("schema property default = %#v, want false bool", got)
+					}
+				}
+			}
+			if tt.wantRef && (configuration.Ref == nil || *configuration.Ref != "http.client.capture-request-headers") {
+				t.Errorf("ref = %v, want http.client.capture-request-headers", configuration.Ref)
+			}
+
+			serialized, err := yaml.Marshal(result.Libraries[0])
+			if err != nil {
+				t.Fatalf("Marshal() error = %v", err)
+			}
+			var roundTripped Library
+			if err := yaml.Unmarshal(serialized, &roundTripped); err != nil {
+				t.Fatalf("Unmarshal() error = %v", err)
+			}
+			if !reflect.DeepEqual(roundTripped.Configurations, configurations) {
+				t.Errorf("round-tripped configurations = %#v, want %#v", roundTripped.Configurations, configurations)
+			}
+		})
+	}
+}
+
 func TestScanRepo(t *testing.T) {
 	const contrib = "go.opentelemetry.io/contrib/"
 

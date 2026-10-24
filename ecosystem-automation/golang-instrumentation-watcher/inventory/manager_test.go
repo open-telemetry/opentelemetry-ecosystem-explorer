@@ -3,6 +3,7 @@ package inventory
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -68,6 +69,62 @@ func TestSaveAndLoad(t *testing.T) {
 	}
 	if len(loaded.Libraries) != 2 || loaded.Libraries[0].Name != "otelgin" {
 		t.Errorf("loaded libraries = %+v", loaded.Libraries)
+	}
+}
+
+func TestSaveAndLoadDeclarativeConfiguration(t *testing.T) {
+	m := NewManager(t.TempDir())
+
+	declarativeName := "go.net_http.enabled"
+	declarativeType := "structured_list"
+	defaultValue := ""
+	ref := "http.client.capture-request-headers"
+	want := []metadata.Configuration{
+		{
+			Name:            "otel.instrumentation.http.rules",
+			DeclarativeName: &declarativeName,
+			Description:     "HTTP rule configuration.",
+			Type:            "list",
+			Default:         &defaultValue,
+			Examples:        []string{"[]"},
+			DeclarativeType: &declarativeType,
+			DeclarativeSchema: &metadata.DeclarativeSchema{
+				Type:     "object",
+				Required: []string{"enabled"},
+				Properties: map[string]metadata.DeclarativeProperty{
+					"enabled": {
+						Type:        "boolean",
+						Description: "Whether the rule is enabled.",
+						Default:     false,
+						Example:     true,
+					},
+				},
+			},
+		},
+		{Ref: &ref},
+	}
+	input := instrumentation.Library{
+		Metadata: metadata.Metadata{
+			Name:           "otelhttp",
+			Configurations: want,
+		},
+	}
+	if err := m.Save("v0.1.0-SNAPSHOT", []instrumentation.Library{input}); err != nil {
+		t.Fatalf("Save() error = %v", err)
+	}
+
+	loaded, err := m.Load("v0.1.0-SNAPSHOT")
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if loaded.FileFormat != 0.1 {
+		t.Fatalf("file_format = %v, want 0.1", loaded.FileFormat)
+	}
+	if len(loaded.Libraries) != 1 {
+		t.Fatalf("libraries = %d, want 1", len(loaded.Libraries))
+	}
+	if got := loaded.Libraries[0].Configurations; !reflect.DeepEqual(got, want) {
+		t.Errorf("configurations = %#v, want %#v", got, want)
 	}
 }
 

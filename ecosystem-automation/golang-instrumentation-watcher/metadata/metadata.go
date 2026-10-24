@@ -173,14 +173,43 @@ type Installation struct {
 
 // Configuration is a single tunable option exposed by a library.
 type Configuration struct {
-	// Name is the name of the configuration option (often matching an Option type or function name).
-	Name string `yaml:"name"`
+	// Name is the optional existing flat/instrumentation configuration property name. It is not the
+	// OpenTelemetry declarative configuration path.
+	Name string `yaml:"name,omitempty"`
+	// DeclarativeName is the fully qualified OpenTelemetry declarative configuration path.
+	DeclarativeName *string `yaml:"declarative_name,omitempty"`
+	// Ref identifies a shared configuration definition. References are preserved by the watcher
+	// and resolved by the consuming instrumentation tool.
+	Ref *string `yaml:"ref,omitempty"`
 	// Description explains what the configuration option does and how it affects behavior.
-	Description string `yaml:"description"`
-	// Type indicates the data type or Go type of the configuration option (e.g., "bool", "time.Duration").
-	Type string `yaml:"type"`
-	// Default is the string representation of the default value for this configuration option.
-	Default string `yaml:"default"`
+	Description string `yaml:"description,omitempty"`
+	// Type is the existing flat/Go option type. It retains its established meaning and is distinct
+	// from DeclarativeType.
+	Type string `yaml:"type,omitempty"`
+	// Default is the string representation of the default value for this configuration option. A nil
+	// value means no default was declared; a pointer to an empty string is an explicit empty default.
+	Default *string `yaml:"default,omitempty"`
 	// Examples provides optional code snippets or values demonstrating how to set this configuration.
 	Examples []string `yaml:"examples,omitempty"`
+	// DeclarativeType describes the value shape used in OpenTelemetry declarative configuration when
+	// it differs from the flat configuration type.
+	DeclarativeType *string `yaml:"declarative_type,omitempty"`
+	// DeclarativeSchema describes the supported structured declarative value shape. Property defaults
+	// and examples intentionally retain native YAML values.
+	DeclarativeSchema *DeclarativeSchema `yaml:"declarative_schema,omitempty"`
+}
+
+// DeclarativeSchema is the JSON-Schema-style subset used for structured declarative configuration.
+type DeclarativeSchema struct {
+	Type       string                         `yaml:"type"`
+	Required   []string                       `yaml:"required,omitempty"`
+	Properties map[string]DeclarativeProperty `yaml:"properties"`
+}
+
+// DeclarativeProperty describes one property in a [DeclarativeSchema].
+type DeclarativeProperty struct {
+	Type        string `yaml:"type"`
+	Description string `yaml:"description,omitempty"`
+	Default     any    `yaml:"default,omitempty"`
+	Example     any    `yaml:"example,omitempty"`
 }

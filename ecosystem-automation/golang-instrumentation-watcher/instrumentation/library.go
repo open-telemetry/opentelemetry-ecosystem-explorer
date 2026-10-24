@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"golang.org/x/mod/semver"
 	"gopkg.in/yaml.v3"
@@ -203,6 +204,70 @@ func analyzeMetadataLibrary(metadataPath string) (*Library, error) {
 	if err := dec.Decode(&lib); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal %s: %w", metadataPath, err)
 	}
+	if err := validateConfigurationEntries(lib.Configurations, metadataPath); err != nil {
+		return nil, err
+	}
 
 	return &lib, nil
+}
+
+// validateConfigurationEntries validates declarative selector and type/schema
+// consistency. Entries without declarative selectors remain valid legacy
+// Go-only options. Shared refs are intentionally left unresolved here; otelc
+// owns reference lookup and full semantic validation.
+func validateConfigurationEntries(configurations []metadata.Configuration, metadataPath string) error {
+	for i, configuration := range configurations {
+		hasDeclarativeName := configuration.DeclarativeName != nil
+		hasRef := configuration.Ref != nil
+		if hasDeclarativeName && hasRef {
+			return fmt.Errorf("invalid configurations[%d] in %s: exactly one of declarative_name or ref must be set", i, metadataPath)
+		}
+		if !hasDeclarativeName && !hasRef {
+			if configuration.DeclarativeType != nil || configuration.DeclarativeSchema != nil {
+				return fmt.Errorf("invalid configurations[%d] in %s: declarative_type or declarative_schema requires declarative_name or ref", i, metadataPath)
+			}
+			continue
+		}
+		if hasDeclarativeName && strings.TrimSpace(*configuration.DeclarativeName) == "" {
+			return fmt.Errorf("invalid configurations[%d] in %s: declarative_name must not be empty", i, metadataPath)
+		}
+		if hasDeclarativeName && strings.TrimSpace(*configuration.DeclarativeName) != *configuration.DeclarativeName {
+			return fmt.Errorf("invalid configurations[%d] in %s: declarative_name must not have leading or trailing whitespace", i, metadataPath)
+		}
+		if hasRef && strings.TrimSpace(*configuration.Ref) == "" {
+			return fmt.Errorf("invalid configurations[%d] in %s: ref must not be empty", i, metadataPath)
+		}
+		if hasRef && strings.TrimSpace(*configuration.Ref) != *configuration.Ref {
+			return fmt.Errorf("invalid configurations[%d] in %s: ref must not have leading or trailing whitespace", i, metadataPath)
+		}
+		if hasRef && (configuration.Name != "" || configuration.Description != "" || configuration.Type != "" ||
+			configuration.Default != nil || len(configuration.Examples) > 0 || configuration.DeclarativeType != nil ||
+			configuration.DeclarativeSchema != nil) {
+			return fmt.Errorf("invalid configurations[%d] in %s: a ref entry must not include inline configuration fields", i, metadataPath)
+		}
+		if configuration.DeclarativeType != nil && !isSupportedDeclarativeType(*configuration.DeclarativeType) {
+			return fmt.Errorf("invalid configurations[%d] in %s: unsupported declarative_type %q", i, metadataPath, *configuration.DeclarativeType)
+		}
+		if configuration.DeclarativeSchema != nil {
+			if configuration.DeclarativeType == nil || *configuration.DeclarativeType != "structured_list" {
+				return fmt.Errorf("invalid configurations[%d] in %s: declarative_schema requires declarative_type structured_list", i, metadataPath)
+			}
+			if configuration.DeclarativeSchema.Type != "object" {
+				return fmt.Errorf("invalid configurations[%d] in %s: declarative_schema type must be object", i, metadataPath)
+			}
+		}
+		if configuration.DeclarativeType != nil && *configuration.DeclarativeType == "structured_list" && configuration.DeclarativeSchema == nil {
+			return fmt.Errorf("invalid configurations[%d] in %s: structured_list requires declarative_schema", i, metadataPath)
+		}
+	}
+	return nil
+}
+
+func isSupportedDeclarativeType(value string) bool {
+	switch value {
+	case "boolean", "string", "int", "map", "list", "structured_list":
+		return true
+	default:
+		return false
+	}
 }
