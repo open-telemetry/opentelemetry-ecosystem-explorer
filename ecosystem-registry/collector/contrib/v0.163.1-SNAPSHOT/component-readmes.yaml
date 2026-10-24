@@ -68,7 +68,7 @@ dockerstatsreceiver: dockerstatsreceiver-a5542b7cee7c.md
 dorisexporter: dorisexporter-bbbde6730da5.md
 drainprocessor: drainprocessor-74e62066492a.md
 ecsobserver: ecsobserver-6f9d535058dd.md
-elasticsearchexporter: elasticsearchexporter-ce4a2d76ff3c.md
+elasticsearchexporter: elasticsearchexporter-f83f931944c7.md
 elasticsearchreceiver: elasticsearchreceiver-2410ca03b7ea.md
 envoyalsreceiver: envoyalsreceiver-024720e32435.md
 exceptionsconnector: exceptionsconnector-8b4d5832dd69.md
@@ -127,7 +127,7 @@ k8sattributesprocessor: k8sattributesprocessor-1720c448f950.md
 k8sclusterreceiver: k8sclusterreceiver-d8e52b724742.md
 k8seventsreceiver: k8seventsreceiver-e2fb062682e1.md
 k8sleaderelector: k8sleaderelector-6fd3aa97b5cc.md
-k8sobjectsreceiver: k8sobjectsreceiver-0ca2b37eaebb.md
+k8sobjectsreceiver: k8sobjectsreceiver-76a2196f7baf.md
 k8sobserver: k8sobserver-954a2f372e56.md
 kafkaexporter: kafkaexporter-7d6c3aa540b4.md
 kafkametricsreceiver: kafkametricsreceiver-563454e2cbd3.md
@@ -178,7 +178,7 @@ probabilisticsamplerprocessor: probabilisticsamplerprocessor-b09e1f007a3f.md
 prometheusexporter: prometheusexporter-2c7fb860a00b.md
 prometheusreceiver: prometheusreceiver-2792406ac353.md
 prometheusremotewriteexporter: prometheusremotewriteexporter-44cb26763d6f.md
-prometheusremotewritereceiver: prometheusremotewritereceiver-a991c0076cb7.md
+prometheusremotewritereceiver: prometheusremotewritereceiver-a1de09de0009.md
 pulsarexporter: pulsarexporter-4b4557e8de30.md
 pulsarreceiver: pulsarreceiver-a47d78ad45ce.md
 purefareceiver: purefareceiver-43857317b620.md
@@ -254,7 +254,7 @@ webhookeventreceiver: webhookeventreceiver-abab38931b98.md
 windowseventlogreceiver: windowseventlogreceiver-429d622f1d9d.md
 windowsperfcountersreceiver: windowsperfcountersreceiver-b1ed02244cf4.md
 windowsservicereceiver: windowsservicereceiver-cf3eff88b286.md
-yanggrpcreceiver: yanggrpcreceiver-b1013fc41368.md
+yanggrpcreceiver: yanggrpcreceiver-5feb0bad28ed.md
 zipkinencodingextension: zipkinencodingextension-1255b38db03b.md
 zipkinexporter: zipkinexporter-7afbe2732052.md
 zipkinreceiver: zipkinreceiver-47eabdd6e69d.md

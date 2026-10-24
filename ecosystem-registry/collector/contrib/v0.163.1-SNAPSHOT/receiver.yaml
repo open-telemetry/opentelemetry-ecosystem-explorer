@@ -7952,6 +7952,17 @@ components:
     description: The Kubernetes Objects Receiver collects (pull/watch) objects from
       the Kubernetes API server.
     display_name: Kubernetes Objects Receiver
+    feature_gates:
+    - description: 'When enabled, the receiver collects objects via a shared informer
+        factory (List+Watch backed by an in-memory cache) instead of the legacy per-object
+        pull/watch observers. Pull mode reads from the informer cache; watch mode
+        uses informer event handlers with automatic relist/reconnect. The `pull` RBAC
+        now also requires the `watch` verb, `resource_version` is ignored, and `exclude_watch_type:
+        [BOOKMARK, ERROR]` is a no-op.'
+      from_version: v0.164.0
+      id: receiver.k8sobjects.useInformerObserver
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43602
+      stage: alpha
     status:
       class: receiver
       codeowners:
@@ -16618,6 +16629,17 @@ components:
       stability:
         alpha:
         - metrics
+    telemetry:
+      metrics:
+        receiver_prometheusremotewrite_resource_cache_evictions:
+          description: Number of job/instance entries evicted from the resource metrics
+            cache because it was full.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{entries}'
     type: prometheus_remote_write
 - name: pulsarreceiver
   metadata:
