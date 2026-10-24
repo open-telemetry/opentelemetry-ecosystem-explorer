@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "semantic-conventions": {
+      "cursor": null,
+      "order": [],
+      "reconcile": [],
+      "revisions": {}
+    }
+  }
+}
