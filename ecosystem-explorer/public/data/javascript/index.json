@@ -9,6 +9,10 @@
       "releases": [
         {
           "hash": "bb9d18a5f614",
+          "version": "0.9.0"
+        },
+        {
+          "hash": "bb9d18a5f614",
           "version": "0.8.2"
         },
         {
@@ -52,7 +56,7 @@
           "version": "0.2.0"
         }
       ],
-      "version": "0.8.2"
+      "version": "0.9.0"
     },
     {
       "description": "OpenTelemetry instrumentation for the `amqplib` messaging client for RabbitMQ",
@@ -1286,6 +1290,19 @@
         }
       ],
       "version": "0.22.0"
+    },
+    {
+      "description": "OpenTelemetry instrumentation for the OpenAI Agents SDK for JavaScript",
+      "in_auto_instrumentations_node": false,
+      "name": "instrumentation-openai-agents",
+      "npm_package": "@opentelemetry/instrumentation-openai-agents",
+      "releases": [
+        {
+          "hash": "c2d6fdc9fe60",
+          "version": "0.1.0"
+        }
+      ],
+      "version": "0.1.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `oracledb` database client for Oracle DB",

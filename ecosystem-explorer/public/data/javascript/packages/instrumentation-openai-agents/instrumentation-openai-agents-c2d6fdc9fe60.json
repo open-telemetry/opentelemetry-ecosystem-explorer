@@ -1,0 +1,29 @@
+{
+  "description": "OpenTelemetry instrumentation for the OpenAI Agents SDK for JavaScript",
+  "in_auto_instrumentations_node": false,
+  "name": "instrumentation-openai-agents",
+  "node_engine": ">=22.15.0",
+  "npm_package": "@opentelemetry/instrumentation-openai-agents",
+  "repository": "open-telemetry/opentelemetry-js-contrib",
+  "source_path": "packages/instrumentation-openai-agents",
+  "supported_versions": [
+    {
+      "package": "@openai/agents",
+      "source": "README.md",
+      "version_range": ">=0.14.0 <1"
+    }
+  ],
+  "tested_versions": [
+    {
+      "package": "@openai/agents",
+      "range": "0.14.0",
+      "source": ".tav.yml"
+    },
+    {
+      "mode": "max-5",
+      "package": "@openai/agents",
+      "range": ">=0.15.0 <1",
+      "source": ".tav.yml"
+    }
+  ]
+}
