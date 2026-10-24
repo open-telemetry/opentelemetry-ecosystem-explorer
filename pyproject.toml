@@ -15,6 +15,7 @@ dependencies = [
     "js-instrumentation-watcher",
     "python-instrumentation-watcher",
     "semconv-timeline-watcher",
+    "conformance-watcher",
 ]
 
 [tool.uv.workspace]
@@ -35,6 +36,7 @@ v1-registry-sync = { workspace = true }
 js-instrumentation-watcher = { workspace = true }
 python-instrumentation-watcher = { workspace = true }
 semconv-timeline-watcher = { workspace = true }
+conformance-watcher = { workspace = true }
 
 [dependency-groups]
 dev = [
