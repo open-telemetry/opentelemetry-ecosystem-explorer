@@ -1125,7 +1125,7 @@ components:
           ref: service.md#service-version
         stability: stable
         type: string
-    sem_conv_version: 1.42.0
+    sem_conv_version: 1.43.0
     status:
       class: processor
       codeowners:

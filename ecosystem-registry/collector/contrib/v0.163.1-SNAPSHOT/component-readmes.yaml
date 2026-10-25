@@ -123,7 +123,7 @@ jaegerreceiver: jaegerreceiver-3251cc563d4a.md
 jaegerremotesampling: jaegerremotesampling-6b679f9f2945.md
 journaldreceiver: journaldreceiver-56e912ee2790.md
 jsonlogencodingextension: jsonlogencodingextension-88d6a35b85eb.md
-k8sattributesprocessor: k8sattributesprocessor-1720c448f950.md
+k8sattributesprocessor: k8sattributesprocessor-46a08ed4dd6f.md
 k8sclusterreceiver: k8sclusterreceiver-d8e52b724742.md
 k8seventsreceiver: k8seventsreceiver-e2fb062682e1.md
 k8sleaderelector: k8sleaderelector-6fd3aa97b5cc.md
@@ -186,13 +186,13 @@ purefbreceiver: purefbreceiver-84c425c5a1a9.md
 rabbitmqexporter: rabbitmqexporter-b690daf53cbf.md
 rabbitmqreceiver: rabbitmqreceiver-40c743eefe21.md
 receivercreator: receivercreator-7e9dded1c2c8.md
-redactionprocessor: redactionprocessor-57b9a4f68bfe.md
+redactionprocessor: redactionprocessor-69cec40ee798.md
 redfishreceiver: redfishreceiver-deb7da2374c2.md
 redisreceiver: redisreceiver-b3328e775a9a.md
-redisstorageextension: redisstorageextension-2500d7d09b20.md
+redisstorageextension: redisstorageextension-624fd5c4ae8f.md
 remotetapextension: remotetapextension-01716b8c7d82.md
 remotetapprocessor: remotetapprocessor-3132e6579248.md
-resourcedetectionprocessor: resourcedetectionprocessor-ec557cc42904.md
+resourcedetectionprocessor: resourcedetectionprocessor-91825b33a085.md
 resourceprocessor: resourceprocessor-0f2924abf3ba.md
 riakreceiver: riakreceiver-daac8cc354fc.md
 rollingspanlatencyprocessor: rollingspanlatencyprocessor-ab77ddf4eb8c.md
