@@ -15,18 +15,18 @@
       "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
     },
     "javaagent": {
-      "release_tag": "data-javaagent-750077d492c4",
+      "release_tag": "data-javaagent-d5f9648df9df",
       "asset": "javaagent.tar.gz",
-      "content_digest": "750077d492c4251543f2e7c0ae0529f1589f22c01c5c09826727720051aba01b",
-      "archive_sha256": "e3f36af0777106a9253e965744a612ff214a8f750f22ee3cea929eb68140fadd",
-      "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
+      "content_digest": "d5f9648df9dfc7b7b9e3baa65569956dc24c7ca7c36ff9afcee5d8d8d94023de",
+      "archive_sha256": "6768a8d12873573c49e24d6335a2ea1d6afe6bb54164a05a3c6b0987fccaaae1",
+      "registry_commit": "b3493346d7a15ff9605441af5322fb2333294621"
     },
     "javascript": {
-      "release_tag": "data-javascript-64e769d7b649",
+      "release_tag": "data-javascript-51bdd17896ba",
       "asset": "javascript.tar.gz",
-      "content_digest": "64e769d7b649afa741fe705f00021a293666a84a305493cbe2cc24a0e54b58f3",
-      "archive_sha256": "e6b3dd457455e1a1f7eaf40186e99b4c2d2c38d332a754f1f6d52c8f71888487",
-      "registry_commit": "02a8b58c3bbe337b0619971316097fc231dfdded"
+      "content_digest": "51bdd17896ba80262378e96d616abe42d1b20d08819e14da0a16a49ba76eaa22",
+      "archive_sha256": "7fffc02eecabe8b713f3ae289af889b82160338c70b16b44a51fafa61861568f",
+      "registry_commit": "b3493346d7a15ff9605441af5322fb2333294621"
     }
   }
 }

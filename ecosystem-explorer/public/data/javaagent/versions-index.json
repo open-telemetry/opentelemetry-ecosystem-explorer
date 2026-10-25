@@ -3,6 +3,11 @@
     {
       "bundle_hash": "c1a54a97d3e2",
       "is_latest": true,
+      "version": "2.33.0"
+    },
+    {
+      "bundle_hash": "c1a54a97d3e2",
+      "is_latest": false,
       "version": "2.32.0"
     },
     {
