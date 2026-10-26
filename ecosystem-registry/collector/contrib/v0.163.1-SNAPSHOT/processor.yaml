@@ -580,6 +580,7 @@ components:
 - name: genainormalizerprocessor
   metadata:
     display_name: GenAI Normalizer Processor
+    sem_conv_version: 1.40.0
     status:
       class: processor
       codeowners:

@@ -3354,7 +3354,7 @@ components:
           be 'docker'.
         enabled: true
         type: string
-    sem_conv_version: 1.40.0
+    sem_conv_version: 1.43.0
     status:
       class: receiver
       codeowners:
@@ -5710,7 +5710,7 @@ components:
         description: The name of the version control system provider
         enabled: true
         type: string
-    sem_conv_version: 1.40.0
+    sem_conv_version: 1.43.0
     status:
       class: receiver
       codeowners:

@@ -64,7 +64,7 @@ deltatocumulativeprocessor: deltatocumulativeprocessor-037c79aa55ed.md
 deltatorateprocessor: deltatorateprocessor-6fba92c550ec.md
 dnscheckreceiver: dnscheckreceiver-9e47ec833f6d.md
 dockerobserver: dockerobserver-130d30906edd.md
-dockerstatsreceiver: dockerstatsreceiver-a5542b7cee7c.md
+dockerstatsreceiver: dockerstatsreceiver-65b90104eb60.md
 dorisexporter: dorisexporter-bbbde6730da5.md
 drainprocessor: drainprocessor-74e62066492a.md
 ecsobserver: ecsobserver-6f9d535058dd.md
@@ -84,9 +84,9 @@ filetelemetrypolicyextension: filetelemetrypolicyextension-41699cbadc0a.md
 filterprocessor: filterprocessor-a97dcc1c48d0.md
 flinkmetricsreceiver: flinkmetricsreceiver-c7c3d8ea0097.md
 fluentforwardreceiver: fluentforwardreceiver-0969e2de1b59.md
-genainormalizerprocessor: genainormalizerprocessor-d414d53b2706.md
+genainormalizerprocessor: genainormalizerprocessor-f365530b48e3.md
 geoipprocessor: geoipprocessor-bd4590c73d66.md
-githubreceiver: githubreceiver-53c6b9c34160.md
+githubreceiver: githubreceiver-6751269c8dd4.md
 gitlabreceiver: gitlabreceiver-ec4743c7d02c.md
 gnmireceiver: gnmireceiver-baa2a9ca7757.md
 googleclientauthextension: googleclientauthextension-2f7b441de980.md
