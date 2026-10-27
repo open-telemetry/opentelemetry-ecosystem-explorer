@@ -1,0 +1,103 @@
+distribution: core
+version: 0.164.1-SNAPSHOT
+repository: opentelemetry-collector
+component_type: exporter
+schema_hash: a13cd490860c
+components:
+- name: debugexporter
+  metadata:
+    display_name: Debug Exporter
+    github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      overrides:
+        batch:
+          enabled: false
+        enabled: false
+      rationale: Debug output is synchronous and unbatched by default.
+      support: has_overrides
+    status:
+      class: exporter
+      codeowners:
+        active:
+        - andrzej-stencel
+      distributions:
+      - contrib
+      - core
+      - k8s
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - profiles
+        - traces
+      warnings:
+      - Unstable Output Format
+    type: debug
+- name: nopexporter
+  metadata:
+    display_name: No-op Exporter
+    github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      rationale: No-op drops telemetry.
+      support: omitted
+    status:
+      class: exporter
+      codeowners:
+        active:
+        - evan-bradley
+      distributions:
+      - contrib
+      - core
+      - k8s
+      stability:
+        alpha:
+        - profiles
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: nop
+- name: otlpexporter
+  metadata:
+    deprecated_type: otlp
+    display_name: OTLP gRPC Exporter
+    github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      support: default
+    status:
+      class: exporter
+      distributions:
+      - contrib
+      - core
+      - k8s
+      - otlp
+      stability:
+        alpha:
+        - profiles
+        stable:
+        - logs
+        - metrics
+        - traces
+    type: otlp_grpc
+- name: otlphttpexporter
+  metadata:
+    deprecated_type: otlphttp
+    display_name: OTLP HTTP Exporter
+    github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      support: default
+    status:
+      class: exporter
+      distributions:
+      - contrib
+      - core
+      - k8s
+      - otlp
+      stability:
+        alpha:
+        - profiles
+        stable:
+        - logs
+        - metrics
+        - traces
+    type: otlp_http
