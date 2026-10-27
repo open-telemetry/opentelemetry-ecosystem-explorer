@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useBackNavigation } from "@/hooks/use-back-navigation";
 
 interface BackButtonProps {
   label?: string;
+  /** Where to go when the page was opened directly. Defaults to the parent path. */
+  fallbackTo?: string;
 }
 
-export function BackButton({ label }: BackButtonProps) {
+export function BackButton({ label, fallbackTo }: BackButtonProps) {
   const { t } = useTranslation("common");
-  const navigate = useNavigate();
+  const goBack = useBackNavigation(fallbackTo);
   const displayLabel = label ?? t("back");
 
   return (
     <button
-      onClick={() => navigate(-1)}
+      onClick={goBack}
       className="border-border bg-background text-foreground hover:bg-card-secondary hover:border-primary/40 focus:ring-primary inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
