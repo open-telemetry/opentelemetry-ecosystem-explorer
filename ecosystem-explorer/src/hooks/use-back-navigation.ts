@@ -42,7 +42,9 @@ export function useBackNavigation(fallbackTo?: string): () => void {
     // new key without any in-app entry to go back to.
     const index = (window.history.state as { idx?: number } | null)?.idx ?? 0;
     if (index === 0) {
-      void navigate(fallbackTo ?? getParentPath(location.pathname));
+      // Replace rather than push, so the fallback page is again the first entry and the next
+      // Back continues up the hierarchy instead of returning to this page.
+      void navigate(fallbackTo ?? getParentPath(location.pathname), { replace: true });
     } else {
       void navigate(-1);
     }

@@ -85,6 +85,15 @@ describe("useBackNavigation", () => {
     expect(currentPath()).toBe("/java-agent");
   });
 
+  it("keeps going up on consecutive clicks after a direct visit", () => {
+    openDirectly("/java-agent/releases");
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(currentPath()).toBe("/java-agent");
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(currentPath()).toBe("/");
+  });
+
   it("goes back in history after in-app navigation", async () => {
     openDirectly("/java-agent/instrumentation");
     fireEvent.click(screen.getByRole("link", { name: "Releases" }));
