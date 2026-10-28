@@ -1,0 +1,65 @@
+{
+  "description": null,
+  "display_name": "AWS X-Ray Tracing Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, the AWS X-Ray exporter no longer reads deprecated semconv v1.12.0 database attribute keys. Requires exporter.awsxray.EmitV1DBConventions to also be enabled.",
+      "from_version": "v0.147.0",
+      "id": "exporter.awsxray.DontEmitV0DBConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46533",
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, the AWS X-Ray exporter no longer reads deprecated semconv v1.12.0 HTTP and network attribute keys. Requires exporter.awsxray.EmitV1HTTPNetworkConventions to also be enabled.",
+      "from_version": "v0.147.0",
+      "id": "exporter.awsxray.DontEmitV0HTTPNetworkConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46533",
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, the AWS X-Ray exporter reads database span attributes using semconv v1.38.0 keys (db.namespace, db.system.name, db.query.text, user.name) instead of the deprecated v1.12.0 keys (db.name, db.system, db.statement, db.user).",
+      "from_version": "v0.147.0",
+      "id": "exporter.awsxray.EmitV1DBConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46533",
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, the AWS X-Ray exporter reads HTTP and network span attributes using semconv v1.38.0 keys (e.g. http.request.method, server.address, server.port, client.address, messaging.message.body.size) instead of the deprecated v1.12.0 keys.",
+      "from_version": "v0.163.0",
+      "id": "exporter.awsxray.EmitV1HTTPNetworkConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46533",
+      "stage": "alpha"
+    },
+    {
+      "description": "Remove XRay's timestamp validation on first 32 bits of trace ID",
+      "from_version": "v0.84.0",
+      "id": "exporter.awsxray.skiptimestampvalidation",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48737",
+      "stage": "beta"
+    }
+  ],
+  "id": "contrib-awsxrayexporter",
+  "markdown_hash": "2a22b6f15062",
+  "name": "awsxrayexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "wangzlei",
+        "srprash"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

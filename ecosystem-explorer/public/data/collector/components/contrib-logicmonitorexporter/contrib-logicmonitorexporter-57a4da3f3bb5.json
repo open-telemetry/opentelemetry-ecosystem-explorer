@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "LogicMonitor Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-logicmonitorexporter",
+  "markdown_hash": "3973166df13f",
+  "name": "logicmonitorexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "emeritus": [
+        "khyatigandhi6",
+        "avadhut123pisal",
+        "bogdandrutu"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "unmaintained": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

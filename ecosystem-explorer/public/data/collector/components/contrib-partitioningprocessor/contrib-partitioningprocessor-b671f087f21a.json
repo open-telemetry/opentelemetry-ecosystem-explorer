@@ -1,0 +1,86 @@
+{
+  "attributes": {
+    "error.type": {
+      "description": "Why key evaluation failed.",
+      "enum": [
+        "evaluation_failed",
+        "invalid_value_type"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "The `partitioning` processor splits incoming batches into sub-batches using OTTL value expressions, and forwards each sub-batch with the evaluated partition keys added to the outgoing request metadata.",
+  "display_name": "Partitioning Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-partitioningprocessor",
+  "markdown_hash": "40f6d6494f70",
+  "name": "partitioningprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "paulojmdias",
+        "dmitryax"
+      ],
+      "emeritus": [
+        "axw"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor.partitioning.key_evaluation.errors": {
+        "attributes": [
+          "error.type"
+        ],
+        "description": "Number of batches rejected because a key expression failed to evaluate or returned a non-string value.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{batch}"
+      },
+      "processor.partitioning.partitions": {
+        "description": "Number of partitions each incoming batch was split into.",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            1,
+            2,
+            3,
+            5,
+            10,
+            20,
+            50,
+            100,
+            250,
+            1000
+          ],
+          "value_type": "int"
+        },
+        "prefix": "otelcol.",
+        "stability": "development",
+        "unit": "{partition}"
+      }
+    }
+  },
+  "type": "processor"
+}

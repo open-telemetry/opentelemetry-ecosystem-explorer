@@ -1,20 +1,36 @@
 {
   "distributions": {
     "contrib": {
-      "latest": "0.163.0"
+      "latest": "0.164.1"
     },
     "core": {
-      "latest": "0.163.0"
+      "latest": "0.164.0"
     }
   },
   "versions": [
+    {
+      "bundle_hash": "d71037cc6900",
+      "distributions": [
+        "contrib"
+      ],
+      "is_latest": true,
+      "version": "0.164.1"
+    },
+    {
+      "bundle_hash": "ce36d53d25e2",
+      "distributions": [
+        "core"
+      ],
+      "is_latest": false,
+      "version": "0.164.0"
+    },
     {
       "bundle_hash": "e7917fdd9717",
       "distributions": [
         "core",
         "contrib"
       ],
-      "is_latest": true,
+      "is_latest": false,
       "version": "0.163.0"
     },
     {

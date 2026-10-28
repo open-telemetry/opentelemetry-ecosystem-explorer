@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "NATS Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-natsreceiver",
+  "markdown_hash": "2da0d0ab1af0",
+  "name": "natsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "suckatrash",
+        "kalebpace",
+        "ChrsMark"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

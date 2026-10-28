@@ -1,11 +1,11 @@
 {
   "ecosystems": {
     "collector": {
-      "release_tag": "data-collector-fa4df3f45209",
+      "release_tag": "data-collector-f0dcda2e94d5",
       "asset": "collector.tar.gz",
-      "content_digest": "fa4df3f452097a9f115c1fb86019b335606b79888c7428d4b0c73edd2c8edb36",
-      "archive_sha256": "c3d1dc270b082dcf06636cd003d5e7d584486c74df931eb8fd8dbba55f82f961",
-      "registry_commit": "b13cbf86c159f65477328864e6c3965d712ce191"
+      "content_digest": "f0dcda2e94d5dd254d5a10ea15d7dd779755d84d3f738ec2741f6f54bd5fc102",
+      "archive_sha256": "1f0f0f5cf2ef52589ba5db5fe0cfcfe2915b9006da1d1cfc53e4df6ecbb2f83a",
+      "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
     },
     "configuration": {
       "release_tag": "data-configuration-ff3eb0ebf3a6",
@@ -15,11 +15,11 @@
       "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
     },
     "javaagent": {
-      "release_tag": "data-javaagent-d5f9648df9df",
+      "release_tag": "data-javaagent-4892ad3b0646",
       "asset": "javaagent.tar.gz",
-      "content_digest": "d5f9648df9dfc7b7b9e3baa65569956dc24c7ca7c36ff9afcee5d8d8d94023de",
-      "archive_sha256": "6768a8d12873573c49e24d6335a2ea1d6afe6bb54164a05a3c6b0987fccaaae1",
-      "registry_commit": "b3493346d7a15ff9605441af5322fb2333294621"
+      "content_digest": "4892ad3b06461f19e6a1d7b136086e1c637b2ab7446e1d9825b165ec7f0d62c1",
+      "archive_sha256": "cde4bb84ed01c5f6823d501935e974f1f839ab5e66f6fec344e93311bda6262e",
+      "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
     },
     "javascript": {
       "release_tag": "data-javascript-51bdd17896ba",

@@ -1,0 +1,25 @@
+{
+  "description": null,
+  "display_name": "gNMI Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-gnmireceiver",
+  "markdown_hash": "baa2a9ca7757",
+  "name": "gnmireceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

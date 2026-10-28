@@ -435,7 +435,7 @@
         "metrics",
         "logs"
       ],
-      "stability": "beta",
+      "stability": "unmaintained",
       "type": "exporter"
     },
     {
@@ -1236,6 +1236,19 @@
       "type": "receiver"
     },
     {
+      "description": null,
+      "display_name": "gNMI Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-gnmireceiver",
+      "name": "gnmireceiver",
+      "signals": [
+        "metrics"
+      ],
+      "stability": "development",
+      "type": "receiver"
+    },
+    {
       "description": "This extension provides Google OAuth2 Client Credentials and Metadata for gRPC and http based exporters.",
       "display_name": "Google Client Auth Extension",
       "distribution": "contrib",
@@ -1627,10 +1640,10 @@
       "type": "processor"
     },
     {
-      "description": null,
+      "description": "This extension supports unmarshaling Jaeger data representing traces.",
       "display_name": "Jaeger Encoding Extension",
       "distribution": "contrib",
-      "has_readme": false,
+      "has_readme": true,
       "id": "contrib-jaegerencodingextension",
       "name": "jaegerencodingextension",
       "signals": [
@@ -1884,7 +1897,7 @@
         "traces",
         "logs"
       ],
-      "stability": "alpha",
+      "stability": "unmaintained",
       "type": "exporter"
     },
     {
@@ -2102,6 +2115,21 @@
       ],
       "stability": "development",
       "type": "exporter"
+    },
+    {
+      "description": null,
+      "display_name": "NATS Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-natsreceiver",
+      "name": "natsreceiver",
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
+      "stability": "development",
+      "type": "receiver"
     },
     {
       "description": "The Netflow Receiver can listen for [netflow](https://en.wikipedia.org/wiki/NetFlow), [sflow](https://en.wikipedia.org/wiki/SFlow), and [ipfix](https://en.wikipedia.org/wiki/IP_Flow_Information_Export) data and convert it to OpenTelemetry logs. The receiver is based on the [goflow2](https://github.com/netsampler/goflow2) project.",
@@ -2323,7 +2351,7 @@
         "logs",
         "profiles"
       ],
-      "stability": "development",
+      "stability": "alpha",
       "type": "processor"
     },
     {
@@ -2669,7 +2697,7 @@
       "signals": [
         "metrics"
       ],
-      "stability": "beta",
+      "stability": "unmaintained",
       "type": "receiver"
     },
     {
@@ -3410,6 +3438,19 @@
       ],
       "stability": "development",
       "type": "receiver"
+    },
+    {
+      "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-verifyprocessor",
+      "name": "verifyprocessor",
+      "signals": [
+        "logs"
+      ],
+      "stability": "development",
+      "type": "processor"
     },
     {
       "description": "The Webhook Event Receiver is a push based event collector component meant to act as a generally available receiver for any webhook style data source. It is designed to work alongside other pipeline components like the [transform processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor) to allow the ingestion of generic events as logs into the opentelemetry collector.",

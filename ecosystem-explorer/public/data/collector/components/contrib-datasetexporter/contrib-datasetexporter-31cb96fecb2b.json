@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "DataSet Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-datasetexporter",
+  "markdown_hash": "53425fec9211",
+  "name": "datasetexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "zdaratom-s1",
+        "tomaz-s1",
+        "martin-majlis-s1"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}
