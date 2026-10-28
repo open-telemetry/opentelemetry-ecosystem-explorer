@@ -1743,8 +1743,9 @@ components:
       class: processor
       codeowners:
         active:
-        - dmitryax
         - himanshu130700
+        emeritus:
+        - dmitryax
       distributions:
       - contrib
       - k8s
@@ -1878,12 +1879,12 @@ components:
       class: processor
       codeowners:
         active:
-        - dmitryax
         - mx-psi
         - TylerHelmuth
         - iblancasa
         emeritus:
         - leonsp-ai
+        - dmitryax
       distributions:
       - contrib
       - k8s

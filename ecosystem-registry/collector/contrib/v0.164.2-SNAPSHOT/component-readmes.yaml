@@ -8,13 +8,13 @@ alibabacloudlogserviceexporter: alibabacloudlogserviceexporter-065b018f810e.md
 apachereceiver: apachereceiver-75dff7a694b1.md
 apachesparkreceiver: apachesparkreceiver-81e798a028e1.md
 asapauthextension: asapauthextension-581feb28e5da.md
-attributesprocessor: attributesprocessor-58b6f67cac38.md
+attributesprocessor: attributesprocessor-423766501999.md
 avrologencodingextension: avrologencodingextension-5728c9bf4dc7.md
 awscloudwatchlogsexporter: awscloudwatchlogsexporter-54c739c33221.md
 awscloudwatchmetricstreamsencodingextension: awscloudwatchmetricstreamsencodingextension-4fad24686b71.md
 awscloudwatchreceiver: awscloudwatchreceiver-1cf5f014ae2d.md
 awscontainerinsightreceiver: awscontainerinsightreceiver-f84da2162e0f.md
-awsecsattributesprocessor: awsecsattributesprocessor-ca1354922384.md
+awsecsattributesprocessor: awsecsattributesprocessor-eb70dea070b0.md
 awsecscontainermetricsreceiver: awsecscontainermetricsreceiver-2b9afade3858.md
 awsemfexporter: awsemfexporter-5bff478d784c.md
 awsfirehosereceiver: awsfirehosereceiver-b2755cd01385.md
@@ -83,7 +83,7 @@ filestorage: filestorage-8dab4f25ccf1.md
 filetelemetrypolicyextension: filetelemetrypolicyextension-41699cbadc0a.md
 filterprocessor: filterprocessor-a97dcc1c48d0.md
 flinkmetricsreceiver: flinkmetricsreceiver-7c353a81f700.md
-fluentforwardreceiver: fluentforwardreceiver-0969e2de1b59.md
+fluentforwardreceiver: fluentforwardreceiver-6110166ad20c.md
 genainormalizerprocessor: genainormalizerprocessor-f365530b48e3.md
 geoipprocessor: geoipprocessor-bd4590c73d66.md
 githubreceiver: githubreceiver-6751269c8dd4.md
@@ -96,7 +96,7 @@ googlecloudmonitoringreceiver: googlecloudmonitoringreceiver-a73a0c71dea5.md
 googlecloudpubsubexporter: googlecloudpubsubexporter-e0aa994403c3.md
 googlecloudpubsubpushreceiver: googlecloudpubsubpushreceiver-75344c06ff1e.md
 googlecloudpubsubreceiver: googlecloudpubsubreceiver-a40627583bb9.md
-googlecloudspannerreceiver: googlecloudspannerreceiver-4515c7874d08.md
+googlecloudspannerreceiver: googlecloudspannerreceiver-9fc6fa9efcc0.md
 googlecloudstorageexporter: googlecloudstorageexporter-5cc80bbbfaf1.md
 googlemanagedprometheusexporter: googlemanagedprometheusexporter-ad7269e7b20d.md
 grafanacloudconnector: grafanacloudconnector-a19abf6ad054.md
@@ -147,7 +147,7 @@ memcachedreceiver: memcachedreceiver-50e036ce8389.md
 metricsaslogsconnector: metricsaslogsconnector-cfd2d64f643f.md
 metricsgenerationprocessor: metricsgenerationprocessor-2b81e0fc38c2.md
 metricstarttimeprocessor: metricstarttimeprocessor-06bda9dae258.md
-metricstransformprocessor: metricstransformprocessor-b816a5d436ad.md
+metricstransformprocessor: metricstransformprocessor-1de0635c9c26.md
 mongodbatlasreceiver: mongodbatlasreceiver-3ed0141e1849.md
 mongodbreceiver: mongodbreceiver-084ed97a3fbf.md
 mysqlreceiver: mysqlreceiver-a40819b65844.md
@@ -186,7 +186,7 @@ purefbreceiver: purefbreceiver-84c425c5a1a9.md
 rabbitmqexporter: rabbitmqexporter-b690daf53cbf.md
 rabbitmqreceiver: rabbitmqreceiver-40c743eefe21.md
 receivercreator: receivercreator-7e9dded1c2c8.md
-redactionprocessor: redactionprocessor-69cec40ee798.md
+redactionprocessor: redactionprocessor-aaff6ca2ec3e.md
 redfishreceiver: redfishreceiver-deb7da2374c2.md
 redisreceiver: redisreceiver-b3328e775a9a.md
 redisstorageextension: redisstorageextension-624fd5c4ae8f.md
@@ -225,7 +225,7 @@ splunkhecreceiver: splunkhecreceiver-0a010b68ea4d.md
 sqlqueryreceiver: sqlqueryreceiver-26d41aa6e60c.md
 sqlserverreceiver: sqlserverreceiver-0eca3c3e6d5d.md
 sshcheckreceiver: sshcheckreceiver-1d44e35c559d.md
-statsdreceiver: statsdreceiver-7ce0ad1bb678.md
+statsdreceiver: statsdreceiver-936602514be4.md
 stefexporter: stefexporter-d7c9bf4ad178.md
 stefreceiver: stefreceiver-e1be5604038e.md
 sumconnector: sumconnector-4e4830bfaad9.md

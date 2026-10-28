@@ -5451,13 +5451,14 @@ components:
     status:
       class: receiver
       codeowners:
-        active:
+        emeritus:
         - dmitryax
+        seeking_new: true
       distributions:
       - contrib
       - k8s
       stability:
-        beta:
+        unmaintained:
         - logs
     telemetry:
       metrics:
@@ -22718,6 +22719,7 @@ components:
       codeowners:
         active:
         - jmacd
+        emeritus:
         - dmitryax
       distributions:
       - contrib
