@@ -2785,7 +2785,7 @@ components:
         emeritus:
         - anuraaga
         - kentquirk
-        seeking_new: true
+        seeking_new: false
       distributions:
       - contrib
       - k8s

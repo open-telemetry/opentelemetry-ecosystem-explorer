@@ -179,6 +179,12 @@ components:
       id: exporter.awsxray.skiptimestampvalidation
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48737
       stage: beta
+    - description: 'X-Ray Exporter will no longer convert . to _ in annotation keys
+        when this feature gate is enabled. '
+      from_version: v0.97.0
+      id: exporter.xray.allowDot
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/31732
+      stage: beta
     status:
       class: exporter
       codeowners:

@@ -194,4 +194,192 @@ components:
         - metrics
         - profiles
         - traces
+    telemetry:
+      metrics:
+        processor_queuebatch_batch_send_size:
+          description: Number of items in the batch. Only recorded when batching is
+            enabled. Only available on detailed level.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 10
+            - 25
+            - 50
+            - 75
+            - 100
+            - 250
+            - 500
+            - 750
+            - 1000
+            - 2000
+            - 3000
+            - 4000
+            - 5000
+            - 6000
+            - 7000
+            - 8000
+            - 9000
+            - 10000
+            - 20000
+            - 30000
+            - 50000
+            - 100000
+            value_type: int
+          stability: development
+          unit: '{item}'
+        processor_queuebatch_batch_send_size_bytes:
+          description: Number of bytes in the batch. Only recorded when batching is
+            enabled. Only available on detailed level.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 128
+            - 256
+            - 512
+            - 1024
+            - 2048
+            - 4096
+            - 8192
+            - 16384
+            - 32768
+            - 65536
+            - 131072
+            - 262144
+            - 524288
+            - 1048576
+            - 2097152
+            - 4194304
+            - 8388608
+            - 16777216
+            value_type: int
+          stability: development
+          unit: By
+        processor_queuebatch_enqueue_failed_items:
+          description: Number of items failed to be added to the queue.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{item}'
+        processor_queuebatch_enqueue_size:
+          description: Number of items in a request offered to the queue, including
+            rejected offers. Only available on detailed level.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 10
+            - 25
+            - 50
+            - 75
+            - 100
+            - 250
+            - 500
+            - 750
+            - 1000
+            - 2000
+            - 3000
+            - 4000
+            - 5000
+            - 6000
+            - 7000
+            - 8000
+            - 9000
+            - 10000
+            - 20000
+            - 30000
+            - 50000
+            - 100000
+            value_type: int
+          stability: development
+          unit: '{item}'
+        processor_queuebatch_enqueue_size_bytes:
+          description: Number of bytes in a request offered to the queue, including
+            rejected offers. Only available on detailed level.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 128
+            - 256
+            - 512
+            - 1024
+            - 2048
+            - 4096
+            - 8192
+            - 16384
+            - 32768
+            - 65536
+            - 131072
+            - 262144
+            - 524288
+            - 1048576
+            - 2097152
+            - 4194304
+            - 8388608
+            - 16777216
+            value_type: int
+          stability: development
+          unit: By
+        processor_queuebatch_in_flight_requests:
+          description: Number of requests currently being processed.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: false
+            value_type: int
+          unit: '{request}'
+        processor_queuebatch_partition_cache_capacity:
+          description: Maximum number of active partition batchers in the LRU cache.
+            Only recorded when batch partitioning is enabled.
+          enabled: true
+          gauge:
+            async: true
+            value_type: int
+          stability: development
+          unit: '{partition}'
+        processor_queuebatch_partition_cache_size:
+          description: Current number of active partition batchers in the LRU cache.
+            Only recorded when batch partitioning is enabled.
+          enabled: true
+          gauge:
+            async: true
+            value_type: int
+          stability: development
+          unit: '{partition}'
+        processor_queuebatch_queue_capacity:
+          description: Fixed capacity of the queue, expressed in units selected by
+            the sizer attribute.
+          enabled: true
+          gauge:
+            async: true
+            value_type: int
+          stability: development
+          unit: '{unit}'
+        processor_queuebatch_queue_size:
+          description: Current size of the queue, expressed in units selected by the
+            sizer attribute.
+          enabled: true
+          gauge:
+            async: true
+            value_type: int
+          stability: development
+          unit: '{unit}'
+        processor_queuebatch_send_failed_items:
+          description: 'Number of items that failed to be sent to the next consumer.
+            At detailed telemetry level, includes attributes: error.type (semantic
+            convention), error.permanent.'
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{item}'
+        processor_queuebatch_sent_items:
+          description: Number of items successfully sent to the next consumer.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{item}'
     type: queue_batch

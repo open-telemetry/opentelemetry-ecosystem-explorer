@@ -96,7 +96,7 @@ googlecloudmonitoringreceiver: googlecloudmonitoringreceiver-a73a0c71dea5.md
 googlecloudpubsubexporter: googlecloudpubsubexporter-e0aa994403c3.md
 googlecloudpubsubpushreceiver: googlecloudpubsubpushreceiver-75344c06ff1e.md
 googlecloudpubsubreceiver: googlecloudpubsubreceiver-a40627583bb9.md
-googlecloudspannerreceiver: googlecloudspannerreceiver-9fc6fa9efcc0.md
+googlecloudspannerreceiver: googlecloudspannerreceiver-ba0962273fec.md
 googlecloudstorageexporter: googlecloudstorageexporter-5cc80bbbfaf1.md
 googlemanagedprometheusexporter: googlemanagedprometheusexporter-ad7269e7b20d.md
 grafanacloudconnector: grafanacloudconnector-a19abf6ad054.md
@@ -178,7 +178,7 @@ probabilisticsamplerprocessor: probabilisticsamplerprocessor-b09e1f007a3f.md
 prometheusexporter: prometheusexporter-2c7fb860a00b.md
 prometheusreceiver: prometheusreceiver-2792406ac353.md
 prometheusremotewriteexporter: prometheusremotewriteexporter-44cb26763d6f.md
-prometheusremotewritereceiver: prometheusremotewritereceiver-a1de09de0009.md
+prometheusremotewritereceiver: prometheusremotewritereceiver-2d6e830a326c.md
 pulsarexporter: pulsarexporter-4b4557e8de30.md
 pulsarreceiver: pulsarreceiver-a47d78ad45ce.md
 purefareceiver: purefareceiver-43857317b620.md
@@ -197,7 +197,7 @@ resourceprocessor: resourceprocessor-0f2924abf3ba.md
 riakreceiver: riakreceiver-daac8cc354fc.md
 rollingspanlatencyprocessor: rollingspanlatencyprocessor-ab77ddf4eb8c.md
 roundrobinconnector: roundrobinconnector-87d841e8ada1.md
-routingconnector: routingconnector-8ceb6a08d05c.md
+routingconnector: routingconnector-c9467faaac69.md
 saphanareceiver: saphanareceiver-9261bd557f9f.md
 schemaprocessor: schemaprocessor-a9ab2f8294df.md
 sdnotifyextension: sdnotifyextension-e06337f485b4.md
@@ -243,7 +243,7 @@ tencentcloudlogserviceexporter: tencentcloudlogserviceexporter-1a26be4309cc.md
 textencodingextension: textencodingextension-b7fd9642bd51.md
 tinybirdexporter: tinybirdexporter-baaf55f56413.md
 tlscheckreceiver: tlscheckreceiver-4a247b27cd04.md
-transformprocessor: transformprocessor-d91c6db78279.md
+transformprocessor: transformprocessor-fcc9ad9ec262.md
 udplogreceiver: udplogreceiver-4a5286ba32ce.md
 unrollprocessor: unrollprocessor-7421d6ff0f0a.md
 vcenterreceiver: vcenterreceiver-b391850b0976.md
