@@ -9,6 +9,7 @@ Python pipelines that watch upstream OpenTelemetry projects and write versioned 
 - `js-instrumentation-watcher/` — JavaScript (js-contrib) instrumentations
 - `python-instrumentation-watcher/` — Python (python-contrib) instrumentations
 - `configuration-watcher/` — Declarative configuration schema
+- `conformance-watcher/` — Semantic-convention conformance reports
 - `explorer-db-builder/` — Builds the content-addressed database the frontend reads
 - `semconv-timeline-watcher/` — Proposes semantic-convention timeline candidates for review (see its
   README; it never writes `timeline.json`)
@@ -31,7 +32,8 @@ Run from the repository root:
 - `uv run collector-watcher` / `uv run java-instrumentation-watcher` /
   `uv run dotnet-instrumentation-watcher` / `uv run js-instrumentation-watcher` /
   `uv run python-instrumentation-watcher` / `uv run configuration-watcher` /
-  `uv run explorer-db-builder` / `uv run v1-registry-sync` — Run a watcher or tool
+  `uv run conformance-watcher` / `uv run explorer-db-builder` / `uv run v1-registry-sync` — Run a
+  watcher or tool
 
 Nightly CI invokes the watchers directly via these console scripts. The `collector-watcher` and
 `configuration-watcher` also expose a `backfill` mode (`--backfill`) for re-extracting existing
@@ -54,6 +56,10 @@ non-negotiable rules:
   lockstep/independent model — see `projects/135-python-instrumentation/02-schema-design.md`), so
   they are written per package as a single file — `javascript/{package-name}/v{version}.yaml` /
   `python/{package-name}/v{version}.yaml` — rather than an aggregated per-version directory.
+  Conformance reports (`conformance/`) are the exception to semantic versioning: upstream reports
+  represent publication commits rather than semver releases. They are stored in place under
+  `ecosystem-registry/conformance/` (`report.json` and `source.yaml`), with Git history recording
+  each imported version.
 
 ## Schema discipline
 
