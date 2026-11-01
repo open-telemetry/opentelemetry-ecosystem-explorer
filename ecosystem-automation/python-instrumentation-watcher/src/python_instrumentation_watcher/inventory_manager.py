@@ -72,6 +72,7 @@ class InventoryManager:
             data: Metadata dict to serialize as YAML
         """
         path = self._version_path(package_name, version)
+        path.parent.mkdir(parents=True, exist_ok=True)
         content = yaml.safe_dump(
             data,
             default_flow_style=False,
