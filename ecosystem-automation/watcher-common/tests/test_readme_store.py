@@ -123,7 +123,7 @@ def test_atomic_publication_failure(tmp_path, existing, stage, failure):
         with pytest.raises(OSError):
             manager.save_library_readmes(version, [("lib", "new")])
     assert (index_path.read_bytes() if index_path.exists() else None) == original
-    assert not list(tmp_path.rglob(".readme-*"))
+    assert not list(tmp_path.rglob(".*.tmp"))
     if stage == "store":
         assert not (tmp_path / "library_readmes" / readme_filename("lib", "new")).exists()
 
