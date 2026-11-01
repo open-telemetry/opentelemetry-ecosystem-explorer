@@ -26,11 +26,46 @@ from pathlib import Path
 
 from semantic_version import Version
 
-_GIT = shutil.which("git") or "git"
+GIT = shutil.which("git") or "git"
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_REPOS_DIR = "tmp_repos"
+
+
+def run_git(
+    *args: str,
+    cwd: Path | None = None,
+    error: str | None = None,
+    error_type: type[Exception] = RuntimeError,
+) -> str:
+    """
+    Run a git command and return its stdout.
+
+    Args:
+        *args: Arguments passed to git
+        cwd: Directory to run the command in
+        error: Message prefix for the raised exception; git's stderr is appended
+            because capture_output otherwise hides the cause from the log. When
+            None, the CalledProcessError propagates unchanged.
+        error_type: Exception type raised when ``error`` is set
+
+    Raises:
+        error_type: If git fails and ``error`` is set
+        subprocess.CalledProcessError: If git fails and ``error`` is None
+    """
+    try:
+        return subprocess.run(
+            [GIT, *args],
+            cwd=cwd,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+    except subprocess.CalledProcessError as e:
+        if error is None:
+            raise
+        raise error_type(f"{error}: {e.stderr}") from e
 
 
 class BaseRepositoryManager:
@@ -87,16 +122,8 @@ class BaseRepositoryManager:
         """
         target_path.parent.mkdir(parents=True, exist_ok=True)
 
-        try:
-            subprocess.run(
-                [_GIT, "clone", url, str(target_path)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            logger.info("Successfully cloned repository to %s", target_path)
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to clone repository from {url}: {e.stderr}") from e
+        run_git("clone", url, str(target_path), error=f"Failed to clone repository from {url}")
+        logger.info("Successfully cloned repository to %s", target_path)
 
     def _pull_latest(self, repo_path: Path) -> None:
         """
@@ -108,24 +135,10 @@ class BaseRepositoryManager:
         Raises:
             RuntimeError: If pull fails
         """
-        try:
-            subprocess.run(
-                [_GIT, "checkout", "main"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            subprocess.run(
-                [_GIT, "pull"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            logger.info("Successfully pulled latest changes at %s", repo_path)
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to pull latest changes: {e.stderr}") from e
+        error = "Failed to pull latest changes"
+        run_git("checkout", "main", cwd=repo_path, error=error)
+        run_git("pull", cwd=repo_path, error=error)
+        logger.info("Successfully pulled latest changes at %s", repo_path)
 
     def _checkout_version(self, repo_path: Path, version: Version) -> None:
         """
@@ -140,21 +153,7 @@ class BaseRepositoryManager:
         """
         # Git tags have 'v' prefix (e.g., "v0.112.0")
         tag = f"v{version}"
-        try:
-            subprocess.run(
-                [_GIT, "fetch", "--tags"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            subprocess.run(
-                [_GIT, "checkout", tag],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            logger.info("Successfully checked out %s at %s", tag, repo_path)
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to checkout version {tag}: {e.stderr}") from e
+        error = f"Failed to checkout version {tag}"
+        run_git("fetch", "--tags", cwd=repo_path, error=error)
+        run_git("checkout", tag, cwd=repo_path, error=error)
+        logger.info("Successfully checked out %s at %s", tag, repo_path)

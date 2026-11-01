@@ -15,10 +15,9 @@
 """Manages OpenTelemetry configuration repository setup and access."""
 
 import logging
-import subprocess
 from pathlib import Path
 
-from watcher_common.repository_manager import _GIT, BaseRepositoryManager
+from watcher_common.repository_manager import BaseRepositoryManager, run_git
 
 logger = logging.getLogger(__name__)
 
@@ -81,36 +80,10 @@ class RepositoryManager(BaseRepositoryManager):
         Raises:
             RuntimeError: If pull fails
         """
-        try:
-            # Discard any local changes left from previous tag checkouts
-            subprocess.run(
-                [_GIT, "checkout", "."],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            subprocess.run(
-                [_GIT, "checkout", "main"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            subprocess.run(
-                [_GIT, "pull", "--ff-only"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            subprocess.run(
-                [_GIT, "fetch", "--tags"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            logger.info("Successfully pulled latest changes at %s", repo_path)
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to pull latest changes: {e.stderr}") from e
+        error = "Failed to pull latest changes"
+        # Discard any local changes left from previous tag checkouts
+        run_git("checkout", ".", cwd=repo_path, error=error)
+        run_git("checkout", "main", cwd=repo_path, error=error)
+        run_git("pull", "--ff-only", cwd=repo_path, error=error)
+        run_git("fetch", "--tags", cwd=repo_path, error=error)
+        logger.info("Successfully pulled latest changes at %s", repo_path)

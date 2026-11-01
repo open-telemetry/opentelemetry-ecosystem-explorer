@@ -22,8 +22,7 @@ import re
 from typing import Any
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
+from watcher_common.http import build_session
 
 logger = logging.getLogger(__name__)
 
@@ -48,19 +47,8 @@ class ConformanceClient:
         self.base_api_url = base_api_url.rstrip("/")
         self.raw_base_url = raw_base_url.rstrip("/")
 
-        if session is not None:
-            self.session = session
-        else:
-            self.session = requests.Session()
-            retry = Retry(
-                total=3,
-                backoff_factor=1.0,
-                status_forcelist=[429, 500, 502, 503, 504],
-                allowed_methods=["GET"],
-            )
-            adapter = HTTPAdapter(max_retries=retry)
-            self.session.mount("https://", adapter)
-            self.session.mount("http://", adapter)
+        # The token is sent per request by _headers, not on the session.
+        self.session = session if session is not None else build_session()
 
     def _headers(self, accept: str = "application/json") -> dict[str, str]:
         headers = {

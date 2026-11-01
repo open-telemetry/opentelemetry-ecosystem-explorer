@@ -19,7 +19,7 @@ from pathlib import Path
 
 from semantic_version import Version
 
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT, run_git
 
 
 class VersionDetector:
@@ -46,27 +46,11 @@ class VersionDetector:
                 matching checkout_version, because capture_output otherwise hides
                 the cause from the nightly log.
         """
-        try:
-            subprocess.run(
-                [_GIT, "fetch", "origin", "--tags"],
-                cwd=self.repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except subprocess.CalledProcessError as e:
-            raise ValueError(f"Failed to fetch tags: {e.stderr}") from e
+        run_git("fetch", "origin", "--tags", cwd=self.repo_path, error="Failed to fetch tags", error_type=ValueError)
 
     def _list_tags(self) -> list[str]:
         """Return all tag names in the repository."""
-        result = subprocess.run(
-            [_GIT, "tag", "--list"],
-            cwd=self.repo_path,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        return [line for line in result.stdout.splitlines() if line]
+        return [line for line in run_git("tag", "--list", cwd=self.repo_path).splitlines() if line]
 
     def _parse_release_versions(self) -> list[Version]:
         """Parse all tag names into non-prerelease Version objects, ignoring invalid tags."""
@@ -113,16 +97,7 @@ class VersionDetector:
         """
         # Match the configured component prefix when checking out a release.
         tag_name = f"{self.tag_prefix}{version}"
-        try:
-            subprocess.run(
-                [_GIT, "checkout", tag_name],
-                cwd=self.repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except subprocess.CalledProcessError as e:
-            raise ValueError(f"Failed to checkout {tag_name}: {e.stderr}") from e
+        run_git("checkout", tag_name, cwd=self.repo_path, error=f"Failed to checkout {tag_name}", error_type=ValueError)
 
     def checkout_main(self) -> None:
         """Checkout the main branch.
@@ -130,16 +105,7 @@ class VersionDetector:
         Raises:
             ValueError: If main doesn't exist
         """
-        try:
-            subprocess.run(
-                [_GIT, "checkout", "main"],
-                cwd=self.repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except subprocess.CalledProcessError as e:
-            raise ValueError(f"Failed to checkout main branch: {e.stderr}") from e
+        run_git("checkout", "main", cwd=self.repo_path, error="Failed to checkout main branch", error_type=ValueError)
 
     def read_file_at_ref(self, ref: str, rel_path: str) -> str | None:
         """Return the text content of ``rel_path`` at git ``ref``.
@@ -160,7 +126,7 @@ class VersionDetector:
             file is absent at that ref.
         """
         result = subprocess.run(
-            [_GIT, "show", f"{ref}:{rel_path}"],
+            [GIT, "show", f"{ref}:{rel_path}"],
             cwd=self.repo_path,
             check=False,
             capture_output=True,

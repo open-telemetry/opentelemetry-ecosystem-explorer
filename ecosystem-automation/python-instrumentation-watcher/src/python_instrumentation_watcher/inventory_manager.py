@@ -16,11 +16,10 @@
 """Inventory manager for Python instrumentation registry storage."""
 
 import logging
-import os
-import tempfile
 from pathlib import Path
 
 import yaml
+from watcher_common.fileio import atomic_write
 
 logger = logging.getLogger(__name__)
 
@@ -73,23 +72,13 @@ class InventoryManager:
             data: Metadata dict to serialize as YAML
         """
         path = self._version_path(package_name, version)
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
-        tmp_path = Path(tmp_name)
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as f:
-                yaml.safe_dump(
-                    data,
-                    f,
-                    default_flow_style=False,
-                    sort_keys=True,
-                    allow_unicode=True,
-                )
-            os.replace(tmp_path, path)  # atomic on POSIX and Windows; same filesystem
-        except Exception:
-            tmp_path.unlink(missing_ok=True)
-            raise
+        content = yaml.safe_dump(
+            data,
+            default_flow_style=False,
+            sort_keys=True,
+            allow_unicode=True,
+        )
+        atomic_write(path, content.encode("utf-8"))
 
         logger.debug("Saved %s v%s to %s", package_name, version, path)
 

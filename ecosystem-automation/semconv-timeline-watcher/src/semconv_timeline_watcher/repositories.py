@@ -16,10 +16,9 @@
 """Repository managers for the two monitored sources."""
 
 import logging
-import subprocess
 from pathlib import Path
 
-from watcher_common.repository_manager import _GIT, BaseRepositoryManager
+from watcher_common.repository_manager import BaseRepositoryManager, run_git
 
 logger = logging.getLogger(__name__)
 
@@ -52,15 +51,6 @@ class SemconvRepositoryManager(BaseRepositoryManager):
         path = self.base_dir / self.source_id
         if not path.exists():
             self._clone_repository(config["url"], path)
-        try:
-            # --force so a tag that moved upstream is seen as moved; --prune drops deleted tags.
-            subprocess.run(  # noqa: S603
-                [_GIT, "fetch", "--tags", "--force", "--prune", "origin"],
-                cwd=path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to fetch {self.source_id}: {e.stderr}") from e
+        # --force so a tag that moved upstream is seen as moved; --prune drops deleted tags.
+        run_git("fetch", "--tags", "--force", "--prune", "origin", cwd=path, error=f"Failed to fetch {self.source_id}")
         return path

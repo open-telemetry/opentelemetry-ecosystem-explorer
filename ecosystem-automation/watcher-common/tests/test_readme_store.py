@@ -118,7 +118,7 @@ def test_atomic_publication_failure(tmp_path, existing, stage, failure):
     original = index_path.read_bytes() if existing else None
     if stage == "index":
         ReadmeStore(tmp_path / "library_readmes").save([("lib", "new")])
-    target = "watcher_common.readme_store.os." + ("fsync" if failure == "flush" else "replace")
+    target = "watcher_common.fileio.os." + ("fsync" if failure == "flush" else "replace")
     with patch(target, side_effect=OSError("disk failure")):
         with pytest.raises(OSError):
             manager.save_library_readmes(version, [("lib", "new")])

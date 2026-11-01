@@ -19,8 +19,7 @@ import logging
 from collections.abc import Iterator
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
+from watcher_common.http import build_session
 
 logger = logging.getLogger(__name__)
 
@@ -36,10 +35,8 @@ class GitHubClient:
     TIMEOUT = 30
 
     def __init__(self, token: str | None = None, session: requests.Session | None = None):
-        self._session = session or requests.Session()
-        # Only idempotent GETs are retried; a POST that may have succeeded is never repeated.
-        adapter = HTTPAdapter(max_retries=Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504]))
-        self._session.mount("https://", adapter)
+        # Only idempotent methods are retried; a POST that may have succeeded is never repeated.
+        self._session = session or build_session()
         self._session.headers.update({"Accept": "application/vnd.github+json"})
         if token:
             self._session.headers.update({"Authorization": f"Bearer {token}"})

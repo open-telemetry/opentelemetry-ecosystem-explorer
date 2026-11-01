@@ -28,7 +28,7 @@ from collector_watcher.repository_manager import (
     RepositoryManager,
 )
 from semantic_version import Version
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT
 from watcher_common.testing import git_commit, init_repo, run_git
 
 
@@ -103,7 +103,8 @@ class TestRepositoryManager:
         manager._clone_repository(REPO_URLS["core"], target_path)
 
         mock_run.assert_called_once_with(
-            [_GIT, "clone", REPO_URLS["core"], str(target_path)],
+            [GIT, "clone", REPO_URLS["core"], str(target_path)],
+            cwd=None,
             check=True,
             capture_output=True,
             text=True,
@@ -127,8 +128,8 @@ class TestRepositoryManager:
         manager._pull_latest(temp_dir)
 
         assert mock_run.call_count == 2
-        assert mock_run.call_args_list[0][0][0] == [_GIT, "checkout", "main"]
-        assert mock_run.call_args_list[1][0][0] == [_GIT, "pull"]
+        assert mock_run.call_args_list[0][0][0] == [GIT, "checkout", "main"]
+        assert mock_run.call_args_list[1][0][0] == [GIT, "pull"]
 
     @patch("watcher_common.repository_manager.subprocess.run")
     def test_pull_latest_failure_raises_runtime_error(self, mock_run, temp_dir):
@@ -147,8 +148,8 @@ class TestRepositoryManager:
         manager._checkout_version(temp_dir, version)
 
         assert mock_run.call_count == 2
-        assert mock_run.call_args_list[0][0][0] == [_GIT, "fetch", "--tags"]
-        assert mock_run.call_args_list[1][0][0] == [_GIT, "checkout", "v1.0.0"]
+        assert mock_run.call_args_list[0][0][0] == [GIT, "fetch", "--tags"]
+        assert mock_run.call_args_list[1][0][0] == [GIT, "checkout", "v1.0.0"]
 
     @patch("watcher_common.repository_manager.subprocess.run")
     def test_checkout_version_failure_raises_runtime_error(self, mock_run, temp_dir):
@@ -191,7 +192,7 @@ class TestRepositoryManager:
         assert path == expected_path
         # Should have called git clone
         mock_run.assert_called_once()
-        assert mock_run.call_args[0][0][0] == _GIT
+        assert mock_run.call_args[0][0][0] == GIT
         assert mock_run.call_args[0][0][1] == "clone"
 
     @patch("watcher_common.repository_manager.subprocess.run")
