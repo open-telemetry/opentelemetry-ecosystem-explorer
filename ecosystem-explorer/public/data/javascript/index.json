@@ -8,6 +8,10 @@
       "npm_package": "@opentelemetry/browser-instrumentation",
       "releases": [
         {
+          "hash": "c8976b777c98",
+          "version": "0.10.0"
+        },
+        {
           "hash": "bb9d18a5f614",
           "version": "0.9.0"
         },
@@ -56,7 +60,7 @@
           "version": "0.2.0"
         }
       ],
-      "version": "0.9.0"
+      "version": "0.10.0"
     },
     {
       "description": "OpenTelemetry instrumentation for the `amqplib` messaging client for RabbitMQ",
