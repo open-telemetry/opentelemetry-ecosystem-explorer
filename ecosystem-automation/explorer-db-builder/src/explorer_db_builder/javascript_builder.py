@@ -41,6 +41,7 @@ PACKAGE_FIELDS = (
     "description",
     "source_path",
     "repository",
+    "platform",
     "modules",
     "node_engine",
     "in_auto_instrumentations_node",

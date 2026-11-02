@@ -68,6 +68,32 @@ def test_parse_basic_fields(tmp_package):
     assert result["source_path"] == "packages/instrumentation-express"
 
 
+@pytest.mark.parametrize(
+    "fields, expected",
+    [
+        ({"keywords": ["opentelemetry", "web"]}, "browser"),
+        ({}, None),
+        ({"keywords": []}, None),
+        ({"keywords": ["node", "browser"]}, None),
+        ({"keywords": ["web-vitals"]}, None),
+        ({"keywords": ["Web"]}, None),
+        ({"keywords": None}, None),
+        ({"keywords": "web"}, None),
+        ({"keywords": {"web": True}}, None),
+    ],
+)
+def test_platform_comes_from_web_keyword(tmp_package, fields, expected):
+    write_package_json(
+        tmp_package,
+        {"name": "@opentelemetry/instrumentation-fetch", "version": "0.66.0", **fields},
+    )
+    result = PackageParser(tmp_package, set(), {}).parse()
+    if expected:
+        assert result["platform"] == expected
+    else:
+        assert "platform" not in result
+
+
 def test_parse_returns_none_on_missing_package_json(tmp_package):
     parser = PackageParser(
         package_path=tmp_package,

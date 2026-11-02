@@ -86,7 +86,7 @@ class PackageParser:
         supported_versions = self._parse_supported_versions_from_readme()
         tested_versions = self._parse_tav_yml()
 
-        return {
+        entry = {
             "name": name,
             "npm_package": npm_name,
             "version": version,
@@ -99,6 +99,10 @@ class PackageParser:
             "supported_versions": supported_versions,
             "tested_versions": tested_versions,
         }
+        keywords = pkg_json.get("keywords")
+        if isinstance(keywords, list) and "web" in keywords:
+            entry["platform"] = "browser"
+        return entry
 
     def _parse_package_json(self) -> dict | None:
         """Read and parse package.json."""

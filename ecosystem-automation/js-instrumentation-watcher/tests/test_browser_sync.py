@@ -33,7 +33,9 @@ def source(tmp_path):
     package_dir = repo / "packages/instrumentation"
     package_dir.mkdir(parents=True)
 
-    def release(version, names, description="Browser instrumentations", extra_exports=None, module_sources=None):
+    def release(
+        version, names, description="Browser instrumentations", extra_exports=None, module_sources=None, **fields
+    ):
         exports = {f"./experimental/{name}": "./build/index.js" for name in names}
         exports["./package.json"] = "./package.json"
         exports["./experimental/absent"] = "./absent.js"
@@ -46,6 +48,7 @@ def source(tmp_path):
                     "version": version,
                     "description": description,
                     "exports": exports,
+                    **fields,
                 }
             )
         )
@@ -67,6 +70,38 @@ def source(tmp_path):
     # HEAD deliberately differs from every released manifest.
     (package_dir / "package.json").write_text('{"version":"99.0.0"}')
     return repo, release
+
+
+@pytest.mark.parametrize(
+    "fields, expected",
+    [
+        ({"keywords": ["opentelemetry", "web"]}, "browser"),
+        ({}, None),
+        ({"keywords": []}, None),
+        ({"keywords": ["browser"]}, None),
+        ({"keywords": ["web-vitals"]}, None),
+        ({"keywords": ["Web"]}, None),
+        ({"keywords": None}, None),
+        ({"keywords": "web"}, None),
+        ({"keywords": {"web": True}}, None),
+    ],
+)
+def test_platform_comes_from_release_keywords(source, tmp_path, fields, expected):
+    repo, release = source
+    release("0.8.3", ["console"], **fields)
+    manifest = repo / "packages/instrumentation/package.json"
+    package = json.loads(manifest.read_text())
+    package["keywords"] = [] if expected else ["web"]
+    manifest.write_text(json.dumps(package))
+    inventory = InventoryManager(str(tmp_path / "registry"))
+    sync = BrowserSync(repo, inventory)
+    with patch.object(sync.detector, "fetch_tags"):
+        assert sync.sync()["failed"] == []
+    data = inventory.load("browser-instrumentation", "0.8.3")
+    if expected:
+        assert data["platform"] == expected
+    else:
+        assert "platform" not in data
 
 
 def test_reads_tag_not_dirty_head_and_preserves_checkout(source, tmp_path):

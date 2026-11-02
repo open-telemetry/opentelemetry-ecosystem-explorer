@@ -83,6 +83,8 @@ export interface JavascriptPackage {
   description?: string;
   /** Upstream repository, e.g. "open-telemetry/opentelemetry-js-contrib". */
   repository?: string;
+  /** Present when the package keywords include "web". */
+  platform?: "browser";
   source_path?: string;
   node_engine?: string;
   in_auto_instrumentations_node?: boolean;
