@@ -28,11 +28,13 @@ def wiring():
     """Patch the collaborators main() wires together."""
     with (
         patch("js_instrumentation_watcher.main.BrowserRepositoryManager"),
+        patch("js_instrumentation_watcher.main.BrowserSdkSync") as sdk_sync,
         patch("js_instrumentation_watcher.main.BrowserSync") as browser_sync,
         patch("js_instrumentation_watcher.main.JsContribRepositoryManager") as repo_manager,
         patch("js_instrumentation_watcher.main.InventoryManager") as inventory_manager,
         patch("js_instrumentation_watcher.main.InstrumentationSync") as sync,
     ):
+        sdk_sync.return_value.sync.return_value = {"new": [], "skipped": [], "failed": []}
         browser_sync.return_value.sync.return_value = {"new": [], "skipped": [], "failed": []}
         repo_manager.return_value.setup.return_value = Path("/repos/opentelemetry-js-contrib")
         sync.return_value.sync.return_value = {"new": [], "skipped": [], "failed": []}
@@ -167,4 +169,24 @@ def test_main_fails_when_browser_release_failed(wiring):
     with patch("js_instrumentation_watcher.main.BrowserSync") as browser_sync:
         browser_sync.return_value.sync.return_value = {"new": [], "skipped": [], "failed": ["0.8.2"]}
         with pytest.raises(RuntimeError, match="Browser releases failed"):
+            main()
+
+
+def test_main_syncs_sdk_into_same_inventory(wiring):
+    _, inventory, _ = wiring
+    with (
+        patch("js_instrumentation_watcher.main.BrowserRepositoryManager") as browser_repo,
+        patch("js_instrumentation_watcher.main.BrowserSdkSync") as sdk_sync,
+    ):
+        browser_repo.return_value.setup.return_value = Path("/repos/browser")
+        sdk_sync.return_value.sync.return_value = {"new": ["0.7.0"], "skipped": [], "failed": []}
+        main()
+        sdk_sync.assert_called_once_with(Path("/repos/browser"), inventory.return_value)
+        sdk_sync.return_value.sync.assert_called_once_with()
+
+
+def test_main_fails_when_sdk_release_failed(wiring):
+    with patch("js_instrumentation_watcher.main.BrowserSdkSync") as sdk_sync:
+        sdk_sync.return_value.sync.return_value = {"new": [], "skipped": [], "failed": ["0.7.0"]}
+        with pytest.raises(RuntimeError, match="Browser SDK releases failed"):
             main()

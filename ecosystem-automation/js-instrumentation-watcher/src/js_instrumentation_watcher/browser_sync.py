@@ -44,8 +44,11 @@ def _skip_reason(export: str) -> str | None:
 class BrowserSync:
     """Store one immutable package entry with its exported modules per release."""
 
+    tag_prefix = TAG_PREFIX
+    package_name = "browser-instrumentation"
+
     def __init__(self, repo_path: Path, inventory_manager: InventoryManager):
-        self.detector = VersionDetector(repo_path, tag_prefix=TAG_PREFIX)
+        self.detector = VersionDetector(repo_path, tag_prefix=self.tag_prefix)
         self.inventory_manager = inventory_manager
 
     def parse(self, version: str) -> dict:
@@ -113,14 +116,14 @@ class BrowserSync:
         summary: dict[str, list[str]] = {"new": [], "skipped": [], "failed": []}
         for release in self.detector.get_all_release_tags():
             version = str(release)
-            if self.inventory_manager.version_exists("browser-instrumentation", version):
+            if self.inventory_manager.version_exists(self.package_name, version):
                 summary["skipped"].append(version)
                 continue
             try:
                 data = self.parse(version)
-                self.inventory_manager.save("browser-instrumentation", version, data)
+                self.inventory_manager.save(self.package_name, version, data)
             except Exception:
-                logger.exception("Failed to sync browser instrumentation %s", version)
+                logger.exception("Failed to sync %s %s", self.package_name, version)
                 summary["failed"].append(version)
                 continue
             summary["new"].append(version)

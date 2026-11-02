@@ -309,3 +309,26 @@ def test_skips_orphan_gc_when_clean(registry):
 
     mock_writer.clean.assert_called_once()
     mock_writer.remove_orphans.assert_not_called()
+
+
+def test_browser_sdk_is_published_as_sdk_without_modules(registry, writer):
+    registry.save(
+        "browser-sdk",
+        "0.7.0",
+        {
+            "name": "browser-sdk",
+            "version": "0.7.0",
+            "npm_package": "@opentelemetry/browser-sdk",
+            "repository": "open-telemetry/opentelemetry-browser",
+            "source_path": "packages/sdk",
+            "package_type": "sdk",
+            "platform": "browser",
+        },
+    )
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+    assert _index_entry(writer, "browser-sdk")["package_type"] == "sdk"
+    package = _package_for(writer, "browser-sdk", "0.7.0")
+    assert package["package_type"] == "sdk"
+    assert package["platform"] == "browser"
+    assert "modules" not in package
+    assert "package_type" not in _index_entry(writer, "instrumentation-express")

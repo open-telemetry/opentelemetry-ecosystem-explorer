@@ -18,6 +18,7 @@
 import logging
 import os
 
+from .browser_sdk_sync import BrowserSdkSync
 from .browser_sync import BrowserSync
 from .instrumentation_sync import InstrumentationSync
 from .inventory_manager import InventoryManager
@@ -61,5 +62,9 @@ def main() -> None:
     browser_path = BrowserRepositoryManager(base_dir=base_dir).setup()
     browser_summary = BrowserSync(browser_path, inventory_manager).sync()
     logger.info("Browser sync complete: %s", browser_summary)
+    sdk_summary = BrowserSdkSync(browser_path, inventory_manager).sync()
+    logger.info("Browser SDK sync complete: %s", sdk_summary)
+    if sdk_summary["failed"]:
+        raise RuntimeError(f"Browser SDK releases failed: {sdk_summary['failed']}")
     if browser_summary["failed"]:
         raise RuntimeError(f"Browser releases failed: {browser_summary['failed']}")

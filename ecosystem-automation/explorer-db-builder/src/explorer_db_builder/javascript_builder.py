@@ -42,6 +42,7 @@ PACKAGE_FIELDS = (
     "source_path",
     "repository",
     "platform",
+    "package_type",
     "modules",
     "node_engine",
     "in_auto_instrumentations_node",
@@ -74,6 +75,7 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
         "in_auto_instrumentations_node": bool(package.get("in_auto_instrumentations_node")),
         "version": releases[0]["version"],
         "releases": releases,
+        **({"package_type": package["package_type"]} if "package_type" in package else {}),
     }
 
 

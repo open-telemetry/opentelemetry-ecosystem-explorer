@@ -37,6 +37,8 @@ export interface JavascriptIndexPackage {
   npm_package: string | null;
   description: string | null;
   in_auto_instrumentations_node: boolean;
+  /** Present for SDK packages, which do not contain instrumentation modules. */
+  package_type?: "sdk";
   /** Latest version, the same as `releases[0].version`. */
   version: string;
   /** Every release, newest first. */
@@ -85,6 +87,8 @@ export interface JavascriptPackage {
   repository?: string;
   /** Present when the package keywords include "web". */
   platform?: "browser";
+  /** Present for SDK packages, which do not contain instrumentation modules. */
+  package_type?: "sdk";
   source_path?: string;
   node_engine?: string;
   in_auto_instrumentations_node?: boolean;
