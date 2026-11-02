@@ -122,8 +122,8 @@ Each entry contains package metadata and a sorted `modules` list with `name`, `i
 `source_path`. A module must have an `./experimental/` export and a matching `src/{name}/index.ts`
 at that tag. `./package.json` is skipped quietly. Any other skipped export is logged, so a module
 that leaves `./experimental/` or loses its `index.ts` shows up in the watcher log. An empty
-description is left out. SDK releases and prerelease tags are excluded. Browser metadata has no Node
-engine, Node bundle membership or tested target-library ranges, so these fields are omitted.
+description is left out. Prerelease tags are excluded. Browser metadata has no Node engine, Node
+bundle membership or tested target-library ranges, so these fields are omitted.
 
 Each module also includes `scope_name` when its `instrumentation.ts` has a literal string as the
 first argument to `super(...)` at the release tag. If the file is missing or the pattern does not
@@ -132,3 +132,15 @@ Platform filtering, module search and telemetry are follow-up work under #1187.
 
 A failed browser release is logged and other releases are still attempted, then the command exits
 with an error so the scheduled workflow can report the failure.
+
+## Browser SDK releases
+
+The same run tracks `@opentelemetry/browser-sdk` from stable `browser-sdk-v{version}` tags in the
+same browser checkout, and writes `javascript/browser-sdk/v{version}.yaml`. Missing versions are
+backfilled and existing entries are skipped, the same way as instrumentation releases. The manifest
+is read from `packages/sdk/package.json` at each tag, and its name and version must match the tag.
+Prerelease tags are excluded.
+
+Each entry sets `package_type: sdk` and has no `modules` list, because SDK exports such as logs and
+traces are not instrumentations. A failed SDK release is logged and the command exits with an
+error, the same as a failed instrumentation release.
