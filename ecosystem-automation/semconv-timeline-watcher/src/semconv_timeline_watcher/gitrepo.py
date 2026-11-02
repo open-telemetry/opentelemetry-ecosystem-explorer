@@ -20,7 +20,7 @@ import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT
 
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 # Refs a caller may pass for a manual range: no leading dash, no whitespace or shell syntax.
@@ -39,7 +39,7 @@ class GitRepo:
 
     def _run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
         result = subprocess.run(  # noqa: S603
-            [_GIT, *args], cwd=self.path, capture_output=True, text=True, encoding="utf-8", check=False
+            [GIT, *args], cwd=self.path, capture_output=True, text=True, encoding="utf-8", check=False
         )
         if check and result.returncode != 0:
             raise GitError(f"git {' '.join(args)} failed: {result.stderr.strip()}")

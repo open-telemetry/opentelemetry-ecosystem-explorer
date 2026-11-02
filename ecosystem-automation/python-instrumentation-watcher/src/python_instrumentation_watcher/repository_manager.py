@@ -17,10 +17,9 @@
 
 import logging
 import re
-import subprocess
 from pathlib import Path
 
-from watcher_common.repository_manager import _GIT, BaseRepositoryManager
+from watcher_common.repository_manager import BaseRepositoryManager, run_git
 
 logger = logging.getLogger(__name__)
 
@@ -102,18 +101,11 @@ class PythonContribRepositoryManager(BaseRepositoryManager):
         If no matching tag is found, the working tree is left as-is (whatever
         `main` currently is) rather than failing the run.
         """
-        try:
-            result = subprocess.run(
-                [_GIT, "tag", "--list", "--sort=-creatordate"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to list tags for python-contrib: {e.stderr}") from e
+        tags = run_git(
+            "tag", "--list", "--sort=-creatordate", cwd=repo_path, error="Failed to list tags for python-contrib"
+        )
 
-        tag = next((t for t in result.stdout.splitlines() if _RELEASE_TAG_RE.match(t)), None)
+        tag = next((t for t in tags.splitlines() if _RELEASE_TAG_RE.match(t)), None)
         if tag is None:
             logger.warning("No release tag found for python-contrib at %s; using current checkout", repo_path)
             return

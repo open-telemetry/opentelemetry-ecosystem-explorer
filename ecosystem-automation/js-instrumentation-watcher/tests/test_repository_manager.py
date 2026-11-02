@@ -27,7 +27,7 @@ from js_instrumentation_watcher.repository_manager import (
     BrowserRepositoryManager,
     JsContribRepositoryManager,
 )
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT
 
 
 def test_init_defaults_to_tmp_repos():
@@ -74,7 +74,7 @@ def test_setup_falls_back_to_clone_when_env_var_path_is_missing(mock_run, tmp_pa
     path = manager.setup()
 
     assert path == tmp_path / REPO_NAME
-    assert mock_run.call_args[0][0] == [_GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
+    assert mock_run.call_args[0][0] == [GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -87,7 +87,7 @@ def test_setup_clones_when_repo_not_present(mock_run, tmp_path, monkeypatch):
 
     assert path == tmp_path / REPO_NAME
     mock_run.assert_called_once()
-    assert mock_run.call_args[0][0] == [_GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
+    assert mock_run.call_args[0][0] == [GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -102,8 +102,8 @@ def test_setup_pulls_when_repo_already_present(mock_run, tmp_path, monkeypatch):
 
     assert path == repo_path
     assert mock_run.call_count == 2
-    assert mock_run.call_args_list[0][0][0] == [_GIT, "checkout", "main"]
-    assert mock_run.call_args_list[1][0][0] == [_GIT, "pull"]
+    assert mock_run.call_args_list[0][0][0] == [GIT, "checkout", "main"]
+    assert mock_run.call_args_list[1][0][0] == [GIT, "pull"]
 
 
 @patch("watcher_common.repository_manager.subprocess.run")

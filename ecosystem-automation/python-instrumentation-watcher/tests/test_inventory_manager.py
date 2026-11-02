@@ -122,7 +122,7 @@ def test_save_replaces_final_path_from_a_temp_file_in_the_same_directory(tmp_pat
     manager = InventoryManager(registry_dir=str(tmp_path))
     final_path = tmp_path / "opentelemetry-instrumentation-flask" / "v0.48b0.yaml"
 
-    with patch("python_instrumentation_watcher.inventory_manager.os.replace") as mock_replace:
+    with patch("watcher_common.fileio.os.replace") as mock_replace:
         manager.save("opentelemetry-instrumentation-flask", "0.48b0", {"name": "test"})
 
     mock_replace.assert_called_once()

@@ -18,8 +18,7 @@ import logging
 from typing import Optional
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
+from watcher_common.http import build_session
 
 logger = logging.getLogger(__name__)
 
@@ -41,20 +40,8 @@ class JavaInstrumentationClient:
             github_token: Optional GitHub token for authentication
         """
         self.github_token = github_token
-        self._session = requests.Session()
+        self._session = build_session(github_token)
         self._tree_cache: dict[str, list[dict]] = {}
-
-        retry_strategy = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-        )
-
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self._session.mount("https://", adapter)
-
-        if self.github_token:
-            self._session.headers.update({"Authorization": f"Bearer {self.github_token}"})
 
     def get_latest_release_tag(self) -> str:
         """Get the latest release tag from the GitHub repository.

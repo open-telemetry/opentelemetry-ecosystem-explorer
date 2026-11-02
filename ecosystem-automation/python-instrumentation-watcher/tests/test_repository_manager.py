@@ -27,7 +27,7 @@ from python_instrumentation_watcher.repository_manager import (
     REPO_URL,
     PythonContribRepositoryManager,
 )
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT
 from watcher_common.testing import git_commit, init_repo, run_git
 
 
@@ -39,7 +39,7 @@ def _run_side_effect(tag_list_stdout: str = "v0.65b0\nv0.64b0\n"):
     """
 
     def _run(cmd, **kwargs):
-        if cmd[:3] == [_GIT, "tag", "--list"]:
+        if cmd[:3] == [GIT, "tag", "--list"]:
             return MagicMock(returncode=0, stdout=tag_list_stdout, stderr="")
         return MagicMock(returncode=0, stdout="", stderr="")
 
@@ -90,7 +90,7 @@ def test_setup_falls_back_to_clone_when_env_var_path_is_missing(mock_run, tmp_pa
     path = manager.setup()
 
     assert path == tmp_path / REPO_NAME
-    assert mock_run.call_args_list[0][0][0] == [_GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
+    assert mock_run.call_args_list[0][0][0] == [GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -102,7 +102,7 @@ def test_setup_clones_when_repo_not_present(mock_run, tmp_path, monkeypatch):
     path = manager.setup()
 
     assert path == tmp_path / REPO_NAME
-    assert mock_run.call_args_list[0][0][0] == [_GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
+    assert mock_run.call_args_list[0][0][0] == [GIT, "clone", REPO_URL, str(tmp_path / REPO_NAME)]
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -116,8 +116,8 @@ def test_setup_pulls_when_repo_already_present(mock_run, tmp_path, monkeypatch):
     path = manager.setup()
 
     assert path == repo_path
-    assert mock_run.call_args_list[0][0][0] == [_GIT, "checkout", "main"]
-    assert mock_run.call_args_list[1][0][0] == [_GIT, "pull"]
+    assert mock_run.call_args_list[0][0][0] == [GIT, "checkout", "main"]
+    assert mock_run.call_args_list[1][0][0] == [GIT, "pull"]
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -161,8 +161,8 @@ def test_setup_checks_out_latest_release_tag_after_cloning(mock_run, tmp_path, m
     manager.setup()
 
     commands = [call[0][0] for call in mock_run.call_args_list]
-    assert [_GIT, "tag", "--list", "--sort=-creatordate"] in commands
-    assert [_GIT, "checkout", "v0.65b0"] in commands
+    assert [GIT, "tag", "--list", "--sort=-creatordate"] in commands
+    assert [GIT, "checkout", "v0.65b0"] in commands
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -175,7 +175,7 @@ def test_setup_checks_out_latest_release_tag_after_pulling(mock_run, tmp_path, m
     manager.setup()
 
     commands = [call[0][0] for call in mock_run.call_args_list]
-    assert [_GIT, "checkout", "v0.65b0"] in commands
+    assert [GIT, "checkout", "v0.65b0"] in commands
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -209,8 +209,8 @@ def test_checkout_latest_release_picks_the_first_matching_tag(mock_run, tmp_path
     manager.setup()
 
     commands = [call[0][0] for call in mock_run.call_args_list]
-    assert [_GIT, "checkout", "v0.65b0"] in commands
-    assert [_GIT, "checkout", "opentelemetry-instrumentation-openai-v2==2.4b0"] not in commands
+    assert [GIT, "checkout", "v0.65b0"] in commands
+    assert [GIT, "checkout", "opentelemetry-instrumentation-openai-v2==2.4b0"] not in commands
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -232,8 +232,8 @@ def test_checkout_latest_release_picks_the_current_tag_over_an_old_same_shaped_o
     manager.setup()
 
     commands = [call[0][0] for call in mock_run.call_args_list]
-    assert [_GIT, "checkout", "v0.65b0"] in commands
-    assert [_GIT, "checkout", "v1.16.0"] not in commands
+    assert [GIT, "checkout", "v0.65b0"] in commands
+    assert [GIT, "checkout", "v1.16.0"] not in commands
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -265,7 +265,7 @@ def test_checkout_latest_release_warns_and_continues_when_no_tag_found(mock_run,
     assert path == tmp_path / REPO_NAME
     assert "No release tag found" in caplog.text
     commands = [call[0][0] for call in mock_run.call_args_list]
-    assert not any(cmd[:2] == [_GIT, "checkout"] and cmd[-1] != "main" for cmd in commands)
+    assert not any(cmd[:2] == [GIT, "checkout"] and cmd[-1] != "main" for cmd in commands)
 
 
 @patch("watcher_common.repository_manager.subprocess.run")
@@ -289,7 +289,7 @@ def test_checkout_latest_release_raises_when_tag_listing_fails(mock_run, tmp_pat
     monkeypatch.delenv(REPO_ENV_VAR, raising=False)
 
     def _run(cmd, **kwargs):
-        if cmd[:3] == [_GIT, "tag", "--list"]:
+        if cmd[:3] == [GIT, "tag", "--list"]:
             raise subprocess.CalledProcessError(1, cmd, stderr="tag listing failed")
         return MagicMock(returncode=0, stdout="", stderr="")
 

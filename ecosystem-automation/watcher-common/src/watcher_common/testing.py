@@ -17,14 +17,14 @@
 import subprocess
 from pathlib import Path
 
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT
 
 
 def run_git(path: Path, *args: str) -> str:
     """Run a git command in *path* and return stripped stdout."""
     try:
         return subprocess.run(
-            [_GIT, *args],
+            [GIT, *args],
             cwd=path,
             check=True,
             capture_output=True,

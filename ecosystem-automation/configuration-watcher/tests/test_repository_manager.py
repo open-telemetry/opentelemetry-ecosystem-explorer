@@ -22,7 +22,7 @@ from configuration_watcher.repository_manager import (
     ENV_VAR_NAME,
     RepositoryManager,
 )
-from watcher_common.repository_manager import _GIT
+from watcher_common.repository_manager import GIT
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ class TestRepositoryManager:
         assert result == expected_path
         mock_run.assert_called_once()
         args = mock_run.call_args[0][0]
-        assert args[0] == _GIT
+        assert args[0] == GIT
         assert args[1] == "clone"
 
     def test_setup_repository_uses_env_var(self, manager, tmp_path):
@@ -72,7 +72,7 @@ class TestRepositoryManager:
 
         with (
             patch.dict("os.environ", {ENV_VAR_NAME: str(repo_path)}),
-            patch("configuration_watcher.repository_manager.subprocess.run") as mock_run,
+            patch("watcher_common.repository_manager.subprocess.run") as mock_run,
         ):
             result = manager.setup_repository()
 
@@ -86,7 +86,7 @@ class TestRepositoryManager:
 
         with (
             patch.dict("os.environ", {}, clear=True),
-            patch("configuration_watcher.repository_manager.subprocess.run") as mock_run,
+            patch("watcher_common.repository_manager.subprocess.run") as mock_run,
         ):
             result = manager.setup_repository()
 

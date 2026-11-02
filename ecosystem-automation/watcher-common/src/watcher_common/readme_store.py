@@ -15,15 +15,14 @@
 """Validated indexes and atomic, content-addressed README storage."""
 
 import logging
-import os
 import re
-import tempfile
 from collections.abc import Iterable
 from pathlib import Path
 
 import yaml
 
 from .content_hashing import compute_content_hash
+from .fileio import atomic_write
 
 logger = logging.getLogger(__name__)
 
@@ -84,27 +83,11 @@ def read_readme_index(path: Path) -> dict[str, str]:
         raise ValueError(f"Invalid README index: {path}") from error
 
 
-def _atomic_write(path: Path, content: bytes) -> None:
-    """Publish complete bytes, preserving the previous destination on failure."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = None
-    try:
-        with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".readme-", delete=False) as stream:
-            temporary = Path(stream.name)
-            stream.write(content)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(temporary, path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-
-
 def write_readme_index(path: Path, index: dict[str, str]) -> None:
     """Validate and atomically publish a deterministic completion index."""
     _validate_index(index)
     content = yaml.safe_dump(index, sort_keys=True, allow_unicode=True)
-    _atomic_write(path, content.encode("utf-8"))
+    atomic_write(path, content.encode("utf-8"))
 
 
 class ReadmeStore:
@@ -133,7 +116,7 @@ class ReadmeStore:
             try:
                 existing = path.read_bytes()
             except FileNotFoundError:
-                _atomic_write(path, data)
+                atomic_write(path, data)
                 written += 1
             else:
                 if existing != data:

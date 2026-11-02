@@ -18,8 +18,7 @@ import logging
 from typing import Any, Dict, List
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
+from watcher_common.http import build_session
 
 logger = logging.getLogger(__name__)
 
@@ -39,17 +38,8 @@ class DotNetInstrumentationClient:
 
     def __init__(self):
         """Initialize the client."""
-        self._session = requests.Session()
+        self._session = build_session()
         self._search_url = None
-
-        retry_strategy = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-        )
-
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self._session.mount("https://", adapter)
 
     def _get_search_url(self) -> str:
         """Resolve the search URL from the NuGet service index.

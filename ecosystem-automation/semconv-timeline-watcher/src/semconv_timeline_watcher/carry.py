@@ -28,9 +28,10 @@ never replaced (a merged record is authoritative); every other valid record is k
 
 import json
 import logging
-import shutil
 import subprocess
 from pathlib import Path
+
+from watcher_common.repository_manager import GIT
 
 from .accepted import AcceptedHistory
 from .gitrepo import REF_RE, GitError
@@ -39,11 +40,9 @@ from .validation import record_problems
 
 logger = logging.getLogger(__name__)
 
-_GIT = shutil.which("git") or "git"
-
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([_GIT, *args], cwd=root, capture_output=True, text=True, encoding="utf-8", check=False)  # noqa: S603
+    return subprocess.run([GIT, *args], cwd=root, capture_output=True, text=True, encoding="utf-8", check=False)  # noqa: S603
 
 
 def _relative(store: Store, root: Path) -> str:

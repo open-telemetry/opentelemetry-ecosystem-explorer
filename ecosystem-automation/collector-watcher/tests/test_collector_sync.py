@@ -842,7 +842,7 @@ def test_tracked_release_retries_readme_write_failure(
     run_git(repo, "commit", "-m", "add release README")
     run_git(repo, "tag", "-f", f"v{version}")
     target = (
-        "watcher_common.readme_store._atomic_write"
+        "watcher_common.readme_store.atomic_write"
         if failure_stage == "store"
         else "collector_watcher.inventory_manager.write_readme_index"
     )
