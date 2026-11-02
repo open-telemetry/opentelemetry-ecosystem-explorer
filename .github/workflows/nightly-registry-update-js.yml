@@ -29,7 +29,6 @@ jobs:
       branch-name: "otelbot/automated-inventory-update-js"
       pr-title: "[automated] Update js registry inventory"
       cache-key-suffix: "js"
-      publish-on-watcher-failure: true
     secrets:
       OTELBOT_PRIVATE_KEY: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 

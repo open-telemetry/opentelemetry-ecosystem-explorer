@@ -143,5 +143,4 @@ Prerelease tags are excluded.
 
 Each entry sets `package_type: sdk` and has no `modules` list, because SDK exports such as logs and
 traces are not instrumentations. A failed SDK release is logged and the command exits with an error,
-the same as a failed instrumentation release. The nightly workflow still publishes the updates that
-succeeded in that run, then fails so the failure is reported.
+the same as a failed instrumentation release.
