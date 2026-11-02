@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Optional
 
 from semantic_version import Version
-from watcher_common.inventory_manager import JavaagentInventoryManager  # decoupled from java-instrumentation-watcher
+from watcher_common.inventory_manager import JavaagentInventoryManager
 
 from explorer_db_builder.archive_plan import emit_archives, snapshot_digests
 from explorer_db_builder.collector_builder import run_collector_builder
@@ -296,7 +296,7 @@ def run_javaagent_builder(
         logger.info(f"  Files written: {stats['files_written']}")
         logger.info(f"  Total size: {stats['total_bytes']:,} bytes ({total_mb:.2f} MB)")
         logger.info("")
-        logger.info("✓ Database build completed successfully")
+        logger.info("[*] Database build completed successfully")
         return 0
 
     except ValueError as e:

@@ -45,6 +45,12 @@ def mock_db_writer():
     return mock
 
 
+@pytest.fixture(autouse=True)
+def mock_semconv_enricher():
+    with patch("explorer_db_builder.main.SemconvEnricher.enrich_inventory") as mock:
+        yield mock
+
+
 class TestGetReleaseVersions:
     def test_get_release_versions_success(self, mock_inventory_manager):
         versions = [
@@ -95,6 +101,19 @@ class TestGetReleaseVersions:
 
 
 class TestProcessVersion:
+    def test_process_version_calls_enricher(self, mock_inventory_manager, mock_db_writer, mock_semconv_enricher):
+        version = Version("2.0.0")
+        inventory_data = {
+            "file_format": 0.2,
+            "libraries": [{"name": "lib1"}],
+        }
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+        mock_db_writer.write_version_bundle.return_value = "bundlehash"
+
+        process_version(version, mock_inventory_manager, mock_db_writer)
+        mock_semconv_enricher.assert_called_once()
+
     def test_process_version_success(self, mock_inventory_manager, mock_db_writer):
         version = Version("2.0.0")
         inventory_data = {
