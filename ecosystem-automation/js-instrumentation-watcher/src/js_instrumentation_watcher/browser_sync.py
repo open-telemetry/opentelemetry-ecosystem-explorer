@@ -102,6 +102,9 @@ class BrowserSync:
         description = package.get("description") or ""
         if description:
             entry["description"] = description
+        keywords = package.get("keywords")
+        if isinstance(keywords, list) and "web" in keywords:
+            entry["platform"] = "browser"
         return entry
 
     def sync(self) -> dict[str, list[str]]:

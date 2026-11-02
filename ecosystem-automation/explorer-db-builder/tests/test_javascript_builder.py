@@ -113,6 +113,33 @@ def test_package_file_drops_unpublished_fields(registry, writer):
     }
 
 
+def test_package_file_publishes_platform_only_when_present(registry, writer):
+    registry.save(
+        "instrumentation-fetch",
+        "0.66.0",
+        _release("instrumentation-fetch", "0.66.0"),
+    )
+    run_javascript_builder(inventory_manager=registry, db_writer=writer)
+    old_release = registry.registry_dir / "instrumentation-fetch" / "v0.66.0.yaml"
+    before = old_release.read_bytes()
+    old_hash = _index_entry(writer, "instrumentation-fetch")["releases"][0]["hash"]
+    registry.save(
+        "instrumentation-fetch",
+        "0.67.0",
+        _release("instrumentation-fetch", "0.67.0", platform="browser"),
+    )
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    assert _package_for(writer, "instrumentation-fetch", "0.67.0")["platform"] == "browser"
+    assert "platform" not in _package_for(writer, "instrumentation-fetch", "0.66.0")
+    assert "platform" not in _package_for(writer, "instrumentation-express", "0.10.0")
+    releases = _index_entry(writer, "instrumentation-fetch")["releases"]
+    assert releases[0]["hash"] != releases[1]["hash"]
+    assert releases[1]["hash"] == old_hash
+    assert old_release.read_bytes() == before
+
+
 def test_package_file_publishes_browser_modules(registry, writer):
     modules = [
         {
