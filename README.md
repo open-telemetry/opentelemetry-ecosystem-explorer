@@ -58,6 +58,13 @@ For more information about the maintainer role, see the
 For more information about the approver role, see the
 [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).
 
+## Triagers
+
+- [Aditya Kr. Nayak](https://github.com/Adii-45).
+
+For more information about the triager role, see the
+[community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#triager).
+
 ## Emeritus
 
 - [Pablo Baeyens](https://github.com/mx-psi), Maintainer
