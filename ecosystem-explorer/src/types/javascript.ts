@@ -37,6 +37,8 @@ export interface JavascriptIndexPackage {
   npm_package: string | null;
   description: string | null;
   in_auto_instrumentations_node: boolean;
+  /** Sorted, unique module names from the latest release, when it bundles instrumentations. */
+  module_names?: string[];
   /** Latest version, the same as `releases[0].version`. */
   version: string;
   /** Every release, newest first. */

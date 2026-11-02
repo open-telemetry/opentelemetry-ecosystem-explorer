@@ -67,7 +67,7 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
     Returns:
         The fields the list page needs, plus where to find each release.
     """
-    return {
+    entry = {
         "name": package["name"],
         "npm_package": package.get("npm_package"),
         "description": package.get("description"),
@@ -75,6 +75,10 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
         "version": releases[0]["version"],
         "releases": releases,
     }
+    module_names = sorted({module["name"] for module in package.get("modules", [])})
+    if module_names:
+        entry["module_names"] = module_names
+    return entry
 
 
 def run_javascript_builder(

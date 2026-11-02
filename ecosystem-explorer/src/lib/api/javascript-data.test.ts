@@ -91,6 +91,26 @@ describe("javascript-data", () => {
       expect(global.fetch).toHaveBeenCalledWith("/data/javascript/index.json");
     });
 
+    it("keeps module names available without loading package files", async () => {
+      const index: JavascriptIndex = {
+        ...mockIndex,
+        packages: [
+          mockIndex.packages[0],
+          {
+            ...mockIndex.packages[0],
+            name: "browser-instrumentation",
+            module_names: ["fetch", "xhr"],
+          },
+        ],
+      };
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(respondWith(index));
+
+      const loaded = await javascriptData.loadIndex();
+      expect(loaded.packages[1].module_names).toEqual(["fetch", "xhr"]);
+      expect(loaded.packages[0].module_names).toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
     it("rejects a response without a packages list", async () => {
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
         respondWith({ ecosystem: "javascript" })
