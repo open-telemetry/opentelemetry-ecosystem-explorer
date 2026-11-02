@@ -7,11 +7,11 @@
       "evidence": [
         {
           "label": "model: model/a2a/registry.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/244465e94b9d7167fa5ed5c31a4b2b49ab6ddee5/model/a2a/registry.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/dc3571562603552dc555c667dfa327a638d94ab2/model/a2a/registry.yaml"
         },
         {
           "label": "model: model/a2a/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/244465e94b9d7167fa5ed5c31a4b2b49ab6ddee5/model/a2a/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/dc3571562603552dc555c667dfa327a638d94ab2/model/a2a/spans.yaml"
         }
       ],
       "fromStates": {},
@@ -171,6 +171,7 @@
     "Define and formalize GenAI content capture and external storage upload configuration options.",
     "Clarify that optional token usage breakdown attributes (cache, reasoning, and per-modality counts) are recommended only when available and non-zero.",
     "Clarify in-process propagation of shared GenAI attributes, including preference for values from the instrumented library and use only on signals that explicitly reference them.",
+    "Clarify that `gen_ai.usage.input_tokens` and `gen_ai.usage.output_tokens` are totals across all modalities. Per-modality attributes on spans and events are recommended only when the provider reports them. On usage metrics, instrumentations SHOULD record tokens with no known modality as `unknown`.",
     "Clarify that the client inference span may have nested spans recorded by the model provider, and that its `gen_ai.response.model`, `gen_ai.response.id` and usage attributes reflect what the model provider returns for this inference operation.",
     "Make `gen_ai.client.inference.operation.details` event recommended instead of opt-in.",
     "Reject malformed known message parts in JSON schemas and recommend prefixing custom part types with `gen_ai.provider.name`.",
@@ -179,9 +180,9 @@
     "Add `plan` operation for GenAI agent planning/task decomposition spans.",
     "Add `moonshot_ai` to `gen_ai.provider.name` well-known values."
   ],
-  "commit": "244465e94b9d7167fa5ed5c31a4b2b49ab6ddee5",
-  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...244465e94b9d7167fa5ed5c31a4b2b49ab6ddee5",
-  "date": "2026-10-31",
+  "commit": "dc3571562603552dc555c667dfa327a638d94ab2",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...dc3571562603552dc555c667dfa327a638d94ab2",
+  "date": "2026-11-01",
   "dateBasis": "commit-date",
   "gaps": [
     {
@@ -219,7 +220,7 @@
     "extractor": "model-stability-diff",
     "filesParsed": 16,
     "filesUnparsed": [],
-    "relevantCommitCount": 89,
+    "relevantCommitCount": 90,
     "structure": {
       "groupsAdded": 37,
       "groupsRemoved": 13,
