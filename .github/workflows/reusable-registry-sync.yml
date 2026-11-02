@@ -35,6 +35,11 @@ on:
         type: string
         required: false
         default: ""
+      publish-on-watcher-failure:
+        description: "Publish what the watcher wrote, then fail the job if it errored"
+        type: boolean
+        required: false
+        default: false
     secrets:
       OTELBOT_PRIVATE_KEY:
         description: "Private key for the otelbot GitHub App. Optional to support forks."
@@ -110,6 +115,8 @@ jobs:
         run: uv sync --locked
 
       - name: Run watcher
+        id: watcher
+        continue-on-error: ${{ inputs.publish-on-watcher-failure }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WATCHER_COMMAND: ${{ inputs.watcher-command }}
@@ -159,3 +166,7 @@ jobs:
             echo "Creating new PR..."
             gh pr create --title "$PR_TITLE" --body "$PR_BODY" --base main --head "$BRANCH"
           fi
+
+      - name: Fail after publishing when the watcher failed
+        if: steps.watcher.outcome == 'failure'
+        run: exit 1
