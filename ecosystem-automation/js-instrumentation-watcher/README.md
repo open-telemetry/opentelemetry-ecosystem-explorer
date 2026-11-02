@@ -142,5 +142,5 @@ is read from `packages/sdk/package.json` at each tag, and its name and version m
 Prerelease tags are excluded.
 
 Each entry sets `package_type: sdk` and has no `modules` list, because SDK exports such as logs and
-traces are not instrumentations. A failed SDK release is logged and the command exits with an
-error, the same as a failed instrumentation release.
+traces are not instrumentations. A failed SDK release is logged and the command exits with an error,
+the same as a failed instrumentation release.
