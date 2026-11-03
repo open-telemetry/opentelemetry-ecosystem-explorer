@@ -344,14 +344,12 @@ def test_platform_fallback_requires_exact_upstream_identity(registry, writer, ex
 
 def test_index_publishes_explicit_platform_for_new_packages(registry, writer):
     registry.save(
-        "browser-instrumentation",
+        "instrumentation-fetch",
         "0.10.0",
-        _release(
-            "browser-instrumentation", "0.10.0", repository="open-telemetry/opentelemetry-browser", platform="browser"
-        ),
+        _release("instrumentation-fetch", "0.10.0", platform="browser"),
     )
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
-    assert _index_entry(writer, "browser-instrumentation")["platform"] == "browser"
+    assert _index_entry(writer, "instrumentation-fetch")["platform"] == "browser"
     assert "platform" not in _index_entry(writer, "instrumentation-express")
 
 
