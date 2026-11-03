@@ -18,7 +18,8 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from explorer_db_builder.javascript_builder import run_javascript_builder
+from explorer_db_builder.content_hashing import content_hash
+from explorer_db_builder.javascript_builder import LEGACY_BROWSER_PACKAGES, make_package, run_javascript_builder
 from explorer_db_builder.javascript_database_writer import JavascriptDatabaseWriter
 from js_instrumentation_watcher.inventory_manager import InventoryManager
 
@@ -309,6 +310,66 @@ def test_skips_orphan_gc_when_clean(registry):
 
     mock_writer.clean.assert_called_once()
     mock_writer.remove_orphans.assert_not_called()
+
+
+@pytest.mark.parametrize("name", sorted(LEGACY_BROWSER_PACKAGES))
+def test_index_classifies_existing_browser_packages_without_rewriting_releases(registry, writer, name):
+    release = _release(name, "0.17.0")
+    registry.save(name, "0.17.0", release)
+    before = {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    entry = _index_entry(writer, name)
+    assert entry["platform"] == "browser"
+    assert entry["releases"][0]["hash"] == content_hash(make_package(release))
+    assert "platform" not in _package_for(writer, name, "0.17.0")
+    assert before == {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"repository": "another/project"},
+        {"npm_package": "@another/instrumentation-web-exception"},
+        {"repository": None},
+    ],
+)
+def test_platform_fallback_requires_exact_upstream_identity(registry, writer, extra):
+    name = "instrumentation-web-exception"
+    registry.save(name, "0.17.0", _release(name, "0.17.0", **extra))
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+    assert "platform" not in _index_entry(writer, name)
+
+
+def test_index_publishes_explicit_platform_for_new_packages(registry, writer):
+    registry.save(
+        "browser-instrumentation",
+        "0.10.0",
+        _release(
+            "browser-instrumentation", "0.10.0", repository="open-telemetry/opentelemetry-browser", platform="browser"
+        ),
+    )
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+    assert _index_entry(writer, "browser-instrumentation")["platform"] == "browser"
+    assert "platform" not in _index_entry(writer, "instrumentation-express")
+
+
+def test_index_classifies_existing_browser_bundle_without_changing_package_file(registry, writer):
+    registry.save(
+        "browser-instrumentation",
+        "0.10.0",
+        _release(
+            "browser-instrumentation",
+            "0.10.0",
+            repository="open-telemetry/opentelemetry-browser",
+            modules=[{"name": "navigation"}],
+        ),
+    )
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+    assert _index_entry(writer, "browser-instrumentation")["platform"] == "browser"
+    assert _index_entry(writer, "browser-instrumentation")["module_names"] == ["navigation"]
+    assert "platform" not in _package_for(writer, "browser-instrumentation", "0.10.0")
 
 
 def test_index_module_names_use_latest_release_without_changing_package_files(registry, writer):

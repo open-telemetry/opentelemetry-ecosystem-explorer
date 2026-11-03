@@ -39,6 +39,8 @@ export interface JavascriptIndexPackage {
   in_auto_instrumentations_node: boolean;
   /** Sorted, unique module names from the latest release, when it bundles instrumentations. */
   module_names?: string[];
+  /** Current platform classification, including browser packages in older registry files. */
+  platform?: "browser";
   /** Latest version, the same as `releases[0].version`. */
   version: string;
   /** Every release, newest first. */
