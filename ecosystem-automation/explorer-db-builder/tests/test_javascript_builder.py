@@ -311,6 +311,49 @@ def test_skips_orphan_gc_when_clean(registry):
     mock_writer.remove_orphans.assert_not_called()
 
 
+def test_navigation_related_package_is_current_index_metadata(registry, writer):
+    name = "instrumentation-browser-navigation"
+    for version in ("0.16.0", "0.17.0"):
+        registry.save(name, version, _release(name, version, modules=[{"name": "navigation"}]))
+    before = {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    entry = _index_entry(writer, name)
+    assert entry["related"] == [
+        {
+            "npm_package": "@opentelemetry/browser-instrumentation",
+            "import_path": "@opentelemetry/browser-instrumentation/experimental/navigation",
+            "source_url": "https://github.com/open-telemetry/opentelemetry-browser/tree/main/"
+            "packages/instrumentation/src/navigation",
+            "reference_url": "https://github.com/open-telemetry/opentelemetry-browser/issues/238",
+            "note": "Successor for browser navigation instrumentation. The event API is not a drop-in replacement.",
+        }
+    ]
+    assert "successor" not in entry
+    assert entry["module_names"] == ["navigation"]
+    assert [r["version"] for r in entry["releases"]] == ["0.17.0", "0.16.0"]
+    assert entry["releases"][0]["hash"] == entry["releases"][1]["hash"]
+    for version in ("0.16.0", "0.17.0"):
+        assert "related" not in _package_for(writer, name, version)
+    assert "related" not in _index_entry(writer, "instrumentation-express")
+    assert before == {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"repository": "another/project"},
+        {"npm_package": "@another/instrumentation-browser-navigation"},
+    ],
+)
+def test_navigation_related_package_requires_exact_upstream_identity(registry, writer, extra):
+    name = "instrumentation-browser-navigation"
+    registry.save(name, "0.17.0", _release(name, "0.17.0", **extra))
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+    assert "related" not in _index_entry(writer, name)
+
+
 def test_index_module_names_use_latest_release_without_changing_package_files(registry, writer):
     for version, names in (("0.8.2", ["removed", "xhr"]), ("0.10.0", ["xhr", "fetch", "fetch"])):
         registry.save(
