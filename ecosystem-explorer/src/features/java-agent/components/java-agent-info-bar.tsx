@@ -17,11 +17,12 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Layers, Tag, AlertCircle } from "lucide-react";
-import { useJavaAgentSummary } from "../hooks/use-java-agent-summary";
+import type { JavaAgentSummary } from "../hooks/use-java-agent-summary";
+import type { DataState } from "@/hooks/data-state";
 
-export function JavaAgentInfoBar() {
+export function JavaAgentInfoBar({ summary }: { summary: DataState<JavaAgentSummary> }) {
   const { t, i18n } = useTranslation("java-agent");
-  const { data, loading, error } = useJavaAgentSummary();
+  const { data, loading, error } = summary;
   const latestVersion = data?.latestVersion ?? null;
   const instrumentationCount = data?.instrumentationCount ?? null;
 

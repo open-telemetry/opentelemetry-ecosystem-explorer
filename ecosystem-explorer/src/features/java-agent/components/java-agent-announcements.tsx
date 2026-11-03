@@ -16,7 +16,8 @@
 
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useJavaAgentAnnouncements } from "../hooks/use-java-agent-announcements";
+import type { Announcement } from "../hooks/use-java-agent-announcements";
+import type { DataState } from "@/hooks/data-state";
 import { useDelayedFlag } from "@/hooks/use-delayed-flag";
 import { ExternalLink, Calendar } from "lucide-react";
 import { isSafeUrl } from "../utils/url";
@@ -111,9 +112,13 @@ function AnnouncementCardSkeleton() {
   );
 }
 
-export function JavaAgentAnnouncements() {
+export function JavaAgentAnnouncements({
+  announcements: state,
+}: {
+  announcements: DataState<Announcement[]>;
+}) {
   const { t } = useTranslation("java-agent");
-  const { data: announcements, loading, error } = useJavaAgentAnnouncements();
+  const { data: announcements, loading, error } = state;
   const showSkeleton = useDelayedFlag(loading, SKELETON_DELAY_MS);
 
   if (loading) {

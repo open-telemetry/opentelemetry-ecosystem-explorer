@@ -16,13 +16,11 @@
 
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import type { DataState } from "@/hooks/data-state";
 import { JavaAgentAnnouncements } from "./java-agent-announcements";
-import { useJavaAgentAnnouncements } from "../hooks/use-java-agent-announcements";
 import type { Announcement } from "../hooks/use-java-agent-announcements";
 
-vi.mock("../hooks/use-java-agent-announcements", () => ({
-  useJavaAgentAnnouncements: vi.fn(),
-}));
+let state: DataState<Announcement[]>;
 
 const SKELETON_DELAY_MS = 300;
 
@@ -32,12 +30,12 @@ describe("JavaAgentAnnouncements", () => {
   });
 
   it("renders nothing while a fast request is still loading", () => {
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: null,
       loading: true,
       error: null,
-    });
-    const { container } = render(<JavaAgentAnnouncements />);
+    };
+    const { container } = render(<JavaAgentAnnouncements announcements={state} />);
 
     // Below the delay threshold the placeholder must not paint at all — a skeleton that
     // appears and clears within a few frames reads as a flash.
@@ -46,12 +44,12 @@ describe("JavaAgentAnnouncements", () => {
 
   it("reserves the section with a skeleton card once loading passes the delay", () => {
     vi.useFakeTimers();
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: null,
       loading: true,
       error: null,
-    });
-    render(<JavaAgentAnnouncements />);
+    };
+    render(<JavaAgentAnnouncements announcements={state} />);
 
     act(() => {
       vi.advanceTimersByTime(SKELETON_DELAY_MS);
@@ -64,22 +62,22 @@ describe("JavaAgentAnnouncements", () => {
   });
 
   it("renders nothing when the announcements request fails", () => {
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: null,
       loading: false,
       error: new Error("failed to load announcements"),
-    });
-    const { container } = render(<JavaAgentAnnouncements />);
+    };
+    const { container } = render(<JavaAgentAnnouncements announcements={state} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders nothing when data is empty", () => {
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: [],
       loading: false,
       error: null,
-    });
-    const { container } = render(<JavaAgentAnnouncements />);
+    };
+    const { container } = render(<JavaAgentAnnouncements announcements={state} />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -100,12 +98,12 @@ describe("JavaAgentAnnouncements", () => {
       },
     ];
 
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: mockAnnouncements,
       loading: false,
       error: null,
-    });
-    render(<JavaAgentAnnouncements />);
+    };
+    render(<JavaAgentAnnouncements announcements={state} />);
 
     expect(screen.getByRole("heading", { name: "News & Announcements" })).toBeInTheDocument();
     expect(screen.getByRole("region")).not.toHaveAttribute("aria-busy");
@@ -130,7 +128,7 @@ describe("JavaAgentAnnouncements", () => {
   ])(
     "caps the grid at $count column(s) so $count card(s) fill the container",
     ({ count, expected, notExpected }) => {
-      vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+      state = {
         data: Array.from({ length: count }, (_, i) => ({
           id: String(i),
           date: "2026-07-20",
@@ -139,8 +137,8 @@ describe("JavaAgentAnnouncements", () => {
         })),
         loading: false,
         error: null,
-      });
-      render(<JavaAgentAnnouncements />);
+      };
+      render(<JavaAgentAnnouncements announcements={state} />);
 
       const grid = screen.getByTestId("announcements-grid");
       expect(grid).toHaveClass(expected);
@@ -152,12 +150,12 @@ describe("JavaAgentAnnouncements", () => {
 
   it("renders the loading skeleton at the same width as the single card it reserves", () => {
     vi.useFakeTimers();
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: null,
       loading: true,
       error: null,
-    });
-    render(<JavaAgentAnnouncements />);
+    };
+    render(<JavaAgentAnnouncements announcements={state} />);
     act(() => {
       vi.advanceTimersByTime(SKELETON_DELAY_MS);
     });
@@ -179,12 +177,12 @@ describe("JavaAgentAnnouncements", () => {
       },
     ];
 
-    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+    state = {
       data: mockAnnouncements,
       loading: false,
       error: null,
-    });
-    render(<JavaAgentAnnouncements />);
+    };
+    render(<JavaAgentAnnouncements announcements={state} />);
 
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });

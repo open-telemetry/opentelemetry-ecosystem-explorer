@@ -16,6 +16,9 @@
 import { AgentExploreLanding } from "@/features/java-agent/components/agent-explore-landing.tsx";
 import { JavaAgentInfoBar } from "@/features/java-agent/components/java-agent-info-bar.tsx";
 import { JavaAgentAnnouncements } from "@/features/java-agent/components/java-agent-announcements.tsx";
+import { useJavaAgentSummary } from "./hooks/use-java-agent-summary";
+import { useJavaAgentAnnouncements } from "./hooks/use-java-agent-announcements";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { Seo } from "@/components/seo/seo";
@@ -23,6 +26,10 @@ import { useTranslation } from "react-i18next";
 
 export function JavaAgentPage() {
   const { t } = useTranslation("java-agent");
+  const summary = useJavaAgentSummary();
+  const announcements = useJavaAgentAnnouncements();
+  const loading = summary.loading || announcements.loading;
+
   return (
     <PageContainer>
       <Seo />
@@ -34,9 +41,15 @@ export function JavaAgentPage() {
           </h1>
           <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
-        <JavaAgentInfoBar />
-        <JavaAgentAnnouncements />
-        <AgentExploreLanding />
+        {loading ? (
+          <Loader />
+        ) : (
+          <>
+            <JavaAgentInfoBar summary={summary} />
+            <JavaAgentAnnouncements announcements={announcements} />
+            <AgentExploreLanding />
+          </>
+        )}
       </div>
     </PageContainer>
   );
