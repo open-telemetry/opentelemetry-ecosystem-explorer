@@ -309,3 +309,28 @@ def test_skips_orphan_gc_when_clean(registry):
 
     mock_writer.clean.assert_called_once()
     mock_writer.remove_orphans.assert_not_called()
+
+
+def test_index_module_names_use_latest_release_without_changing_package_files(registry, writer):
+    for version, names in (("0.8.2", ["removed", "xhr"]), ("0.10.0", ["xhr", "fetch", "fetch"])):
+        registry.save(
+            "browser-instrumentation",
+            version,
+            _release("browser-instrumentation", version, modules=[{"name": name} for name in names]),
+        )
+    before = {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    entry = _index_entry(writer, "browser-instrumentation")
+    assert entry["module_names"] == ["fetch", "xhr"]
+    assert "module_names" not in _index_entry(writer, "instrumentation-express")
+    assert "module_names" not in _package_for(writer, "browser-instrumentation", "0.10.0")
+    assert _package_for(writer, "browser-instrumentation", "0.8.2")["modules"] == [{"name": "removed"}, {"name": "xhr"}]
+    assert before == {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
+
+
+def test_index_omits_empty_module_names(registry, writer):
+    registry.save("empty-bundle", "1.0.0", _release("empty-bundle", "1.0.0", modules=[]))
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+    assert "module_names" not in _index_entry(writer, "empty-bundle")
