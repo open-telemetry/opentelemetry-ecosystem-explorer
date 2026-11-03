@@ -78,6 +78,19 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
     module_names = sorted({module["name"] for module in package.get("modules", [])})
     if module_names:
         entry["module_names"] = module_names
+    # The upstream migration is tracked in opentelemetry-browser#238.
+    if (
+        package["name"] == "instrumentation-browser-navigation"
+        and package.get("npm_package") == "@opentelemetry/instrumentation-browser-navigation"
+        and package.get("repository") == "open-telemetry/opentelemetry-js-contrib"
+    ):
+        entry["successor"] = {
+            "npm_package": "@opentelemetry/browser-instrumentation",
+            "import_path": "@opentelemetry/browser-instrumentation/experimental/navigation",
+            "source_url": "https://github.com/open-telemetry/opentelemetry-browser/tree/main/"
+            "packages/instrumentation/src/navigation",
+            "migration_url": "https://github.com/open-telemetry/opentelemetry-browser/issues/238",
+        }
     return entry
 
 
