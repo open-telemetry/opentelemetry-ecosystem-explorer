@@ -42,7 +42,7 @@ export function JavaAgentPage() {
           <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
         {loading ? (
-          <Loader />
+          <Loader label={t("page.loading")} />
         ) : (
           <>
             <JavaAgentInfoBar summary={summary} />
