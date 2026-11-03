@@ -18,11 +18,13 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 import i18n from "i18next";
 import { LanguageToggle } from "./language-toggle";
+import commonEs from "../../../../public/locales/es/common.json";
 
 describe("LanguageToggle", () => {
   // The test i18n instance is a shared singleton; reset to English so each
   // case starts from a known active locale regardless of run order.
   beforeEach(async () => {
+    i18n.addResourceBundle("es", "common", commonEs);
     await i18n.changeLanguage("en");
   });
 
@@ -32,6 +34,7 @@ describe("LanguageToggle", () => {
     const trigger = screen.getByRole("button", { name: /select language/i });
     expect(trigger).toBeInTheDocument();
     expect(trigger).toHaveTextContent("English");
+    expect(trigger).toHaveAccessibleName("Select language (English, EN)");
   });
 
   it("opens a menu listing the supported locales", async () => {
@@ -53,10 +56,6 @@ describe("LanguageToggle", () => {
   });
 
   it("requests a language change when a locale is selected", async () => {
-    // The test i18n bundle only carries `en` resources, so `resolvedLanguage`
-    // (and thus the trigger label) stays "en" after switching to a locale with
-    // no loaded resources. Assert the observable behaviour instead: the
-    // component asks i18next to switch, and `language` reflects the request.
     const changeLanguage = vi.spyOn(i18n, "changeLanguage");
     render(<LanguageToggle />);
     const user = userEvent.setup();
@@ -66,6 +65,9 @@ describe("LanguageToggle", () => {
 
     expect(changeLanguage).toHaveBeenCalledWith("es");
     expect(i18n.language).toBe("es");
+    expect(screen.getByRole("button", { name: /select language/i })).toHaveAccessibleName(
+      "Select language (Español, ES)"
+    );
 
     changeLanguage.mockRestore();
   });
