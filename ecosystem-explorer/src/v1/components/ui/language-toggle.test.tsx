@@ -34,7 +34,7 @@ describe("LanguageToggle", () => {
     const trigger = screen.getByRole("button", { name: /select language/i });
     expect(trigger).toBeInTheDocument();
     expect(trigger).toHaveTextContent("English");
-    expect(trigger).toHaveAccessibleName("Select language (English, EN)");
+    expect(trigger).toHaveAccessibleName("Select language: English, EN");
   });
 
   it("opens a menu listing the supported locales", async () => {
@@ -66,7 +66,7 @@ describe("LanguageToggle", () => {
     expect(changeLanguage).toHaveBeenCalledWith("es");
     expect(i18n.language).toBe("es");
     expect(screen.getByRole("button", { name: /select language/i })).toHaveAccessibleName(
-      "Select language (Español, ES)"
+      "Select language: Español, ES"
     );
 
     changeLanguage.mockRestore();
