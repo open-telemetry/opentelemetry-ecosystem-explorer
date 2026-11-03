@@ -30,12 +30,13 @@ export interface JavascriptRelease {
   hash: string;
 }
 
-/** Current upstream successor, without changing historical release metadata. */
-export interface JavascriptSuccessor {
+/** A related package or module, with a note explaining the relationship. */
+export interface JavascriptRelatedPackage {
   npm_package: string;
-  import_path: string;
-  source_url: string;
-  migration_url: string;
+  import_path?: string;
+  source_url?: string;
+  reference_url?: string;
+  note: string;
 }
 
 /** One entry in `index.json`. Metadata comes from the package's latest release. */
@@ -47,8 +48,8 @@ export interface JavascriptIndexPackage {
   in_auto_instrumentations_node: boolean;
   /** Sorted, unique module names from the latest release, when it bundles instrumentations. */
   module_names?: string[];
-  /** An upstream successor, when a migration has a published replacement. */
-  successor?: JavascriptSuccessor;
+  /** Current package relationships, without changing historical release metadata. */
+  related?: JavascriptRelatedPackage[];
   /** Latest version, the same as `releases[0].version`. */
   version: string;
   /** Every release, newest first. */
