@@ -50,12 +50,12 @@ export interface JavascriptIndexPackage {
   module_names?: string[];
   /** Current package relationships, without changing historical release metadata. */
   related?: JavascriptRelatedPackage[];
-  /** Platform from the latest registry release, when present. */
-  platform?: "browser";
   /** Latest version, the same as `releases[0].version`. */
   version: string;
   /** Every release, newest first. */
   releases: JavascriptRelease[];
+  /** Platform from the latest registry release, when present. */
+  platform?: "browser";
 }
 
 export interface JavascriptIndex {
