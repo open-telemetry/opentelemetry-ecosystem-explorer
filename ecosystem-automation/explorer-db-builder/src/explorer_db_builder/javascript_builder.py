@@ -26,18 +26,6 @@ logger = logging.getLogger(__name__)
 
 REGISTRY_DIR = "ecosystem-registry/javascript"
 
-# These js-contrib packages have the web keyword. Classify the current index
-# without rewriting releases collected before the watcher published platform.
-LEGACY_BROWSER_PACKAGES = frozenset(
-    {
-        "instrumentation-browser-navigation",
-        "instrumentation-document-load",
-        "instrumentation-long-task",
-        "instrumentation-user-interaction",
-        "instrumentation-web-exception",
-    }
-)
-
 
 # Fields published per package. Everything else in the registry stays out:
 # `version` lives in index.json so releases that only bumped it share one file,
@@ -80,20 +68,6 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
         The fields the list page needs, plus where to find each release.
     """
     platform = package.get("platform")
-    if (
-        platform is None
-        and package.get("repository") == "open-telemetry/opentelemetry-js-contrib"
-        and package["name"] in LEGACY_BROWSER_PACKAGES
-        and package.get("npm_package") == f"@opentelemetry/{package['name']}"
-    ):
-        platform = "browser"
-    if (
-        platform is None
-        and package.get("repository") == "open-telemetry/opentelemetry-browser"
-        and package["name"] == "browser-instrumentation"
-        and package.get("npm_package") == "@opentelemetry/browser-instrumentation"
-    ):
-        platform = "browser"
     entry = {
         "name": package["name"],
         "npm_package": package.get("npm_package"),
@@ -106,6 +80,22 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
     module_names = sorted({module["name"] for module in package.get("modules", [])})
     if module_names:
         entry["module_names"] = module_names
+    # The upstream migration is tracked in opentelemetry-browser#238.
+    if (
+        package["name"] == "instrumentation-browser-navigation"
+        and package.get("npm_package") == "@opentelemetry/instrumentation-browser-navigation"
+        and package.get("repository") == "open-telemetry/opentelemetry-js-contrib"
+    ):
+        entry["related"] = [
+            {
+                "npm_package": "@opentelemetry/browser-instrumentation",
+                "import_path": "@opentelemetry/browser-instrumentation/experimental/navigation",
+                "source_url": "https://github.com/open-telemetry/opentelemetry-browser/tree/main/"
+                "packages/instrumentation/src/navigation",
+                "reference_url": "https://github.com/open-telemetry/opentelemetry-browser/issues/238",
+                "note": "Successor for browser navigation instrumentation. The event API is not a drop-in replacement.",
+            }
+        ]
     return entry
 
 

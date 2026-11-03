@@ -30,6 +30,7 @@ modules:
   source_path: packages/instrumentation/src/web-vitals
 name: browser-instrumentation
 npm_package: '@opentelemetry/browser-instrumentation'
+platform: browser
 repository: open-telemetry/opentelemetry-browser
 source_path: packages/instrumentation
 version: 0.7.0

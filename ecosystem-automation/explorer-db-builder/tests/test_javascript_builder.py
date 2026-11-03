@@ -18,8 +18,7 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from explorer_db_builder.content_hashing import content_hash
-from explorer_db_builder.javascript_builder import LEGACY_BROWSER_PACKAGES, make_package, run_javascript_builder
+from explorer_db_builder.javascript_builder import run_javascript_builder
 from explorer_db_builder.javascript_database_writer import JavascriptDatabaseWriter
 from js_instrumentation_watcher.inventory_manager import InventoryManager
 
@@ -312,18 +311,32 @@ def test_skips_orphan_gc_when_clean(registry):
     mock_writer.remove_orphans.assert_not_called()
 
 
-@pytest.mark.parametrize("name", sorted(LEGACY_BROWSER_PACKAGES))
-def test_index_classifies_existing_browser_packages_without_rewriting_releases(registry, writer, name):
-    release = _release(name, "0.17.0")
-    registry.save(name, "0.17.0", release)
+def test_navigation_related_package_is_current_index_metadata(registry, writer):
+    name = "instrumentation-browser-navigation"
+    for version in ("0.16.0", "0.17.0"):
+        registry.save(name, version, _release(name, version, modules=[{"name": "navigation"}]))
     before = {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
 
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
 
     entry = _index_entry(writer, name)
-    assert entry["platform"] == "browser"
-    assert entry["releases"][0]["hash"] == content_hash(make_package(release))
-    assert "platform" not in _package_for(writer, name, "0.17.0")
+    assert entry["related"] == [
+        {
+            "npm_package": "@opentelemetry/browser-instrumentation",
+            "import_path": "@opentelemetry/browser-instrumentation/experimental/navigation",
+            "source_url": "https://github.com/open-telemetry/opentelemetry-browser/tree/main/"
+            "packages/instrumentation/src/navigation",
+            "reference_url": "https://github.com/open-telemetry/opentelemetry-browser/issues/238",
+            "note": "Successor for browser navigation instrumentation. The event API is not a drop-in replacement.",
+        }
+    ]
+    assert "successor" not in entry
+    assert entry["module_names"] == ["navigation"]
+    assert [r["version"] for r in entry["releases"]] == ["0.17.0", "0.16.0"]
+    assert entry["releases"][0]["hash"] == entry["releases"][1]["hash"]
+    for version in ("0.16.0", "0.17.0"):
+        assert "related" not in _package_for(writer, name, version)
+    assert "related" not in _index_entry(writer, "instrumentation-express")
     assert before == {p: p.read_bytes() for p in registry.registry_dir.rglob("*.yaml")}
 
 
@@ -331,43 +344,14 @@ def test_index_classifies_existing_browser_packages_without_rewriting_releases(r
     "extra",
     [
         {"repository": "another/project"},
-        {"npm_package": "@another/instrumentation-web-exception"},
-        {"repository": None},
+        {"npm_package": "@another/instrumentation-browser-navigation"},
     ],
 )
-def test_platform_fallback_requires_exact_upstream_identity(registry, writer, extra):
-    name = "instrumentation-web-exception"
+def test_navigation_related_package_requires_exact_upstream_identity(registry, writer, extra):
+    name = "instrumentation-browser-navigation"
     registry.save(name, "0.17.0", _release(name, "0.17.0", **extra))
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
-    assert "platform" not in _index_entry(writer, name)
-
-
-def test_index_publishes_explicit_platform_for_new_packages(registry, writer):
-    registry.save(
-        "instrumentation-fetch",
-        "0.10.0",
-        _release("instrumentation-fetch", "0.10.0", platform="browser"),
-    )
-    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
-    assert _index_entry(writer, "instrumentation-fetch")["platform"] == "browser"
-    assert "platform" not in _index_entry(writer, "instrumentation-express")
-
-
-def test_index_classifies_existing_browser_bundle_without_changing_package_file(registry, writer):
-    registry.save(
-        "browser-instrumentation",
-        "0.10.0",
-        _release(
-            "browser-instrumentation",
-            "0.10.0",
-            repository="open-telemetry/opentelemetry-browser",
-            modules=[{"name": "navigation"}],
-        ),
-    )
-    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
-    assert _index_entry(writer, "browser-instrumentation")["platform"] == "browser"
-    assert _index_entry(writer, "browser-instrumentation")["module_names"] == ["navigation"]
-    assert "platform" not in _package_for(writer, "browser-instrumentation", "0.10.0")
+    assert "related" not in _index_entry(writer, name)
 
 
 def test_index_module_names_use_latest_release_without_changing_package_files(registry, writer):
@@ -393,3 +377,23 @@ def test_index_omits_empty_module_names(registry, writer):
     registry.save("empty-bundle", "1.0.0", _release("empty-bundle", "1.0.0", modules=[]))
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
     assert "module_names" not in _index_entry(writer, "empty-bundle")
+
+
+@pytest.mark.parametrize("name", ["instrumentation-fetch", "instrumentation-document-load", "browser-instrumentation"])
+def test_index_publishes_platform_from_latest_registry_release(registry, writer, name):
+    registry.save(name, "0.10.0", _release(name, "0.10.0", platform="browser"))
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    assert _index_entry(writer, name)["platform"] == "browser"
+    assert _package_for(writer, name, "0.10.0")["platform"] == "browser"
+    assert "platform" not in _index_entry(writer, "instrumentation-express")
+
+
+@pytest.mark.parametrize("name", ["instrumentation-document-load", "browser-instrumentation"])
+def test_index_does_not_infer_platform_for_old_records(registry, writer, name):
+    registry.save(name, "0.10.0", _release(name, "0.10.0"))
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    assert "platform" not in _index_entry(writer, name)

@@ -7,6 +7,7 @@ in_auto_instrumentations_node: false
 name: instrumentation-document-load
 node_engine: '>=22.15.0'
 npm_package: '@opentelemetry/instrumentation-document-load'
+platform: browser
 repository: open-telemetry/opentelemetry-js-contrib
 source_path: packages/instrumentation-document-load
 supported_versions: []
