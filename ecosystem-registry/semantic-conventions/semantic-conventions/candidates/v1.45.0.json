@@ -1,0 +1,1469 @@
+{
+  "baselineCommit": "e10a930844c6951757a43b849d364f7d056ac32b",
+  "baselineTag": "v1.44.0",
+  "candidates": [
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4073,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4073"
+            }
+          ],
+          "text": "Rename `db.client.connection.max` to `db.client.connection.limit` ([#4073](https://github.com/open-telemetry/semantic-conventions/issues/4073))"
+        },
+        {
+          "references": [
+            {
+              "number": 3926,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3926"
+            }
+          ],
+          "text": "Add trace context propagation for MongoDB through the comment command field ([#3926](https://github.com/open-telemetry/semantic-conventions/issues/3926))"
+        },
+        {
+          "references": [
+            {
+              "number": 3863,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3863"
+            }
+          ],
+          "text": "Add application context propagation to Oracle DB via piggybacking ([#3863](https://github.com/open-telemetry/semantic-conventions/issues/3863))"
+        },
+        {
+          "references": [
+            {
+              "number": 3808,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3808"
+            }
+          ],
+          "text": "Db spans have been switched to v2 syntax including spans now becoming refinements & adding db.system.name attribute. ([#3808](https://github.com/open-telemetry/semantic-conventions/issues/3808))"
+        },
+        {
+          "references": [
+            {
+              "number": 4041,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4041"
+            }
+          ],
+          "text": "Clarify that database client `server.address` identifies the configured database target, including multiple servers and service discovery."
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/db/deprecated/metrics-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/db/deprecated/metrics-deprecated.yaml"
+        },
+        {
+          "label": "change #4073",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4073"
+        },
+        {
+          "label": "change #3926",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3926"
+        },
+        {
+          "label": "change #3863",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3863"
+        },
+        {
+          "label": "change #3808",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3808"
+        },
+        {
+          "label": "change #4041",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4041"
+        },
+        {
+          "label": "change #4097",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4097"
+        },
+        {
+          "label": "change #4222",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4222"
+        }
+      ],
+      "fromStates": {
+        "development": 1
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/db/deprecated",
+      "kind": "deprecation",
+      "lane": "db",
+      "namespace": "db",
+      "proposedType": "deprecation",
+      "reasons": [
+        "1 of 73 db.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 1,
+        "total": 73
+      },
+      "subjects": [
+        "db.client.connection.max"
+      ],
+      "transition": "db: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4238,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4238"
+            }
+          ],
+          "text": "Deprecate `enduser.id` and `enduser.pseudo.id` in favor of `open-telemetry/semantic-conventions-client-side`. ([#4238](https://github.com/open-telemetry/semantic-conventions/issues/4238))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/enduser/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/enduser/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #4238",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4238"
+        }
+      ],
+      "fromStates": {
+        "development": 2
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/enduser/deprecated",
+      "kind": "deprecation",
+      "lane": null,
+      "namespace": "enduser",
+      "proposedType": "deprecation",
+      "reasons": [
+        "2 of 4 enduser.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 2,
+        "total": 4
+      },
+      "subjects": [
+        "enduser.id",
+        "enduser.pseudo.id"
+      ],
+      "transition": "enduser: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace enduser is not bound to any lane; choose a lane or exclude it.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it.",
+        "The changelog mentions a move, removal or deprecation for this namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4228,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4228"
+            }
+          ],
+          "text": "This renames the faas attributes describing the invocation to be faas.invocation.* ([#4228](https://github.com/open-telemetry/semantic-conventions/issues/4228))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/faas/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/faas/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #4228",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4228"
+        }
+      ],
+      "fromStates": {
+        "development": 2
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/faas/deprecated",
+      "kind": "deprecation",
+      "lane": null,
+      "namespace": "faas",
+      "proposedType": "deprecation",
+      "reasons": [
+        "2 of 33 faas.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 2,
+        "total": 33
+      },
+      "subjects": [
+        "faas.invocation_id",
+        "faas.time"
+      ],
+      "transition": "faas: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace faas is not bound to any lane; choose a lane or exclude it.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4250,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4250"
+            }
+          ],
+          "text": "Rename `messaging.system` to `messaging.system.name` and align cloud-provider values with their attribute namespaces. ([#4250](https://github.com/open-telemetry/semantic-conventions/issues/4250))"
+        },
+        {
+          "references": [
+            {
+              "number": 4004,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4004"
+            }
+          ],
+          "text": "Move system-specific messaging attributes into system-specific namespaces. ([#4004](https://github.com/open-telemetry/semantic-conventions/issues/4004))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/messaging/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/messaging/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #4250",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4250"
+        },
+        {
+          "label": "change #4004",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4004"
+        }
+      ],
+      "fromStates": {
+        "development": 23
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/messaging/deprecated",
+      "kind": "deprecation",
+      "lane": "messaging",
+      "namespace": "messaging",
+      "proposedType": "deprecation",
+      "reasons": [
+        "23 of 72 messaging.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 23,
+        "total": 72
+      },
+      "subjects": [
+        "messaging.eventhubs.message.enqueued_time",
+        "messaging.gcp_pubsub.message.ack_deadline",
+        "messaging.gcp_pubsub.message.ack_id",
+        "messaging.gcp_pubsub.message.delivery_attempt",
+        "messaging.gcp_pubsub.message.ordering_key",
+        "messaging.kafka.cluster.id",
+        "messaging.kafka.message.key",
+        "messaging.kafka.message.tombstone",
+        "messaging.kafka.offset",
+        "messaging.rabbitmq.destination.routing_key",
+        "messaging.rabbitmq.message.delivery_tag",
+        "messaging.rocketmq.consumption_model",
+        "messaging.rocketmq.message.delay_time_level",
+        "messaging.rocketmq.message.delivery_timestamp",
+        "messaging.rocketmq.message.group",
+        "messaging.rocketmq.message.keys",
+        "messaging.rocketmq.message.tag",
+        "messaging.rocketmq.message.type",
+        "messaging.rocketmq.namespace",
+        "messaging.servicebus.disposition_status",
+        "messaging.servicebus.message.delivery_count",
+        "messaging.servicebus.message.enqueued_time",
+        "messaging.system"
+      ],
+      "transition": "messaging: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it.",
+        "The changelog mentions a move, removal or deprecation for this namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4049,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4049"
+            }
+          ],
+          "text": "Deprecate OpenTracing compatibility document and `opentracing.ref_type` attribute. ([#4049](https://github.com/open-telemetry/semantic-conventions/issues/4049))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/opentracing/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/opentracing/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #4049",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4049"
+        }
+      ],
+      "fromStates": {
+        "development": 1
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/opentracing/deprecated",
+      "kind": "deprecation",
+      "lane": null,
+      "namespace": "opentracing",
+      "proposedType": "deprecation",
+      "reasons": [
+        "1 of 1 opentracing.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 1,
+        "total": 1
+      },
+      "subjects": [
+        "opentracing.ref_type"
+      ],
+      "transition": "opentracing: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace opentracing is not bound to any lane; choose a lane or exclude it.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it.",
+        "The changelog mentions a move, removal or deprecation for this namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 3924,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3924"
+            },
+            {
+              "number": 4072,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4072"
+            }
+          ],
+          "text": "Replace `rpc.request.metadata.<key>` and `rpc.response.metadata.<key>` with `rpc.request.header.<key>`, `rpc.response.header.<key>`, and `rpc.response.trailer.<key>`. ([#3924](https://github.com/open-telemetry/semantic-conventions/issues/3924), [#4072](https://github.com/open-telemetry/semantic-conv"
+        },
+        {
+          "references": [
+            {
+              "number": 3870,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3870"
+            }
+          ],
+          "text": "Rename `rpc.response.status_code` to `rpc.status_code`. ([#3870](https://github.com/open-telemetry/semantic-conventions/issues/3870))"
+        },
+        {
+          "references": [
+            {
+              "number": 316,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/316"
+            }
+          ],
+          "text": "Update RPC call-duration histogram bucket recommendations and align gRPC boundaries with gRPC's existing OpenTelemetry metrics. ([#316](https://github.com/open-telemetry/semantic-conventions/issues/316))"
+        },
+        {
+          "references": [
+            {
+              "number": 4276,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4276"
+            }
+          ],
+          "text": "Mark `rpc.request.header.<key>`, `rpc.response.header.<key>`, and `rpc.response.trailer.<key>` as release candidate. ([#4276](https://github.com/open-telemetry/semantic-conventions/issues/4276))"
+        },
+        {
+          "references": [
+            {
+              "number": 3704,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3704"
+            }
+          ],
+          "text": "Clarify that RPC instrumentations may use additional context or provide configuration options to customize which status or error codes are considered errors."
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/rpc/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/rpc/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #3924",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3924"
+        },
+        {
+          "label": "change #4072",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4072"
+        },
+        {
+          "label": "change #3870",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3870"
+        },
+        {
+          "label": "change #316",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/316"
+        },
+        {
+          "label": "change #4276",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4276"
+        },
+        {
+          "label": "change #3704",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3704"
+        },
+        {
+          "label": "change #3784",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3784"
+        }
+      ],
+      "fromStates": {
+        "development": 2,
+        "release_candidate": 1
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/rpc/deprecated",
+      "kind": "deprecation",
+      "lane": "rpc",
+      "namespace": "rpc",
+      "proposedType": "deprecation",
+      "reasons": [
+        "3 of 43 rpc.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 3,
+        "total": 43
+      },
+      "subjects": [
+        "rpc.request.metadata",
+        "rpc.response.metadata",
+        "rpc.response.status_code"
+      ],
+      "transition": "rpc: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 3472,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3472"
+            }
+          ],
+          "text": "Deprecate `service.peer.name` and `service.peer.namespace` in favor of `server.service.name`/`.namespace` and `client.service.name`/`.namespace`. ([#3472](https://github.com/open-telemetry/semantic-conventions/issues/3472))"
+        },
+        {
+          "references": [
+            {
+              "number": 3754,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3754"
+            }
+          ],
+          "text": "Add `service.instance.cost_center.id` and `service.instance.cost_center.name` attributes to the service registry. ([#3754](https://github.com/open-telemetry/semantic-conventions/issues/3754))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/service/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/service/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #3472",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3472"
+        },
+        {
+          "label": "change #3754",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3754"
+        }
+      ],
+      "fromStates": {
+        "development": 2
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/service/deprecated",
+      "kind": "deprecation",
+      "lane": null,
+      "namespace": "service",
+      "proposedType": "deprecation",
+      "reasons": [
+        "2 of 12 service.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 2,
+        "total": 12
+      },
+      "subjects": [
+        "service.peer.name",
+        "service.peer.namespace"
+      ],
+      "transition": "service: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace service is not bound to any lane; choose a lane or exclude it.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it.",
+        "The changelog mentions a move, removal or deprecation for this namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 1474,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/1474"
+            }
+          ],
+          "text": "Rename `system.device` attribute to `system.device.name` ([#1474](https://github.com/open-telemetry/semantic-conventions/issues/1474))"
+        },
+        {
+          "references": [
+            {
+              "number": 2538,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/2538"
+            }
+          ],
+          "text": "`system.memory.state` now only defines the `used` and `available` states. ([#2538](https://github.com/open-telemetry/semantic-conventions/issues/2538))"
+        },
+        {
+          "references": [
+            {
+              "number": 1804,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/1804"
+            }
+          ],
+          "text": "Promote attributes used by hostmetrics system metrics to RC ([#1804](https://github.com/open-telemetry/semantic-conventions/issues/1804))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/system/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/system/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #1474",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/1474"
+        },
+        {
+          "label": "change #2538",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/2538"
+        },
+        {
+          "label": "change #1804",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/1804"
+        }
+      ],
+      "fromStates": {
+        "development": 1
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/system/deprecated",
+      "kind": "deprecation",
+      "lane": "runtime",
+      "namespace": "system",
+      "proposedType": "deprecation",
+      "reasons": [
+        "1 of 64 system.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 1,
+        "total": 64
+      },
+      "subjects": [
+        "system.device"
+      ],
+      "transition": "system: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it.",
+        "The changelog mentions a move, removal or deprecation for this namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4174,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4174"
+            },
+            {
+              "number": 3808,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3808"
+            }
+          ],
+          "text": "Remove z/OS entities and deprecate z/OS attributes in favor of `open-telemetry/semantic-conventions-mainframe`. ([#4174](https://github.com/open-telemetry/semantic-conventions/issues/4174), [#3808](https://github.com/open-telemetry/semantic-conventions/issues/3808))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/zos/deprecated/registry-deprecated.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/zos/deprecated/registry-deprecated.yaml"
+        },
+        {
+          "label": "change #4174",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4174"
+        },
+        {
+          "label": "change #3808",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3808"
+        }
+      ],
+      "fromStates": {
+        "development": 2
+      },
+      "id": "semantic-conventions@v1.45.0/deprecation/zos/deprecated",
+      "kind": "deprecation",
+      "lane": null,
+      "namespace": "zos",
+      "proposedType": "deprecation",
+      "reasons": [
+        "2 of 2 zos.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 2,
+        "total": 2
+      },
+      "subjects": [
+        "zos.smf.id",
+        "zos.sysplex.name"
+      ],
+      "transition": "zos: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace zos is not bound to any lane; choose a lane or exclude it.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it.",
+        "The changelog mentions a move, removal or deprecation for this namespace."
+      ]
+    },
+    {
+      "changelog": [],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/kafka/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/kafka/registry.yaml"
+        }
+      ],
+      "fromStates": {},
+      "id": "semantic-conventions@v1.45.0/domain/kafka/new",
+      "kind": "domain",
+      "lane": null,
+      "namespace": "kafka",
+      "proposedType": "domain",
+      "reasons": [
+        "No kafka.* subject existed in the baseline; 4 exist now."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 4,
+        "total": 4
+      },
+      "subjects": [
+        "kafka.cluster.id",
+        "kafka.message.key",
+        "kafka.message.tombstone",
+        "kafka.offset"
+      ],
+      "transition": "kafka: namespace introduced",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace kafka is not bound to any lane; choose a lane or exclude it.",
+        "Appearance or disappearance of a namespace cannot distinguish a new domain, removal, rename or move; compare with other namespaces and repositories."
+      ]
+    },
+    {
+      "changelog": [],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/rabbitmq/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/rabbitmq/registry.yaml"
+        }
+      ],
+      "fromStates": {},
+      "id": "semantic-conventions@v1.45.0/domain/rabbitmq/new",
+      "kind": "domain",
+      "lane": null,
+      "namespace": "rabbitmq",
+      "proposedType": "domain",
+      "reasons": [
+        "No rabbitmq.* subject existed in the baseline; 2 exist now."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 2,
+        "total": 2
+      },
+      "subjects": [
+        "rabbitmq.destination.routing_key",
+        "rabbitmq.message.delivery_tag"
+      ],
+      "transition": "rabbitmq: namespace introduced",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace rabbitmq is not bound to any lane; choose a lane or exclude it.",
+        "Appearance or disappearance of a namespace cannot distinguish a new domain, removal, rename or move; compare with other namespaces and repositories."
+      ]
+    },
+    {
+      "changelog": [],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/rocketmq/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/rocketmq/registry.yaml"
+        }
+      ],
+      "fromStates": {},
+      "id": "semantic-conventions@v1.45.0/domain/rocketmq/new",
+      "kind": "domain",
+      "lane": null,
+      "namespace": "rocketmq",
+      "proposedType": "domain",
+      "reasons": [
+        "No rocketmq.* subject existed in the baseline; 8 exist now."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 8,
+        "total": 8
+      },
+      "subjects": [
+        "rocketmq.consumption_model",
+        "rocketmq.message.delay_time_level",
+        "rocketmq.message.delivery_timestamp",
+        "rocketmq.message.group",
+        "rocketmq.message.keys",
+        "rocketmq.message.tag",
+        "rocketmq.message.type",
+        "rocketmq.namespace"
+      ],
+      "transition": "rocketmq: namespace introduced",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace rocketmq is not bound to any lane; choose a lane or exclude it.",
+        "Appearance or disappearance of a namespace cannot distinguish a new domain, removal, rename or move; compare with other namespaces and repositories."
+      ]
+    },
+    {
+      "changelog": [],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/aws/sdk-spans.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/e10a930844c6951757a43b849d364f7d056ac32b/model/aws/sdk-spans.yaml"
+        }
+      ],
+      "fromStates": {},
+      "id": "semantic-conventions@v1.45.0/removed/dynamodb/removed",
+      "kind": "removed",
+      "lane": null,
+      "namespace": "dynamodb",
+      "proposedType": "removed",
+      "reasons": [
+        "All 13 dynamodb.* subjects of the baseline are gone."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 13,
+        "total": 13
+      },
+      "subjects": [
+        "dynamodb.batchgetitem.client",
+        "dynamodb.batchwriteitem.client",
+        "dynamodb.createtable.client",
+        "dynamodb.deleteitem.client",
+        "dynamodb.deletetable.client",
+        "dynamodb.describetable.client",
+        "dynamodb.getitem.client",
+        "dynamodb.listtables.client",
+        "dynamodb.putitem.client",
+        "dynamodb.query.client",
+        "dynamodb.scan.client",
+        "dynamodb.updateitem.client",
+        "dynamodb.updatetable.client"
+      ],
+      "transition": "dynamodb: namespace removed",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace dynamodb is not bound to any lane; choose a lane or exclude it.",
+        "Appearance or disappearance of a namespace cannot distinguish a new domain, removal, rename or move; compare with other namespaces and repositories."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4164,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4164"
+            }
+          ],
+          "text": "Define identifying attributes for container entities for Weaver schema v2 migration. ([#4164](https://github.com/open-telemetry/semantic-conventions/issues/4164))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/container/metrics.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/container/metrics.yaml"
+        },
+        {
+          "label": "change #4164",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4164"
+        }
+      ],
+      "fromStates": {
+        "development": 6
+      },
+      "id": "semantic-conventions@v1.45.0/stability/container/release_candidate",
+      "kind": "stability",
+      "lane": "k8s",
+      "namespace": "container",
+      "proposedType": "stability",
+      "reasons": [
+        "6 of 35 container.* subjects changed stability (development: 6) into release_candidate."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 6,
+        "total": 35
+      },
+      "subjects": [
+        "container.cpu.usage",
+        "container.filesystem.available",
+        "container.filesystem.capacity",
+        "container.filesystem.usage",
+        "container.paging.faults",
+        "container.uptime"
+      ],
+      "transition": "container: selected subjects → release candidate",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Scoped change (6 of 35); do not describe the whole namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 2934,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/2934"
+            }
+          ],
+          "text": "Clarify that `cpu.logical_number` is not the same as the number of cores. ([#2934](https://github.com/open-telemetry/semantic-conventions/issues/2934))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/cpu/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/cpu/registry.yaml"
+        },
+        {
+          "label": "change #2934",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/2934"
+        }
+      ],
+      "fromStates": {
+        "development": 1
+      },
+      "id": "semantic-conventions@v1.45.0/stability/cpu/release_candidate",
+      "kind": "stability",
+      "lane": null,
+      "namespace": "cpu",
+      "proposedType": "stability",
+      "reasons": [
+        "1 of 5 cpu.* subjects changed stability (development: 1) into release_candidate."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 1,
+        "total": 5
+      },
+      "subjects": [
+        "cpu.logical_number"
+      ],
+      "transition": "cpu: selected subjects → release candidate",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace cpu is not bound to any lane; choose a lane or exclude it.",
+        "Scoped change (1 of 5); do not describe the whole namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4019,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4019"
+            }
+          ],
+          "text": "Promote `jvm.file_descriptor.count` and `jvm.file_descriptor.limit` metrics to `release_candidate` ([#4019](https://github.com/open-telemetry/semantic-conventions/issues/4019))"
+        },
+        {
+          "references": [
+            {
+              "number": 3956,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3956"
+            }
+          ],
+          "text": "Define development semantic conventions for JVM executor metrics, including executor identities fixed for the lifetime of each registration, completed-task and rejected-submission counting semantics, and user-configured names for unnamed executors. ([#3956](https://github.com/open-telemetry/semantic"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/jvm/metrics.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/jvm/metrics.yaml"
+        },
+        {
+          "label": "change #4019",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4019"
+        },
+        {
+          "label": "change #3956",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3956"
+        }
+      ],
+      "fromStates": {
+        "development": 2
+      },
+      "id": "semantic-conventions@v1.45.0/stability/jvm/release_candidate",
+      "kind": "stability",
+      "lane": "jvm",
+      "namespace": "jvm",
+      "proposedType": "stability",
+      "reasons": [
+        "2 of 40 jvm.* subjects changed stability (development: 2) into release_candidate."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 2,
+        "total": 40
+      },
+      "subjects": [
+        "jvm.file_descriptor.count",
+        "jvm.file_descriptor.limit"
+      ],
+      "transition": "jvm: selected subjects → release candidate",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Scoped change (2 of 40); do not describe the whole namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4064,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4064"
+            }
+          ],
+          "text": "Add Pod level CPU limit and request metrics. ([#4064](https://github.com/open-telemetry/semantic-conventions/issues/4064))"
+        },
+        {
+          "references": [
+            {
+              "number": 3945,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3945"
+            }
+          ],
+          "text": "Promote `container.uptime`, `k8s.pod.uptime` and `k8s.node.uptime` metrics to `release_candidate` ([#3945](https://github.com/open-telemetry/semantic-conventions/issues/3945))"
+        },
+        {
+          "references": [
+            {
+              "number": 4145,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4145"
+            }
+          ],
+          "text": "Promote container.cpu.usage, k8s.pod.cpu.usage and k8s.node.cpu.usage metrics to release candidate ([#4145](https://github.com/open-telemetry/semantic-conventions/issues/4145))"
+        },
+        {
+          "references": [
+            {
+              "number": 4133,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4133"
+            }
+          ],
+          "text": "Add Pod and container memory limit and request utilization metrics. ([#4133](https://github.com/open-telemetry/semantic-conventions/issues/4133))"
+        },
+        {
+          "references": [
+            {
+              "number": 4133,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4133"
+            }
+          ],
+          "text": "Add Pod level memory limit and request metrics. ([#4133](https://github.com/open-telemetry/semantic-conventions/issues/4133))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/k8s/metrics.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/k8s/metrics.yaml"
+        },
+        {
+          "label": "change #4064",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4064"
+        },
+        {
+          "label": "change #3945",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3945"
+        },
+        {
+          "label": "change #4145",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4145"
+        },
+        {
+          "label": "change #4133",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4133"
+        },
+        {
+          "label": "change #4053",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4053"
+        },
+        {
+          "label": "change #3946",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3946"
+        },
+        {
+          "label": "change #4036",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4036"
+        }
+      ],
+      "fromStates": {
+        "development": 18
+      },
+      "id": "semantic-conventions@v1.45.0/stability/k8s/release_candidate",
+      "kind": "stability",
+      "lane": "k8s",
+      "namespace": "k8s",
+      "proposedType": "stability",
+      "reasons": [
+        "18 of 282 k8s.* subjects changed stability (development: 18) into release_candidate."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 18,
+        "total": 282
+      },
+      "subjects": [
+        "k8s.node.cpu.usage",
+        "k8s.node.filesystem.available",
+        "k8s.node.filesystem.capacity",
+        "k8s.node.filesystem.inode.count",
+        "k8s.node.filesystem.inode.free",
+        "k8s.node.filesystem.usage",
+        "k8s.node.network.errors",
+        "k8s.node.network.io",
+        "k8s.node.paging.faults",
+        "k8s.node.uptime",
+        "k8s.pod.cpu.usage",
+        "k8s.pod.filesystem.available",
+        "k8s.pod.filesystem.capacity",
+        "k8s.pod.filesystem.usage",
+        "k8s.pod.network.errors",
+        "k8s.pod.network.io",
+        "k8s.pod.paging.faults",
+        "k8s.pod.uptime"
+      ],
+      "transition": "k8s: selected subjects → release candidate",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Scoped change (18 of 282); do not describe the whole namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 4048,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4048"
+            }
+          ],
+          "text": "Remove the network connection and carrier attributes section from `docs/general/attributes.md`. The `network.carrier.*` and `network.connection.*` attributes remain available in the [attribute registry](/docs/registry/attributes/network.md)."
+        },
+        {
+          "references": [
+            {
+              "number": 3947,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3947"
+            },
+            {
+              "number": 1721,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/1721"
+            }
+          ],
+          "text": "Add guidance for choosing between `client.*` / `server.*`, `source.*` / `destination.*`, and `network.local.*` / `network.peer.*` in a dedicated Network document (`docs/network/choosing-network-attributes.md`)."
+        },
+        {
+          "references": [
+            {
+              "number": 4084,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4084"
+            }
+          ],
+          "text": "Add public `network.peer` and `network.local` attribute groups, replacing the internal `network-core` group."
+        },
+        {
+          "references": [
+            {
+              "number": 1663,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/1663"
+            },
+            {
+              "number": 3740,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3740"
+            }
+          ],
+          "text": "Add `network.local.as.number`, `network.local.as.organization`, `network.peer.as.number`, and `network.peer.as.organization` attributes for local and peer network endpoints."
+        },
+        {
+          "references": [
+            {
+              "number": 2416,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/2416"
+            }
+          ],
+          "text": "Add `network.local.mac.address` and `network.peer.mac.address` attributes for local and peer network endpoints."
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/network/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/network/registry.yaml"
+        },
+        {
+          "label": "change #4048",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4048"
+        },
+        {
+          "label": "change #3947",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3947"
+        },
+        {
+          "label": "change #1721",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/1721"
+        },
+        {
+          "label": "change #4084",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4084"
+        },
+        {
+          "label": "change #1663",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/1663"
+        },
+        {
+          "label": "change #3740",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3740"
+        },
+        {
+          "label": "change #2416",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/2416"
+        }
+      ],
+      "fromStates": {
+        "development": 1
+      },
+      "id": "semantic-conventions@v1.45.0/stability/network/release_candidate",
+      "kind": "stability",
+      "lane": null,
+      "namespace": "network",
+      "proposedType": "stability",
+      "reasons": [
+        "1 of 25 network.* subjects changed stability (development: 1) into release_candidate."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 1,
+        "total": 25
+      },
+      "subjects": [
+        "network.connection.state"
+      ],
+      "transition": "network: selected subjects → release candidate",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Namespace network is not bound to any lane; choose a lane or exclude it.",
+        "Scoped change (1 of 25); do not describe the whole namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 3924,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3924"
+            },
+            {
+              "number": 4072,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4072"
+            }
+          ],
+          "text": "Replace `rpc.request.metadata.<key>` and `rpc.response.metadata.<key>` with `rpc.request.header.<key>`, `rpc.response.header.<key>`, and `rpc.response.trailer.<key>`. ([#3924](https://github.com/open-telemetry/semantic-conventions/issues/3924), [#4072](https://github.com/open-telemetry/semantic-conv"
+        },
+        {
+          "references": [
+            {
+              "number": 3870,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3870"
+            }
+          ],
+          "text": "Rename `rpc.response.status_code` to `rpc.status_code`. ([#3870](https://github.com/open-telemetry/semantic-conventions/issues/3870))"
+        },
+        {
+          "references": [
+            {
+              "number": 316,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/316"
+            }
+          ],
+          "text": "Update RPC call-duration histogram bucket recommendations and align gRPC boundaries with gRPC's existing OpenTelemetry metrics. ([#316](https://github.com/open-telemetry/semantic-conventions/issues/316))"
+        },
+        {
+          "references": [
+            {
+              "number": 4276,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/4276"
+            }
+          ],
+          "text": "Mark `rpc.request.header.<key>`, `rpc.response.header.<key>`, and `rpc.response.trailer.<key>` as release candidate. ([#4276](https://github.com/open-telemetry/semantic-conventions/issues/4276))"
+        },
+        {
+          "references": [
+            {
+              "number": 3704,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/3704"
+            }
+          ],
+          "text": "Clarify that RPC instrumentations may use additional context or provide configuration options to customize which status or error codes are considered errors."
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/rpc/metrics.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/rpc/metrics.yaml"
+        },
+        {
+          "label": "model: model/rpc/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/rpc/registry.yaml"
+        },
+        {
+          "label": "model: model/rpc/spans.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/rpc/spans.yaml"
+        },
+        {
+          "label": "change #3924",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3924"
+        },
+        {
+          "label": "change #4072",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4072"
+        },
+        {
+          "label": "change #3870",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/3870"
+        },
+        {
+          "label": "change #316",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/316"
+        },
+        {
+          "label": "change #4276",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/4276"
+        }
+      ],
+      "fromStates": {
+        "release_candidate": 7
+      },
+      "id": "semantic-conventions@v1.45.0/stability/rpc/stable",
+      "kind": "stability",
+      "lane": "rpc",
+      "namespace": "rpc",
+      "proposedType": "stability",
+      "reasons": [
+        "7 of 43 rpc.* subjects changed stability (release_candidate: 7) into stable."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 7,
+        "total": 43
+      },
+      "subjects": [
+        "rpc.call.client",
+        "rpc.call.server",
+        "rpc.client.call.duration",
+        "rpc.method",
+        "rpc.method_original",
+        "rpc.server.call.duration",
+        "rpc.system.name"
+      ],
+      "transition": "rpc: selected subjects → stable",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Scoped change (7 of 43); do not describe the whole namespace."
+      ]
+    },
+    {
+      "changelog": [
+        {
+          "references": [
+            {
+              "number": 1474,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/1474"
+            }
+          ],
+          "text": "Rename `system.device` attribute to `system.device.name` ([#1474](https://github.com/open-telemetry/semantic-conventions/issues/1474))"
+        },
+        {
+          "references": [
+            {
+              "number": 2538,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/2538"
+            }
+          ],
+          "text": "`system.memory.state` now only defines the `used` and `available` states. ([#2538](https://github.com/open-telemetry/semantic-conventions/issues/2538))"
+        },
+        {
+          "references": [
+            {
+              "number": 1804,
+              "url": "https://github.com/open-telemetry/semantic-conventions/issues/1804"
+            }
+          ],
+          "text": "Promote attributes used by hostmetrics system metrics to RC ([#1804](https://github.com/open-telemetry/semantic-conventions/issues/1804))"
+        }
+      ],
+      "disposition": null,
+      "evidence": [
+        {
+          "label": "model: model/system/registry.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions/blob/fb30ca17193b551473b1f43c315482918ab6987c/model/system/registry.yaml"
+        },
+        {
+          "label": "change #1474",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/1474"
+        },
+        {
+          "label": "change #2538",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/2538"
+        },
+        {
+          "label": "change #1804",
+          "url": "https://github.com/open-telemetry/semantic-conventions/issues/1804"
+        }
+      ],
+      "fromStates": {
+        "development": 8
+      },
+      "id": "semantic-conventions@v1.45.0/stability/system/release_candidate",
+      "kind": "stability",
+      "lane": "runtime",
+      "namespace": "system",
+      "proposedType": "stability",
+      "reasons": [
+        "8 of 64 system.* subjects changed stability (development: 8) into release_candidate."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 8,
+        "total": 64
+      },
+      "subjects": [
+        "system.filesystem.mode",
+        "system.filesystem.mountpoint",
+        "system.filesystem.state",
+        "system.filesystem.type",
+        "system.memory.linux.hugepages.state",
+        "system.memory.linux.slab.state",
+        "system.paging.direction",
+        "system.paging.state"
+      ],
+      "transition": "system: selected subjects → release candidate",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "Scoped change (8 of 64); do not describe the whole namespace."
+      ]
+    }
+  ],
+  "commit": "fb30ca17193b551473b1f43c315482918ab6987c",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions/compare/e10a930844c6951757a43b849d364f7d056ac32b...fb30ca17193b551473b1f43c315482918ab6987c",
+  "date": "2026-11-02",
+  "dateBasis": "release-published-at",
+  "gaps": [
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for android suggests a milestone ('Remove the `android` entity in favor of the `android` attribute group. Usage on resources stays the same. ([#4168](https') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for aws suggests a milestone ('Remove the AWS log entity while retaining its attributes for resource metadata. ([#4171](https://github.com/open-telemet') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for aws suggests a milestone ('Remove the `aws.ecs` entity in favor of `aws.ecs.task`, `aws.ecs.cluster`, and `aws.ecs.container` entities identified b') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for azure suggests a milestone ('Move the `azure.resource.log` event to schema v2 and deprecate section describing its body fields. ([#4085](https://gith') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for gcp suggests a milestone ('Remove the `gcp.gce` and `gcp.cloud_run` entities in favor of `gcp.gce.instance` and `gcp.cloud_run.job.task`, and defin') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for log suggests a milestone ('Remove `docs/general/logs.md` and attribute groups covered there (`log.record`, `attributes.log`, and `attributes.log.fi') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    }
+  ],
+  "incomplete": false,
+  "kind": "release",
+  "method": {
+    "extractor": "model-stability-diff",
+    "filesParsed": 267,
+    "filesUnparsed": [],
+    "structure": {
+      "groupsAdded": 71,
+      "groupsRemoved": 28,
+      "subjectsAddedToExistingNamespaces": 83
+    }
+  },
+  "noMilestone": null,
+  "reviewKey": "semantic-conventions@v1.45.0",
+  "schemaVersion": 1,
+  "source": "semantic-conventions",
+  "tag": "v1.45.0"
+}

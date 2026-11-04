@@ -3,9 +3,19 @@
   "sources": {
     "semantic-conventions": {
       "cursor": null,
-      "order": [],
+      "order": [
+        "semantic-conventions@v1.45.0"
+      ],
       "reconcile": [],
-      "revisions": {}
+      "revisions": {
+        "semantic-conventions@v1.45.0": {
+          "commit": "fb30ca17193b551473b1f43c315482918ab6987c",
+          "kind": "release",
+          "source": "semantic-conventions",
+          "status": "pending",
+          "tag": "v1.45.0"
+        }
+      }
     }
   }
 }
