@@ -6,12 +6,46 @@
       "disposition": null,
       "evidence": [
         {
+          "label": "model: model/gen-ai/spans.yaml",
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/633cbb060b16b1487ea2dcd23c4307edc1a03f01/model/gen-ai/spans.yaml"
+        }
+      ],
+      "fromStates": {
+        "development": 1
+      },
+      "id": "semantic-conventions-genai@ebe3d1fb9fdd../deprecation/gen-ai/deprecated",
+      "kind": "deprecation",
+      "lane": "genai",
+      "namespace": "gen_ai",
+      "proposedType": "deprecation",
+      "reasons": [
+        "1 of 123 gen_ai.* subjects became deprecated."
+      ],
+      "requiresReview": true,
+      "scope": {
+        "changed": 1,
+        "total": 123
+      },
+      "subjects": [
+        "gen_ai.retrieval.client"
+      ],
+      "transition": "gen_ai: subjects → deprecated",
+      "warnings": [
+        "Requires human review: a candidate is evidence, not an accepted event.",
+        "A deprecation may only record an earlier decision; check the pull request before dating it."
+      ]
+    },
+    {
+      "changelog": [],
+      "disposition": null,
+      "evidence": [
+        {
           "label": "model: model/a2a/registry.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/dc3571562603552dc555c667dfa327a638d94ab2/model/a2a/registry.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/633cbb060b16b1487ea2dcd23c4307edc1a03f01/model/a2a/registry.yaml"
         },
         {
           "label": "model: model/a2a/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/dc3571562603552dc555c667dfa327a638d94ab2/model/a2a/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/633cbb060b16b1487ea2dcd23c4307edc1a03f01/model/a2a/spans.yaml"
         }
       ],
       "fromStates": {},
@@ -119,6 +153,9 @@
     "Warn that `gen_ai.tool.description` and `gen_ai.tool.definitions` may contain sensitive information.",
     "Allow `gen_ai.conversation.id` on `execute_tool` spans when available.",
     "Add `gen_ai.client.embeddings.duration` and `gen_ai.client.embeddings.operation.input_tokens` metrics, consolidate embeddings client span and metrics in `client-embeddings.md`.",
+    "Deprecate the `gen_ai.retrieval.client` span. Calls to retrieval or search services should follow database or other applicable client semantic conventions; retrieval performed by GenAI frameworks and applications should use the `gen_ai.retrieval` span. ([#637](https://github.com/open-telemetry/seman",
+    "Retrieval operations are no longer reported on `gen_ai.client.operation.duration`. ([#637](https://github.com/open-telemetry/semantic-conventions-genai/issues/637))",
+    "Add the `gen_ai.retrieval` internal span and `gen_ai.retrieval.duration` metric for retrieval performed by GenAI frameworks and applications. ([#637](https://github.com/open-telemetry/semantic-conventions-genai/issues/637))",
     "Mark `gen_ai.agent.name` as sampling-relevant on `create_agent`, `invoke_agent` client, and `invoke_agent` internal spans.",
     "Add `gen_ai.invoke_workflow.duration` metric to track duration of a workflow.",
     "Add missing `gen_ai.tool.call.arguments` and `gen_ai.tool.call.result` opt-in attributes to MCP server span.",
@@ -167,6 +204,7 @@
     "Add `gen_ai.skill.*` attributes recorded on the `execute_tool` span, so an agent's use of [Agent Skills](https://agentskills.io) — loading a skill's instructions, reading a bundled resource, running a bundled script — is described where the framework already exposes it, as a tool execution.",
     "Add guidance that `gen_ai.client.inference.operation.details` event severity should be set to DEBUG (severity number 5).",
     "Add `gen_ai.client.inference.duration` metric, consolidate inference client span, events and metrics in `client-inference.md`.",
+    "Clarify that `gen_ai.invoke_agent.client` SHOULD be emitted for out-of-process agent invocations and `gen_ai.invoke_agent.internal` SHOULD be emitted for in-process agent execution.",
     "Record the token usage histograms and usage counters for every inference operation, including failed ones, with `error.type` on the histograms and `0` when no usage was received.",
     "Define and formalize GenAI content capture and external storage upload configuration options.",
     "Clarify that optional token usage breakdown attributes (cache, reasoning, and per-modality counts) are recommended only when available and non-zero.",
@@ -177,12 +215,13 @@
     "Reject malformed known message parts in JSON schemas and recommend prefixing custom part types with `gen_ai.provider.name`.",
     "Reject malformed `function` tool definitions in `gen_ai.tool.definitions` JSON schema and recommend prefixing custom tool definition types with `gen_ai.provider.name`.",
     "Clarify the first response chunk and measurement boundaries, including authentication and retries, for the GenAI time-to-first-chunk metric and span attribute.",
+    "Clarify that `gen_ai.invoke_agent.inference_calls` counts each logical inference operation once, regardless of retries.",
     "Add `plan` operation for GenAI agent planning/task decomposition spans.",
     "Add `moonshot_ai` to `gen_ai.provider.name` well-known values."
   ],
-  "commit": "dc3571562603552dc555c667dfa327a638d94ab2",
-  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...dc3571562603552dc555c667dfa327a638d94ab2",
-  "date": "2026-11-01",
+  "commit": "633cbb060b16b1487ea2dcd23c4307edc1a03f01",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...633cbb060b16b1487ea2dcd23c4307edc1a03f01",
+  "date": "2026-11-04",
   "dateBasis": "commit-date",
   "gaps": [
     {
@@ -196,6 +235,10 @@
     {
       "kind": "ambiguity",
       "message": "Changelog entry for (no scope) suggests a milestone ('Deprecate `gen_ai.output.messages[].finish_reason` in favor of `gen_ai.response.finish_reasons`.') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for (no scope) suggests a milestone ('Deprecate the `gen_ai.retrieval.client` span. Calls to retrieval or search services should follow database or other appl') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
     },
     {
       "kind": "ambiguity",
@@ -220,11 +263,11 @@
     "extractor": "model-stability-diff",
     "filesParsed": 16,
     "filesUnparsed": [],
-    "relevantCommitCount": 90,
+    "relevantCommitCount": 97,
     "structure": {
-      "groupsAdded": 37,
+      "groupsAdded": 38,
       "groupsRemoved": 13,
-      "subjectsAddedToExistingNamespaces": 62
+      "subjectsAddedToExistingNamespaces": 64
     }
   },
   "noMilestone": null,
