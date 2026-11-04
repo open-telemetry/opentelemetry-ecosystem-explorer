@@ -4,6 +4,18 @@
     {
       "description": "OpenTelemetry browser instrumentations.",
       "in_auto_instrumentations_node": false,
+      "module_names": [
+        "console",
+        "element-timing",
+        "errors",
+        "fetch",
+        "navigation",
+        "navigation-timing",
+        "resource-timing",
+        "user-action",
+        "web-vitals",
+        "xhr"
+      ],
       "name": "browser-instrumentation",
       "npm_package": "@opentelemetry/browser-instrumentation",
       "releases": [
@@ -178,6 +190,15 @@
       "in_auto_instrumentations_node": false,
       "name": "instrumentation-browser-navigation",
       "npm_package": "@opentelemetry/instrumentation-browser-navigation",
+      "related": [
+        {
+          "import_path": "@opentelemetry/browser-instrumentation/experimental/navigation",
+          "note": "Successor for browser navigation instrumentation. The event API is not a drop-in replacement.",
+          "npm_package": "@opentelemetry/browser-instrumentation",
+          "reference_url": "https://github.com/open-telemetry/opentelemetry-browser/issues/238",
+          "source_url": "https://github.com/open-telemetry/opentelemetry-browser/tree/main/packages/instrumentation/src/navigation"
+        }
+      ],
       "releases": [
         {
           "hash": "89c1bca12bbe",
