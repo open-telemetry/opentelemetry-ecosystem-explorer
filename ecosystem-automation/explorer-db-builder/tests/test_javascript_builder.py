@@ -377,3 +377,23 @@ def test_index_omits_empty_module_names(registry, writer):
     registry.save("empty-bundle", "1.0.0", _release("empty-bundle", "1.0.0", modules=[]))
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
     assert "module_names" not in _index_entry(writer, "empty-bundle")
+
+
+@pytest.mark.parametrize("name", ["instrumentation-fetch", "instrumentation-document-load", "browser-instrumentation"])
+def test_index_publishes_platform_from_latest_registry_release(registry, writer, name):
+    registry.save(name, "0.10.0", _release(name, "0.10.0", platform="browser"))
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    assert _index_entry(writer, name)["platform"] == "browser"
+    assert _package_for(writer, name, "0.10.0")["platform"] == "browser"
+    assert "platform" not in _index_entry(writer, "instrumentation-express")
+
+
+@pytest.mark.parametrize("name", ["instrumentation-document-load", "browser-instrumentation"])
+def test_index_does_not_infer_platform_for_old_records(registry, writer, name):
+    registry.save(name, "0.10.0", _release(name, "0.10.0"))
+
+    assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
+
+    assert "platform" not in _index_entry(writer, name)

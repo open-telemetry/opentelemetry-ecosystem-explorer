@@ -54,6 +54,8 @@ export interface JavascriptIndexPackage {
   version: string;
   /** Every release, newest first. */
   releases: JavascriptRelease[];
+  /** Platform from the latest registry release, when present. */
+  platform?: "browser";
 }
 
 export interface JavascriptIndex {

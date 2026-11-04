@@ -7,6 +7,7 @@ in_auto_instrumentations_node: false
 name: instrumentation-web-exception
 node_engine: '>=22.15.0'
 npm_package: '@opentelemetry/instrumentation-web-exception'
+platform: browser
 repository: open-telemetry/opentelemetry-js-contrib
 source_path: packages/instrumentation-web-exception
 supported_versions: []

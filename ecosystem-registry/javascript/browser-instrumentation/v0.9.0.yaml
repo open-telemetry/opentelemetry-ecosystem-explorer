@@ -38,6 +38,7 @@ modules:
   source_path: packages/instrumentation/src/xhr
 name: browser-instrumentation
 npm_package: '@opentelemetry/browser-instrumentation'
+platform: browser
 repository: open-telemetry/opentelemetry-browser
 source_path: packages/instrumentation
 version: 0.9.0

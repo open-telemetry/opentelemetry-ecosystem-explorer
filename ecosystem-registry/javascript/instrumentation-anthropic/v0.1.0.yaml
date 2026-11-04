@@ -1,0 +1,18 @@
+component_owners:
+- eternalcuriouslearner
+- jacksonweber
+description: OpenTelemetry instrumentation for the `@anthropic-ai/sdk` Anthropic client
+  library
+in_auto_instrumentations_node: false
+name: instrumentation-anthropic
+node_engine: '>=22.15.0'
+npm_package: '@opentelemetry/instrumentation-anthropic'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-anthropic
+supported_versions: []
+tested_versions:
+- mode: max-5
+  package: '@anthropic-ai/sdk'
+  range: '>=0.65.0 <0.134.0'
+  source: .tav.yml
+version: 0.1.0
