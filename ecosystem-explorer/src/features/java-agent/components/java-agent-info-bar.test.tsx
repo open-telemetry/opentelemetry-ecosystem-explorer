@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { describe, it, expect } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
+import type { DataState } from "@/hooks/data-state";
+import type { JavaAgentSummary } from "../hooks/use-java-agent-summary";
 import { JavaAgentInfoBar } from "./java-agent-info-bar";
-import { useJavaAgentSummary } from "../hooks/use-java-agent-summary";
 
-vi.mock("../hooks/use-java-agent-summary", () => ({
-  useJavaAgentSummary: vi.fn(),
-}));
-
-beforeEach(() => {
-  vi.resetAllMocks();
-});
+let state: DataState<JavaAgentSummary>;
 
 describe("JavaAgentInfoBar", () => {
   it("renders loading skeletons when summary is loading", () => {
-    vi.mocked(useJavaAgentSummary).mockReturnValue({
+    state = {
       data: null,
       loading: true,
       error: null,
-    });
+    };
 
-    const { container } = render(<JavaAgentInfoBar />);
+    const { container } = render(<JavaAgentInfoBar summary={state} />);
 
     const skeletons = container.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThan(0);
@@ -43,16 +38,16 @@ describe("JavaAgentInfoBar", () => {
   });
 
   it("renders stats correctly when loaded successfully", () => {
-    vi.mocked(useJavaAgentSummary).mockReturnValue({
+    state = {
       data: {
         latestVersion: "1.32.0",
         instrumentationCount: 247,
       },
       loading: false,
       error: null,
-    });
+    };
 
-    render(<JavaAgentInfoBar />);
+    render(<JavaAgentInfoBar summary={state} />);
 
     expect(screen.getByText("247")).toBeInTheDocument();
     expect(screen.getByText("v1.32.0")).toBeInTheDocument();
@@ -61,13 +56,13 @@ describe("JavaAgentInfoBar", () => {
   });
 
   it("renders error alert when loading fails", () => {
-    vi.mocked(useJavaAgentSummary).mockReturnValue({
+    state = {
       data: null,
       loading: false,
       error: new Error("Network fetch failed"),
-    });
+    };
 
-    render(<JavaAgentInfoBar />);
+    render(<JavaAgentInfoBar summary={state} />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(

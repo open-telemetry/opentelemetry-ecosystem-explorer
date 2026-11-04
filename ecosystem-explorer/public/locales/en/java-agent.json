@@ -60,6 +60,7 @@
   },
   "page": {
     "title": "OpenTelemetry Java Agent",
+    "loading": "Loading Java agent...",
     "description": "Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
   },
   "landing": {
