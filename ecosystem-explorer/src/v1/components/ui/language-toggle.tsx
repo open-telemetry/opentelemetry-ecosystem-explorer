@@ -40,7 +40,7 @@ export function LanguageToggle() {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         className="td-lang-menu__trigger"
-        aria-label={`Select language (${activeLabel})`}
+        aria-label={`Select language: ${activeLabel}, ${current.toUpperCase()}`}
       >
         <FaGlobe className="td-lang-menu__globe" />
         <span className="td-lang-menu__label">{activeLabel}</span>
