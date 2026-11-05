@@ -139,6 +139,44 @@ describe.skipIf(!hasDist)("agent-negotiation against the built dist/", () => {
     expect(await res!.text()).toBe(readFileSync(join(distDir, "collector.md"), "utf-8"));
   });
 
+  describe.each([
+    ["GET", "text/markdown"],
+    ["HEAD", "text/markdown"],
+    ["GET", "*/*"],
+    ["HEAD", "*/*"],
+  ])("explicit Markdown routes on %s with Accept: %s", (method, accept) => {
+    it.each([
+      ["/agent/collector/index.md", "agent/collector/index.md"],
+      ["/agent/collector/versions.md", "agent/collector/versions.md"],
+      ["/agent/collector", "agent/collector/index.md"],
+      ["/agent/collector/versions", "agent/collector/versions.md"],
+      ["/agent/javaagent/index.md", "agent/javaagent/index.md"],
+      ["/agent/javaagent/versions.md", "agent/javaagent/versions.md"],
+      ["/agent/javaagent", "agent/javaagent/index.md"],
+      ["/agent/javaagent/versions", "agent/javaagent/versions.md"],
+    ])("serves %s from the built artifact", async (path, artifact) => {
+      const res = await run(path, { method, headers: { accept } });
+      expect(res?.status).toBe(200);
+      expect(res?.headers.get("content-type")).toBe("text/markdown; charset=UTF-8");
+      expect(await res!.text()).toBe(
+        method === "HEAD" ? "" : readFileSync(join(distDir, artifact), "utf-8")
+      );
+      if (method === "HEAD") expect(res?.body).toBeNull();
+    });
+
+    it.each([
+      "/agent/collector/nope-xyz-does-not-exist.md",
+      "/agent/javaagent/nope-xyz-does-not-exist.md",
+      "/agent/collector/nope-xyz-does-not-exist",
+      "/agent/javaagent/nope-xyz-does-not-exist",
+    ])("404s the missing path %s", async (path) => {
+      const res = await run(path, { method, headers: { accept } });
+      expect(res?.status).toBe(404);
+      expect(await res!.text()).toBe(method === "HEAD" ? "" : "Not Found");
+      if (method === "HEAD") expect(res?.body).toBeNull();
+    });
+  });
+
   it("404s a fabricated route that the SPA catch-all would answer 200 for", async () => {
     const res = await run("/collector/components/contrib/nope-xyz-does-not-exist");
     expect(res?.status).toBe(404);

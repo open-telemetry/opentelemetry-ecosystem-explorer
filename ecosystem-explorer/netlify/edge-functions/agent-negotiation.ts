@@ -504,6 +504,29 @@ export default async (request: Request, context: Context) => {
     );
   }
 
+  // Explicit Markdown paths and agent aliases take precedence over negotiation.
+  const agentPathMap: Record<string, string> = {
+    "/agent/collector": "/agent/collector/index.md",
+    "/agent/collector/": "/agent/collector/index.md",
+    "/agent/collector/versions": "/agent/collector/versions.md",
+    "/agent/collector/versions/": "/agent/collector/versions.md",
+    "/agent/javaagent": "/agent/javaagent/index.md",
+    "/agent/javaagent/": "/agent/javaagent/index.md",
+    "/agent/javaagent/versions": "/agent/javaagent/versions.md",
+    "/agent/javaagent/versions/": "/agent/javaagent/versions.md",
+  };
+
+  const resolvedPath = agentPathMap[pathname] || pathname;
+  if (resolvedPath.endsWith(".md") || resolvedPath.startsWith("/agent/")) {
+    if (resolvedPath.endsWith(".md")) {
+      const response = await serveAsset(context, resolvedPath, "text/markdown; charset=UTF-8");
+      if (response) {
+        return response;
+      }
+    }
+    return notFound(request);
+  }
+
   // Content negotiation for AI agents: prefer the page's own Markdown (generated
   // at the app-route path), falling back to the section index, then the docs root.
   if (isMarkdownRequested && !NO_MARKDOWN_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
@@ -539,29 +562,6 @@ export default async (request: Request, context: Context) => {
       }
     }
     // Strict 404 for unrecognized Markdown requests (Copilot feedback)
-    return notFound(request);
-  }
-
-  // Explicit agent documentation routes
-  const agentPathMap: Record<string, string> = {
-    "/agent/collector": "/agent/collector/index.md",
-    "/agent/collector/": "/agent/collector/index.md",
-    "/agent/collector/versions": "/agent/collector/versions.md",
-    "/agent/collector/versions/": "/agent/collector/versions.md",
-    "/agent/javaagent": "/agent/javaagent/index.md",
-    "/agent/javaagent/": "/agent/javaagent/index.md",
-    "/agent/javaagent/versions": "/agent/javaagent/versions.md",
-    "/agent/javaagent/versions/": "/agent/javaagent/versions.md",
-  };
-
-  const resolvedPath = agentPathMap[pathname] || pathname;
-  if (resolvedPath.endsWith(".md") || resolvedPath.startsWith("/agent/")) {
-    if (resolvedPath.endsWith(".md")) {
-      const response = await serveAsset(context, resolvedPath, "text/markdown; charset=UTF-8");
-      if (response) {
-        return response;
-      }
-    }
     return notFound(request);
   }
 
