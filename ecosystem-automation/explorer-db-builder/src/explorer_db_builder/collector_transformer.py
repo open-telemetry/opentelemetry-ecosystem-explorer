@@ -198,6 +198,6 @@ def make_index_component(component: dict[str, Any]) -> dict[str, Any]:
     # Every distribution that ships this component. The list views filter on it, so it belongs in
     # the slim shape; omitted when unknown so they fall back to the source repository.
     distributions = component.get("status", {}).get("distributions")
-    if distributions:
+    if distributions is not None:
         entry["distributions"] = sorted(distributions)
     return entry
