@@ -250,6 +250,69 @@ describe("agent-negotiation edge function", () => {
   });
 });
 
+describe.each(["GET", "HEAD"])("agent-negotiation explicit Markdown routes on %s", (method) => {
+  it.each([
+    ["/index.md", "/index.md"],
+    ["/collector.md", "/collector.md"],
+    ["/java-agent.md", "/java-agent.md"],
+    ["/agent/collector/index.md", "/agent/collector/index.md"],
+    ["/agent/collector/versions.md", "/agent/collector/versions.md"],
+    ["/agent/collector", "/agent/collector/index.md"],
+    ["/agent/collector/", "/agent/collector/index.md"],
+    ["/agent/collector/versions", "/agent/collector/versions.md"],
+    ["/agent/collector/versions/", "/agent/collector/versions.md"],
+    ["/agent/javaagent/index.md", "/agent/javaagent/index.md"],
+    ["/agent/javaagent/versions.md", "/agent/javaagent/versions.md"],
+    ["/agent/javaagent", "/agent/javaagent/index.md"],
+    ["/agent/javaagent/", "/agent/javaagent/index.md"],
+    ["/agent/javaagent/versions", "/agent/javaagent/versions.md"],
+    ["/agent/javaagent/versions/", "/agent/javaagent/versions.md"],
+  ])("serves %s when the request prefers Markdown", async (path, artifact) => {
+    const markdown = `# Documentation at ${artifact}`;
+    const context = contextWith(async (rewritePath) => {
+      const exists = rewritePath === artifact;
+      return new Response(method === "HEAD" ? null : exists ? markdown : SHELL, {
+        status: 200,
+        headers: { "content-type": exists ? "text/plain" : "text/html" },
+      });
+    });
+    const request = new Request(`https://explorer.opentelemetry.io${path}`, {
+      method,
+      headers: { accept: "text/markdown" },
+    });
+    const res = await handler(request, context);
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("text/markdown; charset=UTF-8");
+    expect(await res!.text()).toBe(method === "HEAD" ? "" : markdown);
+    expect(context.rewrite).toHaveBeenCalledExactlyOnceWith(artifact);
+    if (method === "HEAD") expect(res?.body).toBeNull();
+  });
+
+  it.each([
+    "/agent/collector/missing.md",
+    "/agent/javaagent/missing.md",
+    "/agent/collector/missing",
+    "/agent/javaagent/missing",
+    "/agent/unknown",
+    "/collector/missing.md",
+    "/java-agent/missing.md",
+  ])("returns 404 for %s when the request prefers Markdown", async (path) => {
+    const context = contextWith(async () =>
+      method === "HEAD"
+        ? new Response(null, { headers: { "content-type": "text/html" } })
+        : htmlShell()
+    );
+    const request = new Request(`https://explorer.opentelemetry.io${path}`, {
+      method,
+      headers: { accept: "text/markdown" },
+    });
+    const res = await handler(request, context);
+    expect(res?.status).toBe(404);
+    expect(await res!.text()).toBe(method === "HEAD" ? "" : "Not Found");
+    if (method === "HEAD") expect(res?.body).toBeNull();
+  });
+});
+
 describe("agent-negotiation HTML metadata injection", () => {
   it("injects per-route title/description/OG/canonical for a known route", async () => {
     const handler = await freshHandler();
