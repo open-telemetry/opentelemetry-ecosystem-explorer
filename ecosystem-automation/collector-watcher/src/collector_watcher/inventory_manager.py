@@ -30,7 +30,7 @@ from watcher_common.readme_store import (
     write_readme_index,
 )
 
-from .type_defs import COMPONENT_TYPES, DistributionName
+from .type_defs import COMPONENT_TYPES, DistributionName, ManifestDistributionName
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +40,7 @@ class InventoryManager:
 
     README_DIR = "readmes"
     README_INDEX_FILE = "component-readmes.yaml"
+    DISTRIBUTION_MANIFEST_FILE = "manifest.yaml"
 
     def __init__(self, inventory_dir: str = "ecosystem-registry/collector"):
         """
@@ -197,6 +198,47 @@ class InventoryManager:
             "schema_hash": schema_hash,
             "components": components,
         }
+
+    def distribution_manifest_exists(self, distribution: ManifestDistributionName, version: Version) -> bool:
+        """Whether this release's manifest record has been written for ``distribution``."""
+        return (self.get_version_dir(distribution, version) / self.DISTRIBUTION_MANIFEST_FILE).is_file()
+
+    def save_distribution_manifest(
+        self,
+        distribution: ManifestDistributionName,
+        version: Version,
+        repository: str,
+        components: list[dict[str, str]],
+        external: list[str],
+    ) -> None:
+        """Write the core/contrib components a manifest distribution ships at ``version``.
+
+        Args:
+            components: ``{type, source, name}`` entries, already sorted
+            external: Module paths shipped from outside core/contrib (no registry record)
+        """
+        version_dir = self.get_version_dir(distribution, version)
+        version_dir.mkdir(parents=True, exist_ok=True)
+        data = {
+            "distribution": distribution,
+            "version": str(version),
+            "repository": repository,
+            "components": components,
+            "external": external,
+        }
+        with open(version_dir / self.DISTRIBUTION_MANIFEST_FILE, "w", encoding="utf-8") as f:
+            yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+
+    def load_distribution_manifest(
+        self, distribution: ManifestDistributionName, version: Version
+    ) -> list[dict[str, str]] | None:
+        """Return the ``{type, source, name}`` components, or None if no record exists."""
+        path = self.get_version_dir(distribution, version) / self.DISTRIBUTION_MANIFEST_FILE
+        if not path.is_file():
+            return None
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        return data.get("components") or []
 
     def readme_index_exists(self, distribution: DistributionName, version: Version) -> bool:
         """Accept only a validated index as the README sync completion signal."""

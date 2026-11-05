@@ -54,7 +54,14 @@ const COMPONENT_CARD_ITEMS = [
   })),
 ];
 
-const DISTRIBUTIONS = [{ distribution: "core" }, { distribution: "contrib" }] as const;
+const DISTRIBUTIONS = [
+  { distribution: "core" },
+  { distribution: "contrib" },
+  { distribution: "otlp" },
+  { distribution: "k8s" },
+  { distribution: "prometheus" },
+  { distribution: "ebpf-profiler" },
+] as const;
 
 const RESOURCES = [
   {
@@ -103,17 +110,15 @@ function emptyDistributionCounts(): Record<CollectorDistribution, number> {
   return {
     core: 0,
     contrib: 0,
+    otlp: 0,
+    k8s: 0,
+    prometheus: 0,
+    "ebpf-profiler": 0,
   };
 }
 
 function isComponentType(value: unknown): value is CollectorComponentType {
   return typeof value === "string" && COMPONENT_TYPES.some(({ type }) => type === value);
-}
-
-function isDistribution(value: unknown): value is CollectorDistribution {
-  return (
-    typeof value === "string" && DISTRIBUTIONS.some(({ distribution }) => distribution === value)
-  );
 }
 
 function buildCollectorLandingStats(
@@ -127,8 +132,12 @@ function buildCollectorLandingStats(
     if (isComponentType(component.type)) {
       byType[component.type] += 1;
     }
-    if (isDistribution(component.distribution)) {
-      byDistribution[component.distribution] += 1;
+    // Same membership rule as the components list, so a card's count matches what its link shows.
+    const memberOf = component.distributions ?? [component.distribution];
+    for (const { distribution } of DISTRIBUTIONS) {
+      if (memberOf.includes(distribution)) {
+        byDistribution[distribution] += 1;
+      }
     }
   }
 

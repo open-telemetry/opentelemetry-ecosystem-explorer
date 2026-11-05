@@ -25,6 +25,22 @@
       "version": "0.164.0"
     },
     {
+      "bundle_hash": "d71037cc6900",
+      "distributions": [
+        "contrib"
+      ],
+      "is_latest": true,
+      "version": "0.164.1"
+    },
+    {
+      "bundle_hash": "ce36d53d25e2",
+      "distributions": [
+        "core"
+      ],
+      "is_latest": false,
+      "version": "0.164.0"
+    },
+    {
       "bundle_hash": "e7917fdd9717",
       "distributions": [
         "core",
@@ -37,79 +53,107 @@
       "bundle_hash": "0dcfb0051abf",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "prometheus",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.162.0"
     },
     {
-      "bundle_hash": "e1a949c3156d",
+      "bundle_hash": "eba99c081e11",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.161.0"
     },
     {
-      "bundle_hash": "c356b2a5bc83",
+      "bundle_hash": "b1caf03a58ae",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.160.0"
     },
     {
-      "bundle_hash": "aa8829df5b84",
+      "bundle_hash": "b1cd0f7c5a58",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.159.0"
     },
     {
-      "bundle_hash": "4cfee0a3ee96",
+      "bundle_hash": "820beeef1e8e",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.158.0"
     },
     {
-      "bundle_hash": "504eb3c1870c",
+      "bundle_hash": "ad4e8b215de4",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.157.0"
     },
     {
-      "bundle_hash": "d09032931aaa",
+      "bundle_hash": "14ba35763385",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.156.0"
     },
     {
-      "bundle_hash": "475091234305",
+      "bundle_hash": "409c465ce0ca",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.155.0"
     },
     {
-      "bundle_hash": "9ee8c143918a",
+      "bundle_hash": "1a595a2e2fee",
       "distributions": [
         "core",
-        "contrib"
+        "contrib",
+        "otlp",
+        "k8s",
+        "ebpf-profiler"
       ],
       "is_latest": false,
       "version": "0.154.0"
