@@ -4,7 +4,7 @@ issue: 1187
 type: roadmap
 phase: meta
 status: in-progress
-last_updated: "2026-11-02"
+last_updated: "2026-11-05"
 ---
 
 ## Done
@@ -21,23 +21,23 @@ last_updated: "2026-11-02"
 2. [x] `scope_name` per module, optional and left out when the pattern does not match.
 3. [x] An optional `platform: browser` field from the `web` keyword, in both watcher sources and the
        package files
-       ([#1368](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1368)).
-       Existing registry releases stay unchanged.
-4. Module names in `index.json` so search on the list page from
-   [#990](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/990), still in
-   progress, finds a module. The builder and data layer are merged
-   ([#1202](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1202),
-   [#1223](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1223),
-   [#1309](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1309)), so this
-   can build on the existing index and TypeScript types.
+       ([#1368](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1368)). The
+       initial change left existing registry releases unchanged.
+       [#1372](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1372) then
+       rebuilt the JavaScript registry with platform metadata and published it in `index.json`.
+4. [x] Module names in `index.json` and the TypeScript data types
+       ([#1370](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1370)). The
+       list page from
+       [#990](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/990) is
+       still in progress. Its search can use `module_names` without fetching every package file.
 5. Telemetry, once the trigger in `02-watcher-and-presentation.md` fires.
 
 ## Telemetry from a run
 
-The explorer already has work in flight to import the published reports of
+The explorer imports the published reports of
 [semantic-conventions-conformance](https://github.com/open-telemetry/semantic-conventions-conformance)
-([#1183](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/1183), open PR
-[#1188](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1188)). A trial ran
+through the conformance watcher merged in
+[#1188](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1188). A trial ran
 three modules of the 0.8.1 package (errors, console, web-vitals), each alone on a page in headless
 Chrome, through that repo's runner at `1860208` against semantic conventions v1.44.0. The scenarios
 are proposed in
@@ -60,13 +60,21 @@ the instrumentation. Every scope was flagged for a missing `schema_url`, matchin
    and leave out an empty optional field instead of writing `""`.
 4. Answered on 2026-10-18: read stable `browser-instrumentation-v*` tags, and backfill every missing
    tag. The pull request records a live read of the 11 releases from 0.2.0 through 0.8.2.
-5. Partly implemented in
+5. Implemented in
    [#1368](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1368): new
-   entries get `platform: browser` when their package keywords include `web`. Still to decide: how
-   the five existing packages get it without rewriting immutable registry releases.
+   entries get `platform: browser` when their package keywords include `web`.
+   [#1372](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1372) rebuilt the
+   existing registry records with platform metadata and added the field to the index.
 6. Is the "JS / Node" home card meant to be Node only?
 7. Telemetry: wait for a merged registry, capture from runs, or read the event-name constants now?
-8. Should `@opentelemetry/browser-sdk` be tracked, and if so as what?
-9. Should a js-contrib browser package be linked to its successor here, and how?
-10. Still open: add module names to the index and data types introduced by #990 so its list page can
-    search them without fetching every package file.
+8. Answered on 2026-11-03: keep SDKs out, consistent with the other languages
+   ([discussion](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1371#discussion_r4454151697)).
+   The SDK tracking PR was closed without merging.
+9. Implemented for browser navigation in
+   [#1373](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1373): the index
+   links the js-contrib package to the browser navigation module through `related`. The note says
+   its event API is not a drop-in replacement. Historical package files stay unchanged.
+10. Implemented in
+    [#1370](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1370): the index
+    and data types expose sorted, unique `module_names` from the latest release. List-page search
+    remains with #990.
