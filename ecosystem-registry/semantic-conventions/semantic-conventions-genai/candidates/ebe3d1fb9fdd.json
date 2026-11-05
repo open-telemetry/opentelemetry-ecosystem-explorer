@@ -7,7 +7,7 @@
       "evidence": [
         {
           "label": "model: model/gen-ai/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/633cbb060b16b1487ea2dcd23c4307edc1a03f01/model/gen-ai/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/58daeb9da6d24757c51b51ec044aecfb3c0e2844/model/gen-ai/spans.yaml"
         }
       ],
       "fromStates": {
@@ -19,12 +19,12 @@
       "namespace": "gen_ai",
       "proposedType": "deprecation",
       "reasons": [
-        "1 of 123 gen_ai.* subjects became deprecated."
+        "1 of 133 gen_ai.* subjects became deprecated."
       ],
       "requiresReview": true,
       "scope": {
         "changed": 1,
-        "total": 123
+        "total": 133
       },
       "subjects": [
         "gen_ai.retrieval.client"
@@ -41,11 +41,11 @@
       "evidence": [
         {
           "label": "model: model/a2a/registry.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/633cbb060b16b1487ea2dcd23c4307edc1a03f01/model/a2a/registry.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/58daeb9da6d24757c51b51ec044aecfb3c0e2844/model/a2a/registry.yaml"
         },
         {
           "label": "model: model/a2a/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/633cbb060b16b1487ea2dcd23c4307edc1a03f01/model/a2a/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/58daeb9da6d24757c51b51ec044aecfb3c0e2844/model/a2a/spans.yaml"
         }
       ],
       "fromStates": {},
@@ -191,6 +191,7 @@
     "Replace the `gen_ai.client.token.usage` histogram (and the `gen_ai.token.type` attribute it relied on) with separate per-direction, per-operation token usage histograms, so token distributions can be aggregated correctly.",
     "Add `gen_ai.client.inference.usage.*` token counters that let consumers aggregate token spend across operations, broken down by the new `gen_ai.token.modality` attribute and by token category (cached, cache-written, reasoning).",
     "Clarify MCP error reporting: MCP server telemetry no longer reports client-side errors as failures, while MCP client telemetry reports all JSON-RPC error codes as errors.",
+    "Add `realtime_inference` and `user_speech` operations and spans, `gen_ai.client.realtime_session.started`/`ended` events, the `gen_ai.realtime_session.id` attribute, and a `transcription` message part for realtime, bidirectional streaming sessions such as OpenAI Realtime and Gemini Live.",
     "Allow `gen_ai.conversation.id` on invoke workflow spans when available.",
     "Rename `gen_ai.usage.cache_creation.input_tokens` to `gen_ai.usage.cache_write.input_tokens`.",
     "Add per-modality token usage attributes: `gen_ai.usage.{text,image,audio}.{input_tokens,output_tokens}` and `gen_ai.usage.{text,image,audio}.cache_read.input_tokens`.",
@@ -215,13 +216,18 @@
     "Reject malformed known message parts in JSON schemas and recommend prefixing custom part types with `gen_ai.provider.name`.",
     "Reject malformed `function` tool definitions in `gen_ai.tool.definitions` JSON schema and recommend prefixing custom tool definition types with `gen_ai.provider.name`.",
     "Clarify the first response chunk and measurement boundaries, including authentication and retries, for the GenAI time-to-first-chunk metric and span attribute.",
+    "Use `gen_ai.client.inference.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client inference operations to fail.",
+    "Use `gen_ai.client.embeddings.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client embeddings operations to fail.",
     "Clarify that `gen_ai.invoke_agent.inference_calls` counts each logical inference operation once, regardless of retries.",
+    "Use `gen_ai.client.invoke_agent.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client agent invocation operations to fail.",
+    "Add `gen_ai.execute_tool.exception` for exceptions that cause tool execution operations to fail.",
+    "Use `gen_ai.client.fetch_response.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client fetch response operations to fail.",
     "Add `plan` operation for GenAI agent planning/task decomposition spans.",
     "Add `moonshot_ai` to `gen_ai.provider.name` well-known values."
   ],
-  "commit": "633cbb060b16b1487ea2dcd23c4307edc1a03f01",
-  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...633cbb060b16b1487ea2dcd23c4307edc1a03f01",
-  "date": "2026-11-04",
+  "commit": "58daeb9da6d24757c51b51ec044aecfb3c0e2844",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...58daeb9da6d24757c51b51ec044aecfb3c0e2844",
+  "date": "2026-11-05",
   "dateBasis": "commit-date",
   "gaps": [
     {
@@ -263,11 +269,11 @@
     "extractor": "model-stability-diff",
     "filesParsed": 16,
     "filesUnparsed": [],
-    "relevantCommitCount": 97,
+    "relevantCommitCount": 103,
     "structure": {
-      "groupsAdded": 38,
+      "groupsAdded": 40,
       "groupsRemoved": 13,
-      "subjectsAddedToExistingNamespaces": 64
+      "subjectsAddedToExistingNamespaces": 74
     }
   },
   "noMilestone": null,
