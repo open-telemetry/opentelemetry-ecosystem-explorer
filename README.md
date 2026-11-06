@@ -60,7 +60,7 @@ For more information about the approver role, see the
 
 ## Triagers
 
-- [Aditya Kr. Nayak](https://github.com/Adii-45).
+- [Aditya Kr. Nayak](https://github.com/Adii-45)
 
 For more information about the triager role, see the
 [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#triager).
@@ -68,6 +68,7 @@ For more information about the triager role, see the
 ## Emeritus
 
 - [Pablo Baeyens](https://github.com/mx-psi), Maintainer
+- [Severin Neumann](https://github.com/svrnm), Maintainer
 
 [opentelemetry community calendar]:
   https://calendar.google.com/calendar/u/0/embed?src=c_2bf73e3b6b530da4babd444e72b76a6ad893a5c3f43cf40467abc7a9a897f977@group.calendar.google.com
