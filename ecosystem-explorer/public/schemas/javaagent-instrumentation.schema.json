@@ -223,10 +223,24 @@
                           "STRING_ARRAY"
                         ],
                         "type": "string"
+                      },
+                      "semconv_compliance": {
+                        "description": "Semantic convention versions this attribute is compliant with.",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
                       }
                     },
-                    "propertyOrder": ["name", "type"],
+                    "propertyOrder": ["name", "type", "semconv_compliance"],
                     "required": ["name", "type"]
+                  }
+                },
+                "semconv_compliance": {
+                  "description": "Semantic convention versions this metric is compliant with.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
                 }
               },
@@ -236,7 +250,8 @@
                 "instrument",
                 "data_type",
                 "unit",
-                "attributes"
+                "attributes",
+                "semconv_compliance"
               ],
               "required": ["data_type", "description", "instrument", "name", "unit"]
             }
@@ -277,14 +292,28 @@
                           "STRING_ARRAY"
                         ],
                         "type": "string"
+                      },
+                      "semconv_compliance": {
+                        "description": "Semantic convention versions this attribute is compliant with.",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
                       }
                     },
-                    "propertyOrder": ["name", "type"],
+                    "propertyOrder": ["name", "type", "semconv_compliance"],
                     "required": ["name", "type"]
+                  }
+                },
+                "semconv_compliance": {
+                  "description": "Semantic convention versions this span is compliant with.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
                 }
               },
-              "propertyOrder": ["span_kind", "attributes"],
+              "propertyOrder": ["span_kind", "attributes", "semconv_compliance"],
               "required": ["span_kind"]
             }
           }

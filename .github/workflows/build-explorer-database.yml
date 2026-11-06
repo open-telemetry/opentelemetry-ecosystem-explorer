@@ -113,6 +113,12 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
+      - name: Install Weaver
+        run: |
+          WEAVER_VERSION="0.26.1"
+          curl -sSL "https://github.com/open-telemetry/weaver/releases/download/v${WEAVER_VERSION}/weaver-x86_64-unknown-linux-gnu.tar.xz" | sudo tar -xJ -C /usr/local/bin weaver
+          weaver --version
+
       # Always clean and always every ecosystem: the builder's incremental mode reads back its own
       # previous output, which carries silent corruption forward and never sweeps stale version
       # indexes.
