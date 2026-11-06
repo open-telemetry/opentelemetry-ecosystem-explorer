@@ -162,7 +162,12 @@ describe("CollectorExploreLanding", () => {
 
     const stats = screen.getByLabelText("Collector summary statistics");
     expect(within(stats).getAllByText("5")).toHaveLength(2);
-    expect(within(stats).getByText("2")).toBeInTheDocument();
+    expect(within(stats).getByText("6")).toBeInTheDocument();
+
+    expect(screen.getByRole("link", { name: /View OTLP Components/i })).toHaveAttribute(
+      "href",
+      "/collector/components?distribution=otlp"
+    );
 
     expect(screen.getByRole("link", { name: /Official Documentation/i })).toHaveAttribute(
       "href",

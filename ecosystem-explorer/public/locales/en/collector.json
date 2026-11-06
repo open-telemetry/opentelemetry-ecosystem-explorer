@@ -106,7 +106,11 @@
       "label": "Distribution",
       "all": "All Distributions",
       "core": "Core",
-      "contrib": "Contrib"
+      "contrib": "Contrib",
+      "otlp": "OTLP",
+      "k8s": "K8s",
+      "prometheus": "Prometheus",
+      "ebpf-profiler": "eBPF Profiler"
     },
     "stability": {
       "label": "Stability",
@@ -255,6 +259,18 @@
       "k8s": {
         "name": "OpenTelemetry Operator for Kubernetes",
         "desc": "The official Kubernetes Operator designed to manage and provision the OpenTelemetry Collector."
+      },
+      "otlp": {
+        "name": "OpenTelemetry Collector OTLP",
+        "desc": "A minimal distribution that only receives and exports OTLP, with the smallest footprint."
+      },
+      "prometheus": {
+        "name": "OpenTelemetry Collector Prometheus",
+        "desc": "A distribution for embedded Prometheus exporters, bundling the Prometheus receiver."
+      },
+      "ebpf-profiler": {
+        "name": "OpenTelemetry Collector eBPF Profiler",
+        "desc": "A distribution for continuous eBPF-based profiling of hosts and workloads."
       },
       "generic": {
         "desc": "A specialized OpenTelemetry distribution."
@@ -441,6 +457,22 @@
         "contrib": {
           "description": "Community-contributed components. May have varying stability levels. Broader ecosystem coverage.",
           "button": "View Contrib Components"
+        },
+        "otlp": {
+          "description": "Minimal build that only receives and exports OTLP. Smallest footprint.",
+          "button": "View OTLP Components"
+        },
+        "k8s": {
+          "description": "Components bundled for Kubernetes environments, including Kubernetes-aware receivers and processors.",
+          "button": "View K8s Components"
+        },
+        "prometheus": {
+          "description": "Build for embedded Prometheus exporters, centered on the Prometheus receiver.",
+          "button": "View Prometheus Components"
+        },
+        "ebpf-profiler": {
+          "description": "Build for continuous eBPF-based profiling of hosts and workloads.",
+          "button": "View eBPF Profiler Components"
         }
       }
     },

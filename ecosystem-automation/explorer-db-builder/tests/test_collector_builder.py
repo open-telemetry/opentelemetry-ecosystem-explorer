@@ -30,6 +30,7 @@ from semantic_version import Version
 
 def _make_mock_inventory_manager(versions_by_distribution=None, inventories=None):
     manager = MagicMock()
+    manager.load_distribution_manifest.return_value = None
 
     if versions_by_distribution is None:
         versions_by_distribution = {
@@ -319,6 +320,7 @@ class TestRunCollectorBuilder:
                 "id",
                 "name",
                 "distribution",
+                "distributions",
                 "type",
                 "display_name",
                 "description",
@@ -947,3 +949,29 @@ class TestReadmePublishingIsolation:
         v_map = {entry["version"]: entry for entry in versions_data["versions"]}
         assert v_map["0.156.0"]["distributions"] == ["core"]
         assert v_map["0.155.0"]["distributions"] == ["core", "contrib"]
+
+
+class TestManifestDistributions:
+    """Distributions built from opentelemetry-collector-releases take membership from manifests."""
+
+    def test_manifest_membership_overrides_upstream_tags(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        manifests = {
+            "otlp": [{"type": "receiver", "source": "core", "name": "nopreceiver"}],
+            "prometheus": [{"type": "receiver", "source": "contrib", "name": "otlpreceiver"}],
+        }
+        manager.load_distribution_manifest.side_effect = lambda dist, version: manifests.get(dist)
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        assert run_collector_builder(inventory_manager=manager, db_writer=db_writer) == 0
+
+        with open(tmp_path / "collector" / "index.json") as f:
+            components = {c["id"]: c for c in json.load(f)["components"]}
+        assert "otlp" in components["core-nopreceiver"]["distributions"]
+        assert "prometheus" in components["contrib-otlpreceiver"]["distributions"]
+        assert "otlp" not in components["contrib-otlpreceiver"]["distributions"]
+
+        with open(tmp_path / "collector" / "versions-index.json") as f:
+            versions = json.load(f)
+        assert versions["distributions"]["otlp"] == {"latest": "0.156.0"}
+        assert "k8s" not in versions["distributions"]

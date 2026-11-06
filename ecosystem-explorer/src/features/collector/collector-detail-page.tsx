@@ -135,6 +135,33 @@ export function CollectorDetailPage() {
         url: "https://github.com/open-telemetry/opentelemetry-operator",
       };
     }
+    if (lower === "otlp") {
+      return {
+        name: t("detail.distributions.otlp.name"),
+        desc: t("detail.distributions.otlp.desc"),
+        cmdLabel: "# Docker",
+        cmd: "docker pull otel/opentelemetry-collector-otlp:latest",
+        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/tree/main/distributions/otelcol-otlp",
+      };
+    }
+    if (lower === "prometheus") {
+      return {
+        name: t("detail.distributions.prometheus.name"),
+        desc: t("detail.distributions.prometheus.desc"),
+        cmdLabel: "# Docker",
+        cmd: "docker pull otel/opentelemetry-collector-prometheus:latest",
+        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/tree/main/distributions/otelcol-prometheus",
+      };
+    }
+    if (lower === "ebpf-profiler") {
+      return {
+        name: t("detail.distributions.ebpf-profiler.name"),
+        desc: t("detail.distributions.ebpf-profiler.desc"),
+        cmdLabel: "# Docker",
+        cmd: "docker pull otel/opentelemetry-collector-ebpf-profiler:latest",
+        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/tree/main/distributions/otelcol-ebpf-profiler",
+      };
+    }
     return {
       name: distroName,
       desc: t("detail.distributions.generic.desc"),

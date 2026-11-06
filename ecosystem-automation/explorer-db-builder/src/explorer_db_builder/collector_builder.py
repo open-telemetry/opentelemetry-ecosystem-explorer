@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Optional
 
 from collector_watcher.inventory_manager import InventoryManager
+from collector_watcher.type_defs import MANIFEST_DISTRIBUTIONS
 from semantic_version import Version
 
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
@@ -28,6 +29,7 @@ from explorer_db_builder.collector_display_name_audit import (
 )
 from explorer_db_builder.collector_transformer import (
     COMPONENT_TYPES,
+    apply_manifest_distributions,
     make_index_component,
     transform_collector_components,
 )
@@ -205,6 +207,17 @@ def _process_version(
         logger.info("  %s: %d components", distribution, len(components))
         all_components.extend(components)
 
+    # Membership in the releases-repo distributions comes from their manifests, not upstream tags.
+    manifests = {}
+    for distribution in MANIFEST_DISTRIBUTIONS:
+        entries = inventory_manager.load_distribution_manifest(distribution, version)
+        if entries is not None:
+            manifests[distribution] = entries
+            if distribution not in distributions_present:
+                distributions_present.append(distribution)
+    apply_manifest_distributions(all_components, manifests)
+    logger.info("  Manifest distributions: %s", ", ".join(manifests) or "none")
+
     logger.info("  Total: %d components", len(all_components))
 
     if not all_components:
@@ -315,10 +328,12 @@ def run_collector_builder(
 
             # Active catalog: components across each distribution's latest release.
             missing = find_missing_display_names(active_catalog_components)
+            # Only the scanned repositories: manifest distributions reuse their components.
+            repo_latest = {d: v for d, v in distribution_latest.items() if d in DISTRIBUTIONS}
             audit_version = (
                 f"v{processed_versions[0]}"
-                if len(set(distribution_latest.values())) <= 1
-                else ", ".join(f"{d}: v{v}" for d, v in sorted(distribution_latest.items()))
+                if len(set(repo_latest.values())) <= 1
+                else ", ".join(f"{d}: v{v}" for d, v in sorted(repo_latest.items()))
             )
             write_missing_display_name_report(audit_report_path, audit_version, missing)
             logger.info(

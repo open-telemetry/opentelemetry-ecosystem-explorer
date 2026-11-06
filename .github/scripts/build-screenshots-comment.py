@@ -47,10 +47,8 @@ PAGES = [
 
 
 def theme_table(base_url: str, slug: str, theme: str) -> str:
-    cells = " | ".join(
-        f"![{slug} {vp} {theme}]({base_url}/{vp}-{theme}-{slug}.png)" for vp in VIEWPORTS
-    )
-    return "| Desktop | Tablet | Mobile |\n|---|---|---|\n" f"| {cells} |"
+    cells = " | ".join(f"![{slug} {vp} {theme}]({base_url}/{vp}-{theme}-{slug}.png)" for vp in VIEWPORTS)
+    return f"| Desktop | Tablet | Mobile |\n|---|---|---|\n| {cells} |"
 
 
 def page_section(base_url: str, label: str, slug: str) -> str:
@@ -102,13 +100,8 @@ def render_diff_section(base_url: str, report_path: Path) -> str:
     for name in missing:
         rows.append(f"| `{name}` | missing | — | — |")
 
-    summary_line = (
-        f"{len(over_budget)} over budget, {len(new_files)} new, {len(missing)} missing"
-    )
-    table = (
-        "| File | Changed pixels | Ratio | Diff |\n"
-        "|---|---|---|---|\n" + "\n".join(rows)
-    )
+    summary_line = f"{len(over_budget)} over budget, {len(new_files)} new, {len(missing)} missing"
+    table = "| File | Changed pixels | Ratio | Diff |\n|---|---|---|---|\n" + "\n".join(rows)
     return (
         "\n\n<details>\n"
         f"<summary><strong>Visual diffs vs main</strong> ({summary_line})</summary>\n\n"
@@ -140,17 +133,9 @@ def main() -> None:
     sections = "\n\n".join(page_section(base_url, label, slug) for label, slug in PAGES)
     diff_section = render_diff_section(base_url, diff_report_path) if diff_report_path else ""
 
-    footer = (
-        f"_Captured from [`{short_sha}`]({commit_url}) on `{head_ref}` "
-        f"· [workflow run]({run_url})"
-        f"· {timestamp}_"
-    )
+    footer = f"_Captured from [`{short_sha}`]({commit_url}) on `{head_ref}` · [workflow run]({run_url})· {timestamp}_"
 
-    body = (
-        f"<!-- screenshots-bot -->\n## PR Screenshots\n\n"
-        f"{sections}"
-        f"{diff_section}\n\n---\n{footer}\n"
-    )
+    body = f"<!-- screenshots-bot -->\n## PR Screenshots\n\n{sections}{diff_section}\n\n---\n{footer}\n"
 
     output_path.write_text(body)
 
