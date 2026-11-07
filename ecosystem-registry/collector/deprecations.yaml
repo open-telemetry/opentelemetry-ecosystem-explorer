@@ -74,3 +74,10 @@ contrib:
     distributions:
     - contrib
     subtype: null
+  - name: signalfxreceiver
+    last_version: v0.164.1
+    deprecated_in_version: v0.165.0
+    source_repo: opentelemetry-collector-contrib
+    distributions:
+    - contrib
+    subtype: null
