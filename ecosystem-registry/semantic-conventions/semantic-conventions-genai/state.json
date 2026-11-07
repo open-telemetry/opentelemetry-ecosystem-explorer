@@ -9,7 +9,7 @@
       "reconcile": [],
       "revisions": {
         "semantic-conventions-genai@ebe3d1fb9fdd..": {
-          "commit": "58daeb9da6d24757c51b51ec044aecfb3c0e2844",
+          "commit": "e6658f14c9d9ea0760825f029cb82e7673f48fab",
           "kind": "range",
           "source": "semantic-conventions-genai",
           "status": "pending"
