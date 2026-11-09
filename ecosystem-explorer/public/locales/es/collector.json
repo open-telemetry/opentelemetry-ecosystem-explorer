@@ -106,7 +106,11 @@
       "label": "Distribución",
       "all": "Todas las distribuciones",
       "core": "Core",
-      "contrib": "Contrib"
+      "contrib": "Contrib",
+      "otlp": "OTLP",
+      "k8s": "K8s",
+      "prometheus": "Prometheus",
+      "ebpf-profiler": "eBPF Profiler"
     },
     "stability": {
       "label": "Estabilidad",
@@ -255,6 +259,18 @@
       "k8s": {
         "name": "OpenTelemetry Operator para Kubernetes",
         "desc": "El Operador oficial de Kubernetes diseñado para gestionar y proveer el OpenTelemetry Collector."
+      },
+      "otlp": {
+        "name": "OpenTelemetry Collector OTLP",
+        "desc": "Una distribución mínima que solo recibe y exporta OTLP, con la menor huella posible."
+      },
+      "prometheus": {
+        "name": "OpenTelemetry Collector Prometheus",
+        "desc": "Una distribución para exportadores de Prometheus integrados, que incluye el receptor de Prometheus."
+      },
+      "ebpf-profiler": {
+        "name": "OpenTelemetry Collector eBPF Profiler",
+        "desc": "Una distribución para el perfilado continuo basado en eBPF de hosts y cargas de trabajo."
       },
       "generic": {
         "desc": "Una distribución especializada de OpenTelemetry."
@@ -441,6 +457,22 @@
         "contrib": {
           "description": "Componentes aportados por la comunidad. Pueden tener distintos niveles de estabilidad. Mayor cobertura del ecosistema.",
           "button": "Ver componentes Contrib"
+        },
+        "otlp": {
+          "description": "Compilación mínima que solo recibe y exporta OTLP. La menor huella posible.",
+          "button": "Ver componentes OTLP"
+        },
+        "k8s": {
+          "description": "Componentes incluidos para entornos Kubernetes, con receptores y procesadores compatibles con Kubernetes.",
+          "button": "Ver componentes de K8s"
+        },
+        "prometheus": {
+          "description": "Compilación para exportadores de Prometheus integrados, centrada en el receptor de Prometheus.",
+          "button": "Ver componentes de Prometheus"
+        },
+        "ebpf-profiler": {
+          "description": "Compilación para el perfilado continuo basado en eBPF de hosts y cargas de trabajo.",
+          "button": "Ver componentes de eBPF Profiler"
         }
       }
     },

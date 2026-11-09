@@ -17,7 +17,7 @@
       "type": "processor"
     },
     {
-      "component_hash": "f6e970092904",
+      "component_hash": "b571d7bfe347",
       "deprecated_in_version": "0.157.0",
       "description": null,
       "display_name": "JMX Receiver",
@@ -38,6 +38,9 @@
       "description": null,
       "display_name": "Kafka Topics Observer Extension",
       "distribution": "contrib",
+      "distributions": [
+        "contrib"
+      ],
       "has_readme": true,
       "id": "contrib-kafkatopicsobserver",
       "last_version": "0.158.0",
@@ -54,6 +57,9 @@
       "description": null,
       "display_name": "Mezmo Exporter",
       "distribution": "contrib",
+      "distributions": [
+        "contrib"
+      ],
       "has_readme": true,
       "id": "contrib-mezmoexporter",
       "last_version": "0.160.0",
@@ -70,6 +76,9 @@
       "description": null,
       "display_name": "Wavefront Receiver",
       "distribution": "contrib",
+      "distributions": [
+        "contrib"
+      ],
       "has_readme": true,
       "id": "contrib-wavefrontreceiver",
       "last_version": "0.161.0",
@@ -81,7 +90,7 @@
       "type": "receiver"
     },
     {
-      "component_hash": "5a07ac237fdd",
+      "component_hash": "07b2217f3c73",
       "deprecated_in_version": "0.159.0",
       "description": null,
       "display_name": null,
@@ -97,7 +106,7 @@
       "type": "connector"
     },
     {
-      "component_hash": "be39518d8b6a",
+      "component_hash": "bb7814bebbe9",
       "deprecated_in_version": "0.159.0",
       "description": null,
       "display_name": null,
@@ -113,7 +122,7 @@
       "type": "exporter"
     },
     {
-      "component_hash": "a061ec4c6ec5",
+      "component_hash": "f6e0a30ed5a2",
       "deprecated_in_version": "0.159.0",
       "description": null,
       "display_name": null,
@@ -129,7 +138,7 @@
       "type": "extension"
     },
     {
-      "component_hash": "729a97839957",
+      "component_hash": "6ed4153aa1b8",
       "deprecated_in_version": "0.159.0",
       "description": null,
       "display_name": null,
@@ -145,7 +154,7 @@
       "type": "processor"
     },
     {
-      "component_hash": "1bb2e858e266",
+      "component_hash": "d725fcfb06c4",
       "deprecated_in_version": "0.159.0",
       "description": null,
       "display_name": null,

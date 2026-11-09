@@ -17,6 +17,8 @@
 import logging
 from typing import Any
 
+from collector_watcher.type_defs import MANIFEST_DISTRIBUTIONS
+
 logger = logging.getLogger(__name__)
 
 COMPONENT_TYPES = ["connector", "exporter", "extension", "processor", "receiver"]
@@ -140,6 +142,38 @@ def transform_collector_components(
     return results
 
 
+def apply_manifest_distributions(
+    components: list[dict[str, Any]],
+    manifests: dict[str, list[dict[str, str]]],
+) -> None:
+    """Set manifest-backed distribution membership on ``components``, in place.
+
+    Upstream ``status.distributions`` only reflects what component authors remembered to tag,
+    so the builder ``manifest.yaml`` in opentelemetry-collector-releases is authoritative for
+    every distribution it defines (core and contrib included, which ship components from both
+    repositories): any upstream tag for one of them is dropped and replaced by what the
+    manifest lists. A distribution with no manifest for this version
+    (not yet released, or not yet recorded) contributes nothing, rather than keeping a stale tag.
+
+    Args:
+        components: Canonical component dicts for one version, from
+            ``transform_collector_components``.
+        manifests: ``{distribution: [{type, source, name}, ...]}`` for the distributions that
+            have a manifest at this version; ``source`` is the core/contrib repository.
+    """
+    shipped = {
+        distribution: {(entry["source"], entry["type"], entry["name"]) for entry in entries}
+        for distribution, entries in manifests.items()
+    }
+    for component in components:
+        key = (component["distribution"], component["type"], component["name"])
+        status = dict(component.get("status") or {})
+        tags = {d for d in status.get("distributions") or [] if d not in MANIFEST_DISTRIBUTIONS}
+        tags.update(distribution for distribution, members in shipped.items() if key in members)
+        status["distributions"] = sorted(tags)
+        component["status"] = status
+
+
 def make_index_component(component: dict[str, Any]) -> dict[str, Any]:
     """Extract lightweight metadata for use in the ecosystem index.json.
 
@@ -150,7 +184,7 @@ def make_index_component(component: dict[str, Any]) -> dict[str, Any]:
         Minimal dict suitable for the index components list.
     """
     stability_raw = component.get("status", {}).get("stability")
-    return {
+    entry = {
         "id": component["id"],
         "name": component["name"],
         "distribution": component["distribution"],
@@ -161,3 +195,9 @@ def make_index_component(component: dict[str, Any]) -> dict[str, Any]:
         "signals": _derive_signals(stability_raw),
         "has_readme": bool(component.get("markdown_hash")),
     }
+    # Every distribution that ships this component. The list views filter on it, so it belongs in
+    # the slim shape; omitted when unknown so they fall back to the source repository.
+    distributions = component.get("status", {}).get("distributions")
+    if distributions is not None:
+        entry["distributions"] = sorted(distributions)
+    return entry
