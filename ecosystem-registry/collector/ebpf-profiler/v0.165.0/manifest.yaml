@@ -1,0 +1,54 @@
+distribution: ebpf-profiler
+version: 0.165.0
+repository: opentelemetry-collector-releases
+components:
+- type: exporter
+  source: contrib
+  name: fileexporter
+- type: exporter
+  source: core
+  name: debugexporter
+- type: exporter
+  source: core
+  name: nopexporter
+- type: exporter
+  source: core
+  name: otlpexporter
+- type: exporter
+  source: core
+  name: otlphttpexporter
+- type: extension
+  source: contrib
+  name: healthcheckextension
+- type: extension
+  source: contrib
+  name: opampextension
+- type: extension
+  source: contrib
+  name: pprofextension
+- type: processor
+  source: contrib
+  name: k8sattributesprocessor
+- type: processor
+  source: contrib
+  name: resourcedetectionprocessor
+- type: processor
+  source: contrib
+  name: resourceprocessor
+- type: processor
+  source: contrib
+  name: transformprocessor
+- type: processor
+  source: core
+  name: batchprocessor
+- type: processor
+  source: core
+  name: memorylimiterprocessor
+- type: processor
+  source: core
+  name: queuebatchprocessor
+- type: receiver
+  source: core
+  name: nopreceiver
+external:
+- go.opentelemetry.io/ebpf-profiler
