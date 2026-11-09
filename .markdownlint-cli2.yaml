@@ -8,6 +8,7 @@ ignores:
   - "ecosystem-registry/**"
   - "**/tmp_repos/**"
   - "**/node_modules/**"
+  - "**/.venv/**"
   - ".claude/**"
   - "ecosystem-explorer/public/data/**"
   - "ecosystem-explorer/dist/**"

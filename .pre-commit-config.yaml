@@ -1,30 +1,40 @@
+# Every hook runs the tool version pinned in uv.lock or bun.lock, so local results match CI.
+# Run `uv sync` and `bun install` first.
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 18ba2d02dcafd1cc608bd83eff6c17fb0108ca71 # v0.9.1
+  - repo: local
     hooks:
       - id: ruff
-        args: [--fix]
+        name: ruff
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+        files: ^(ecosystem-automation|scripts)/
+
       - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+        files: ^(ecosystem-automation|scripts)/
 
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: 1d349044b9624661f5a0a7e13e0ca9801752022a # v0.16.0
-    hooks:
+      # --no-globs lints only the staged files instead of adding the config's `**/*.md`.
       - id: markdownlint-cli2
-        args: ["--fix"]
+        name: markdownlint-cli2
+        entry: bunx markdownlint-cli2 --no-globs --fix
+        language: system
+        types: [markdown]
 
-  - repo: local
-    hooks:
-      - id: prettier
-        name: prettier
-        entry: bunx prettier --write
+      # Paths in vite.config.ts `fmt.ignorePatterns` are skipped even when passed explicitly.
+      - id: oxfmt
+        name: oxfmt (vp fmt)
+        entry: bunx vp fmt --no-error-on-unmatched-pattern
         language: system
         files: \.(js|mjs|ts|tsx|css|json|yaml|yml|md)$
-        exclude: ^ecosystem-explorer/public/data/
+        # vp fmt starts its own worker pool; parallel batches from pre-commit exhaust process limits.
+        require_serial: true
 
-  - repo: local
-    hooks:
-      - id: eslint-ecosystem-explorer
-        name: eslint (ecosystem-explorer)
+      - id: lint-ecosystem-explorer
+        name: oxlint (ecosystem-explorer)
         entry: bash -c 'cd ecosystem-explorer && bun run lint'
         language: system
         pass_filenames: false
