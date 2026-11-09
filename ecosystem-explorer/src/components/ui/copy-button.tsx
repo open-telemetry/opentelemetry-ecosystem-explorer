@@ -16,6 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Copy } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/lib/telemetry";
 
 interface CopyButtonProps {
   text: string;
@@ -57,6 +58,11 @@ export function CopyButton({
     navigator.clipboard.writeText(text).then(
       () => {
         setCopied(true);
+        trackEvent("copy_snippet", {
+          label: label ?? "",
+          path: window.location.pathname,
+          length: String(text.length),
+        });
         onCopy?.();
         if (timeoutRef.current !== null) {
           clearTimeout(timeoutRef.current);
@@ -68,11 +74,13 @@ export function CopyButton({
       },
       () => {
         // Clipboard write rejected (permissions, insecure context). Stay silent.
-      }
+      },
     );
   };
 
-  const visibleLabel = copied ? (copiedLabel ?? t("copied")) : (label ?? t("copy"));
+  const visibleLabel = copied
+    ? (copiedLabel ?? t("copied"))
+    : (label ?? t("copy"));
 
   return (
     <button
