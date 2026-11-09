@@ -49,7 +49,10 @@ non-negotiable rules:
 - **Inventory layout.** Versions are written under
   `ecosystem-registry/{ecosystem}/[{distribution}/]v{version}/`, using semantic versioning. The
   `{distribution}` segment applies only where an ecosystem ships multiple distributions: collector
-  (`collector/{core,contrib}/v…`) and Java (`java/javaagent/v…`). Configuration (`configuration/v…`)
+  (`collector/{core,contrib}/v…`) and Java (`java/javaagent/v…`). The collector's `otlp`, `k8s`,
+  `prometheus` and `ebpf-profiler` distributions are the exception within collector: each version
+  holds only a `manifest.yaml` naming the core/contrib components that distribution ships
+  (from opentelemetry-collector-releases), not copies of component metadata. Configuration (`configuration/v…`)
   and .NET (`dotnet/v…`) have no distribution segment. JavaScript and Python are exceptions to the
   per-version-directory rule: js-contrib and python-contrib packages version independently (Python
   via a hybrid lockstep/independent model — see

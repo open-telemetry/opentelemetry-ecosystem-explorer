@@ -21,8 +21,10 @@ import sys
 from semantic_version import Version
 
 from collector_watcher.collector_sync import CollectorSync
+from collector_watcher.distribution_manifest import DistributionManifestSync
 from collector_watcher.inventory_manager import InventoryManager
 from collector_watcher.repository_manager import RepositoryManager
+from collector_watcher.type_defs import MANIFEST_DISTRIBUTIONS
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +64,8 @@ def main():
     parser.add_argument(
         "--distribution",
         type=str,
-        choices=["core", "contrib"],
-        help="Specific distribution to backfill (core or contrib). "
+        choices=["core", "contrib", *MANIFEST_DISTRIBUTIONS],
+        help="Specific distribution to backfill (core, contrib, or a releases-repo distribution). "
         "If not specified, all distributions will be processed.",
     )
     parser.add_argument(
@@ -101,6 +103,7 @@ def main():
         logger.info("Setting up repositories...")
         manager = RepositoryManager()
         paths = manager.setup_all_repositories()
+        releases_path = manager.setup_repository("releases")
         logger.info("Repositories ready.")
         logger.info("")
 
@@ -116,6 +119,11 @@ def main():
             repos=dist_config,
             inventory_manager=inventory_manager,
         )
+
+        manifest_sync = DistributionManifestSync(str(releases_path), inventory_manager)
+        # core and contrib are both scanned and manifest-backed; the rest are manifest-only.
+        manifest_dists = [args.distribution] if args.distribution else None
+        scan_requested = not args.distribution or args.distribution in dist_config
 
         if args.backfill:
             versions_by_dist = None
@@ -138,9 +146,23 @@ def main():
             elif args.distribution:
                 versions_by_dist = {args.distribution: None}
 
-            collector_sync.backfill(versions_by_dist, prune_unlisted=args.prune_unlisted)
+            if scan_requested:
+                collector_sync.backfill(versions_by_dist, prune_unlisted=args.prune_unlisted)
+            manifest_versions = version_list if args.versions else None
+            if args.prune_unlisted:
+                # core and contrib were pruned by collector_sync.backfill above; the rest have
+                # no source scan, so prune them here, before their manifests are re-synced.
+                for dist in manifest_dists or MANIFEST_DISTRIBUTIONS:
+                    if dist in dist_config:
+                        continue
+                    removed = inventory_manager.prune_release_versions_not_in(dist, version_list)
+                    if removed:
+                        logger.info("Pruned %d unlisted release version(s) from %s", removed, dist)
+            manifest_sync.sync(manifest_dists, manifest_versions, overwrite=True)
         else:
             collector_sync.sync()
+            # After the scan, so releases just recorded for core/contrib are picked up too.
+            manifest_sync.sync()
 
     except Exception as e:
         logger.error("Error: %s", e, exc_info=True)

@@ -208,14 +208,12 @@ class CollectorSync:
         )
 
         # Readme discovery/save runs after the critical inventory write, not
-        # before: save_versioned_inventory() is what version_exists() treats
-        # as the "this version is tracked" signal, since it just checks
-        # whether the version directory exists. If readme saving (which also
-        # mkdirs that directory as a side effect of writing into it) ran
-        # first and the process crashed before save_versioned_inventory
-        # completed, version_exists() would incorrectly report the version
-        # as already tracked despite zero real component data ever being
-        # written - causing process_latest_release() to skip it forever.
+        # before: save_versioned_inventory() writes the component files that
+        # version_exists() treats as the "this version is tracked" signal.
+        # Readme saving mkdirs the version directory as a side effect, so it
+        # must not be what marks the version tracked if the process crashed
+        # before save_versioned_inventory completed - process_latest_release()
+        # would skip it forever.
         self._save_component_readmes(distribution, version, components)
         logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
 
@@ -479,7 +477,7 @@ class CollectorSync:
             Summary of versions that were backfilled
         """
         if versions is None:
-            versions = self.inventory_manager.list_versions(distribution)
+            versions = self.inventory_manager.list_inventory_versions(distribution)
 
         if not versions:
             logger.info("No versions to backfill for %s", distribution)
