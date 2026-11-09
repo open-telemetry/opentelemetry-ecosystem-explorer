@@ -824,3 +824,27 @@ def test_prune_release_versions_not_in_covers_manifest_only_versions(temp_invent
     assert manager.distribution_manifest_exists("otlp", keep)
     assert not manager.distribution_manifest_exists("otlp", drop)
     assert manager.distribution_manifest_exists("otlp", snapshot)
+
+
+def test_failed_manifest_write_leaves_no_record_and_keeps_previous(temp_inventory_dir, monkeypatch):
+    manager = InventoryManager(str(temp_inventory_dir))
+    version = Version("0.162.0")
+    releases = "opentelemetry-collector-releases"
+    component = {"type": "receiver", "source": "core", "name": "otlpreceiver"}
+
+    def failing_replace(*args, **kwargs):
+        raise OSError("disk full")
+
+    with monkeypatch.context() as m:
+        m.setattr("watcher_common.fileio.os.replace", failing_replace)
+        with pytest.raises(OSError):
+            manager.save_distribution_manifest("otlp", version, releases, [component], [])
+    assert not manager.distribution_manifest_exists("otlp", version)
+
+    manager.save_distribution_manifest("otlp", version, releases, [component], [])
+    with monkeypatch.context() as m:
+        m.setattr("watcher_common.fileio.os.replace", failing_replace)
+        with pytest.raises(OSError):
+            manager.save_distribution_manifest("otlp", version, releases, [], [])
+    assert manager.load_distribution_manifest("otlp", version) == [component]
+    assert not list(manager.get_version_dir("otlp", version).glob(".*.tmp"))

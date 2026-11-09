@@ -22,6 +22,7 @@ from typing import Any
 
 import yaml
 from semantic_version import Version
+from watcher_common.fileio import atomic_write
 from watcher_common.readme_store import (
     ReadmeStore,
     parse_readme_filename,
@@ -217,8 +218,6 @@ class InventoryManager:
             components: ``{type, source, name}`` entries, already sorted
             external: Module paths shipped from outside core/contrib (no registry record)
         """
-        version_dir = self.get_version_dir(distribution, version)
-        version_dir.mkdir(parents=True, exist_ok=True)
         data = {
             "distribution": distribution,
             "version": str(version),
@@ -226,8 +225,12 @@ class InventoryManager:
             "components": components,
             "external": external,
         }
-        with open(version_dir / self.DISTRIBUTION_MANIFEST_FILE, "w", encoding="utf-8") as f:
-            yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        # distribution_manifest_exists() is the sync completion signal, so the file must appear
+        # only once complete; a failed overwrite keeps the previous record.
+        content = yaml.dump(data, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        atomic_write(
+            self.get_version_dir(distribution, version) / self.DISTRIBUTION_MANIFEST_FILE, content.encode("utf-8")
+        )
 
     def load_distribution_manifest(
         self, distribution: ManifestDistributionName, version: Version
