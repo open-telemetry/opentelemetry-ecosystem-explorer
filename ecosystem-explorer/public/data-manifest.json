@@ -1,11 +1,11 @@
 {
   "ecosystems": {
     "collector": {
-      "release_tag": "data-collector-f0dcda2e94d5",
+      "release_tag": "data-collector-3323822654be",
       "asset": "collector.tar.gz",
-      "content_digest": "f0dcda2e94d5dd254d5a10ea15d7dd779755d84d3f738ec2741f6f54bd5fc102",
-      "archive_sha256": "1f0f0f5cf2ef52589ba5db5fe0cfcfe2915b9006da1d1cfc53e4df6ecbb2f83a",
-      "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
+      "content_digest": "3323822654be45f38f869cb4f9ffbb4c6bad0377283e06a3dc00e86971d9e7c0",
+      "archive_sha256": "172211afdd626c20dfdfd3eb8e9f2924bcd9519afcdf6e827eda4d63a93ca34b",
+      "registry_commit": "78f8d58a3205e05c5ba0794f226d6b0bd19bce99"
     },
     "configuration": {
       "release_tag": "data-configuration-ff3eb0ebf3a6",

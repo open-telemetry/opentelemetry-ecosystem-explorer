@@ -1,0 +1,146 @@
+## How It Works
+1. The user configures the log deduplication processor in the desired logs pipeline.
+2. If the processor does not provide `conditions`, all logs are considered eligible for aggregation. If the processor does have configured `conditions`, all log entries where at least one of the `conditions` evaluates `true` are considered eligible for aggregation. Eligible identical logs are aggregated over the configured `interval`. Logs are considered identical if they have the same body, resource attributes, severity, and log attributes. Logs that do not match any condition in `conditions` are passed onward in the pipeline without aggregating.
+3. After the interval, the processor emits a single log with the count of logs that were deduplicated. The emitted log will have the same body, resource attributes, severity, and log attributes as the original log. The emitted log will also have the following new attributes:
+
+    - `log_count`: The count of logs that were deduplicated over the interval. The name of the attribute is configurable via the `log_count_attribute` parameter.
+    - `first_observed_timestamp`: The timestamp of the first log that was observed during the aggregation interval.
+    - `last_observed_timestamp`: The timestamp of the last log that was observed during the aggregation interval.
+    - `first_event_timestamp`: The `Timestamp` of the first log received during the aggregation interval (only present when `timestamp_mode` is `aggregated`).
+    - `last_event_timestamp`: The `Timestamp` of the last log received during the aggregation interval.
+
+### Timestamp resolution
+
+The timestamps on the emitted log are resolved as follows:
+
+| Field | Source |
+| --- | --- |
+| `ObservedTimestamp` | When the processor received the first log in the aggregation window (same as `first_observed_timestamp`). |
+| `Timestamp` | Depends on `timestamp_mode`. `aggregated` (default): when the aggregated log was emitted. `preserved`: the `Timestamp` of the first log received in the window, or when the aggregated log was emitted if that log has no `Timestamp`. |
+| `first_observed_timestamp` / `last_observed_timestamp` | When the processor received the first and last log in the window. Always present. |
+| `first_event_timestamp` / `last_event_timestamp` | The `Timestamp` of the first and last log received in the window. Omitted when the corresponding log has no `Timestamp` (e.g. a `filelog` receiver without a timestamp parser). |
+
+"First" and "last" follow arrival order, not chronological order.
+
+Using `preserved` is recommended when accurate time-based analysis and alerting are required, as it maintains the original event timestamp rather than the aggregation time. It also improves interoperability with downstream systems that rely on correct temporal ordering. See [Tradeoffs and Considerations](https://opentelemetry.io/blog/2026/log-deduplication-processor/#tradeoffs-and-considerations) for guidance on when to avoid deduplication entirely, such as for compliance-critical or audit logs.
+
+## Configuration
+| Field               | Type     | Default     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---                 | ---      | ---         | ---                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| interval            | duration | `10s`       | The interval at which logs are aggregated. The counter will reset after each interval.                                                                                                                                                                                                                                                                                                                                                                  |
+| conditions          | []string | `[]`        | A slice of [OTTL] expressions used to evaluate which log records are deduped.  All paths in the [log context] are available to reference. Paths should be prefixed with their context name (e.g. `log.attributes["foo"]`, `resource.attributes["bar"]`). The un-prefixed form (e.g. `attributes["foo"]`) is deprecated; if used, the processor will log the rewritten conditions at startup so they can be migrated. All [converters] are available to use.                                                                                                                                                                                                                                                                        |
+| log_count_attribute | string   | `log_count` | The name of the count attribute of deduplicated logs that will be added to the emitted aggregated log.                                                                                                                                                                                                                                                                                                                                                  |
+| include_fields                | []string | `[]`        | Fields to include in duplication matching. Fields can be from the log `body` or `attributes`.  Nested fields must be `.` delimited. If a field contains a `.` it can be escaped by using a `\`.  This option is **mutually exclusive** with `exclude_fields`. See [example config](#example-config-with-deduplication-key).
+| timezone            | string   | `UTC`       | The timezone of the timestamp attributes (`first_observed_timestamp`, `last_observed_timestamp`, `first_event_timestamp`, and `last_event_timestamp`) on the emitted aggregated log. The available locations depend on the local IANA Time Zone database. [This page](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) contains many examples, such as `America/New_York`.                                                                                                                               |
+| timestamp_mode      | string   | `aggregated`  | Controls how the `Timestamp` field of the emitted log is set. `aggregated`: set to when the aggregated log was emitted. `preserved`: preserved from the first log received in the aggregation window. In `aggregated` mode, `first_event_timestamp` is added to record the original log's timestamp; in `preserved` mode, `first_event_timestamp` is omitted as it is identical to `Timestamp`. In all modes, `last_event_timestamp` records the last received log's timestamp. See [Timestamp resolution](#timestamp-resolution). |
+| exclude_fields      | []string | `[]`        | Fields to exclude from duplication matching. Fields can be excluded from the log `body` or `attributes`. These fields will not be present in the emitted aggregated log. Nested fields must be `.` delimited. This option is `mutually exclusive` with `include_fields`. If a field contains a `.` it can be escaped by using a `\` see [example config](#example-config-with-excluded-fields).<br><br>**Note**: The entire `body` cannot be excluded. If the body is a map then fields within it can be excluded. |
+| metadata_keys       | []string | `[]`        | A list of client metadata keys (e.g. gRPC/HTTP request headers such as `x-scope-orgid`) used to partition log aggregation. Logs arriving with different values for these keys are aggregated independently and exported with a context that preserves the original metadata, allowing downstream extensions (e.g. `headers_setter`) to route them correctly. Entries are case-insensitive and duplicates are rejected. When empty (default), all logs share a single aggregation bucket. |
+| metadata_cardinality_limit | uint32 | `0` | Maximum number of distinct metadata combinations that can be tracked simultaneously. `0` means no limit (a warning is logged at startup when `metadata_keys` is set with no limit, since memory growth is unbounded). When the limit is reached, new combinations are rejected with a permanent error. |
+
+[OTTL]: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/v0.109.0/pkg/ottl#readme
+[converters]: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.109.0/pkg/ottl/ottlfuncs/README.md#converters
+[log context]: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.109.0/pkg/ottl/contexts/ottllog/README.md
+
+> **Note:** The processor type has been renamed from `logdedup` to `log_dedup`. The old name is still accepted but will log a deprecation warning.
+
+### Example Config
+The following config is an example configuration for the log deduplication processor. It is configured with an aggregation interval of `60 seconds`, a timezone of `America/Los_Angeles`, and a log count attribute of `dedup_count`. It has no fields being excluded.
+```yaml
+receivers:
+    file_log:
+        include: [./example/*.log]
+processors:
+    log_dedup:
+        interval: 60s
+        log_count_attribute: dedup_count
+        timezone: 'America/Los_Angeles'
+exporters:
+    googlecloud:
+
+service:
+    pipelines:
+        logs:
+            receivers: [file_log]
+            processors: [log_dedup]
+            exporters: [googlecloud]
+```
+
+### Example Config with Excluded Fields
+The following config is an example configuration that excludes the following fields from being considered when searching for duplicate logs:
+
+- `timestamp` field from the body
+- `host.name` field from attributes
+- `ip` nested attribute inside a map attribute named `src`
+
+```yaml
+receivers:
+    file_log:
+        include: [./example/*.log]
+processors:
+    log_dedup:
+        exclude_fields:
+          - body.timestamp
+          - attributes.host\.name
+          - attributes.src.ip
+exporters:
+    googlecloud:
+
+service:
+    pipelines:
+        logs:
+            receivers: [file_log]
+            processors: [log_dedup]
+            exporters: [googlecloud]
+```
+
+### Example Config with Include Fields
+This example demonstrates a configuration where deduplication is applied to telemetry based on specified fields. Only logs with the same values for the fields defined in the `include_fields` parameter are deduplicated:
+
+```yaml
+receivers:
+    file_log:
+        include: [./example/*.log]
+processors:
+    log_dedup:
+        include_fields:
+          - attributes.id
+          - attributes.name
+        interval: 60s
+        log_count_attribute: dedup_count
+        timezone: 'America/Los_Angeles'
+exporters:
+    googlecloud:
+
+service:
+    pipelines:
+        logs:
+            receivers: [file_log]
+            processors: [log_dedup]
+            exporters: [googlecloud]
+```
+
+### Example Config with Conditions
+The following config is an example configuration that only performs the deduping process on telemetry where Attribute `ID` equals `1` OR where Resource Attribute `service.name` equals `my-service`:
+
+```yaml
+receivers:
+    file_log:
+        include: [./example/*.log]
+processors:
+    log_dedup:
+        conditions:
+            - log.attributes["ID"] == 1
+            - resource.attributes["service.name"] == "my-service"
+        interval: 60s
+        log_count_attribute: dedup_count
+        timezone: 'America/Los_Angeles'
+exporters:
+    googlecloud:
+
+service:
+    pipelines:
+        logs:
+            receivers: [file_log]
+            processors: [log_dedup]
+            exporters: [googlecloud]
+```

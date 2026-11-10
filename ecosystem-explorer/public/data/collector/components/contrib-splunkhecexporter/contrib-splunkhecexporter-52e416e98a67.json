@@ -1,0 +1,69 @@
+{
+  "description": null,
+  "display_name": "Splunk HTTP Event Collector (HEC) Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-splunkhecexporter",
+  "markdown_hash": "ba541eaca44b",
+  "name": "splunkhecexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "exporter_dropped_unsupported_profile_records": {
+        "description": "Number of eBPF profile records dropped during conversion because their measurement type is unsupported or ambiguous.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{record}"
+      },
+      "exporter_splunkhec_heartbeats_failed": {
+        "description": "Number of heartbeats failed by the Splunk HEC exporter.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "exporter_splunkhec_heartbeats_sent": {
+        "description": "Number of heartbeats sent by the Splunk HEC exporter.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "exporter"
+}

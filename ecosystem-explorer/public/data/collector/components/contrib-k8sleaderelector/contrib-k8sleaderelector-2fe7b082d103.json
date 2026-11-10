@@ -1,0 +1,32 @@
+{
+  "description": "This extension enables OpenTelemetry components to run in HA mode across a Kubernetes cluster. The component that owns the lease becomes the leader and becomes the active instance.",
+  "display_name": "Kubernetes Leader Elector Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-k8sleaderelector",
+  "markdown_hash": "ccc89da038f1",
+  "name": "k8sleaderelector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "rakesh-garimella",
+        "jinja2"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

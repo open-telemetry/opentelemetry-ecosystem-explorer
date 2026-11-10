@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Azure Authenticator Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-azureauthextension",
+  "markdown_hash": "d14d912e59e6",
+  "name": "azureauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "constanca-m",
+        "dyl10s"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

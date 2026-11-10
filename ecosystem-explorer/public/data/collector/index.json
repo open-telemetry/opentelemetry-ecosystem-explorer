@@ -435,7 +435,7 @@
         "metrics",
         "logs"
       ],
-      "stability": "unmaintained",
+      "stability": "beta",
       "type": "exporter"
     },
     {
@@ -1155,7 +1155,7 @@
       "type": "processor"
     },
     {
-      "description": "This receiver uses Flink's [REST API](https://nightlies.apache.org/flink/flink-docs-release-1.14/docs/ops/metrics/#rest-api-integration) to collect Jobmanager, Taskmanager, Job, Task and Operator metrics.",
+      "description": "This receiver uses Flink's [REST API](https://nightlies.apache.org/flink/flink-docs-stable/docs/ops/metrics/#rest-api-integration) to collect Jobmanager, Taskmanager, Job, Task and Operator metrics.",
       "display_name": "FlinkMetrics Receiver",
       "distribution": "contrib",
       "has_readme": true,
@@ -2841,20 +2841,6 @@
       "type": "exporter"
     },
     {
-      "description": null,
-      "display_name": "SignalFx Receiver",
-      "distribution": "contrib",
-      "has_readme": true,
-      "id": "contrib-signalfxreceiver",
-      "name": "signalfxreceiver",
-      "signals": [
-        "metrics",
-        "logs"
-      ],
-      "stability": "deprecated",
-      "type": "receiver"
-    },
-    {
       "description": "Signal to metrics connector produces metrics from all signal types (traces, logs, or metrics).",
       "display_name": "Signal to Metrics Connector",
       "distribution": "contrib",
@@ -3738,7 +3724,7 @@
         "logs",
         "profiles"
       ],
-      "stability": "development",
+      "stability": "beta",
       "type": "processor"
     },
     {
