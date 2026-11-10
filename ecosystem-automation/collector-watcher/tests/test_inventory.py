@@ -783,3 +783,68 @@ def test_unreadable_index_aborts_collector_prune(temp_inventory_dir, monkeypatch
     with pytest.raises(PermissionError):
         manager.prune_orphan_readmes("core")
     assert len(list((temp_inventory_dir / "core" / "readmes").glob("*.md"))) == 1
+
+
+def test_manifest_only_version_is_not_a_source_inventory(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+    scanned = Version("0.161.0")
+    manifest_only = Version("0.162.0")
+    manager.save_versioned_inventory("contrib", scanned, sample_components, "opentelemetry-collector-contrib")
+    manager.save_distribution_manifest("contrib", manifest_only, "opentelemetry-collector-releases", [], [])
+
+    assert manager.distribution_manifest_exists("contrib", manifest_only)
+    assert not manager.version_exists("contrib", manifest_only)
+    assert manager.version_exists("contrib", scanned)
+    assert manager.list_release_versions("contrib") == [scanned]
+    assert manager.list_inventory_versions("contrib") == [scanned]
+    # The raw directory listing still sees both, so pruning can reach manifest-only versions.
+    assert manager.list_versions("contrib") == [manifest_only, scanned]
+
+
+def test_partial_inventory_is_not_complete(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+    version = Version("0.161.0")
+    manager.save_versioned_inventory("core", version, sample_components, "opentelemetry-collector")
+    (manager.get_version_dir("core", version) / "receiver.yaml").unlink()
+
+    assert not manager.version_exists("core", version)
+
+
+def test_prune_release_versions_not_in_covers_manifest_only_versions(temp_inventory_dir):
+    manager = InventoryManager(str(temp_inventory_dir))
+    keep = Version("0.162.0")
+    drop = Version("0.161.0")
+    snapshot = Version(major=0, minor=163, patch=0, prerelease=("SNAPSHOT",))
+    for version in (keep, drop, snapshot):
+        manager.save_distribution_manifest("otlp", version, "opentelemetry-collector-releases", [], [])
+
+    removed = manager.prune_release_versions_not_in("otlp", [keep])
+
+    assert removed == 1
+    assert manager.distribution_manifest_exists("otlp", keep)
+    assert not manager.distribution_manifest_exists("otlp", drop)
+    assert manager.distribution_manifest_exists("otlp", snapshot)
+
+
+def test_failed_manifest_write_leaves_no_record_and_keeps_previous(temp_inventory_dir, monkeypatch):
+    manager = InventoryManager(str(temp_inventory_dir))
+    version = Version("0.162.0")
+    releases = "opentelemetry-collector-releases"
+    component = {"type": "receiver", "source": "core", "name": "otlpreceiver"}
+
+    def failing_replace(*args, **kwargs):
+        raise OSError("disk full")
+
+    with monkeypatch.context() as m:
+        m.setattr("watcher_common.fileio.os.replace", failing_replace)
+        with pytest.raises(OSError):
+            manager.save_distribution_manifest("otlp", version, releases, [component], [])
+    assert not manager.distribution_manifest_exists("otlp", version)
+
+    manager.save_distribution_manifest("otlp", version, releases, [component], [])
+    with monkeypatch.context() as m:
+        m.setattr("watcher_common.fileio.os.replace", failing_replace)
+        with pytest.raises(OSError):
+            manager.save_distribution_manifest("otlp", version, releases, [], [])
+    assert manager.load_distribution_manifest("otlp", version) == [component]
+    assert not list(manager.get_version_dir("otlp", version).glob(".*.tmp"))

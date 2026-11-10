@@ -12,14 +12,14 @@ on:
       versions:
         description:
           "Optional comma-separated versions to scope the backfill (e.g. 0.144.0,0.145.0). Empty =
-          all existing versions, both distributions."
+          all existing versions, all distributions."
         type: string
         required: false
         default: ""
       prune_unlisted_versions:
         description:
           "When 'versions' is set, delete any existing release versions NOT in that list from the
-          registry (both distributions) before regenerating. SNAPSHOT versions are always kept.
+          registry (all distributions) before regenerating. SNAPSHOT versions are always kept.
           Errors if 'versions' is empty."
         type: boolean
         required: false
@@ -95,12 +95,12 @@ jobs:
             tmp-repos-
 
       - name: Install uv
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version-file: ".python-version"
 
@@ -113,8 +113,8 @@ jobs:
           VERSIONS: ${{ inputs.versions }}
           PRUNE_UNLISTED: ${{ inputs.prune_unlisted_versions }}
         run: |
-          # Backfill re-extracts both core and contrib. Contrib's schema is
-          # resolved from the core clone at each version's ref, so both
+          # Backfill re-extracts all distributions. Contrib's schema is
+          # resolved from the core clone at each version's ref, so all
           # distributions stay in sync regardless of scope.
           ARGS=(--backfill)
           if [ -n "$VERSIONS" ]; then

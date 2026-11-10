@@ -11,7 +11,7 @@
     "format:check": "vp fmt --check ."
   },
   "devDependencies": {
-    "markdownlint-cli2": "0.23.3",
+    "markdownlint-cli2": "0.24.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.3.0",
     "vite-plus": "1.3.0"
   },
