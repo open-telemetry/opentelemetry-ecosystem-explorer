@@ -1,0 +1,64 @@
+{
+  "description": null,
+  "display_name": "Transform Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "Allow the transform processor's experimental functions to be used in statements and conditions. When disabled, experimental functions are rejected.",
+      "from_version": "v0.165.0",
+      "id": "processor.transform.enableExperimentalFunctions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47306",
+      "stage": "alpha"
+    },
+    {
+      "description": "Flatten log data prior to transformation so every record has a unique copy of the resource and scope. Regroups logs based on resource and scope after transformations.",
+      "from_version": "v0.103.0",
+      "id": "transform.flatten.logs",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32080#issuecomment-2120764953",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-transformprocessor",
+  "markdown_hash": "dbf37b39dece",
+  "name": "transformprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "evan-bradley",
+        "edmocosta",
+        "bogdandrutu"
+      ],
+      "emeritus": [
+        "anuraaga",
+        "kentquirk"
+      ],
+      "seeking_new": false
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    },
+    "warnings": [
+      "Unsound Transformations",
+      "Identity Conflict",
+      "Orphaned Telemetry",
+      "Other"
+    ]
+  },
+  "type": "processor"
+}

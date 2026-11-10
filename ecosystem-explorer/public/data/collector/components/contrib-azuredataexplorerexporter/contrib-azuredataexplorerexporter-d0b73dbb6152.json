@@ -1,0 +1,34 @@
+{
+  "description": null,
+  "display_name": "Azure Data Explorer Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-azuredataexplorerexporter",
+  "markdown_hash": "cf745fd15c4f",
+  "name": "azuredataexplorerexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Abhimanyu9988",
+        "tanmaya-panda1"
+      ],
+      "emeritus": [
+        "asaharn",
+        "ag-ramachandran"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}
