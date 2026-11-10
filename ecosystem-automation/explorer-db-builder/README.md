@@ -6,8 +6,8 @@ Automation tool for converting registry data into a content addressed database.
 
 On a nightly basis, the tool regenerates data based on the latest registry entries. It runs one
 pipeline per ecosystem listed in `ECOSYSTEMS` (`src/explorer_db_builder/ecosystems.py`):
-`collector`, `configuration`, `javaagent`, `javascript`, and `python`. Each writes into its own directory
-under `ecosystem-explorer/public/data/`.
+`collector`, `configuration`, `javaagent`, `javascript`, and `python`. Each writes into its own
+directory under `ecosystem-explorer/public/data/`.
 
 Those directories are owned **entirely** by this tool. A `--clean` build `rmtree`s each one before
 rebuilding, so any hand-maintained file placed inside them is deleted without warning — this is what

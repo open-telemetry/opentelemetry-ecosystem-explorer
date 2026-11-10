@@ -46,8 +46,8 @@ globally, so do not duplicate it per page. A new static route also needs an entr
 - Unit tests live next to source as `*.test.ts(x)` and run with `bun run test`. Integration tests
   use `*.integration.test.ts(x)` and run with `bun run test:integration`.
 - The unit suite and `bun run typecheck` must run without the generated database.
-  `public/data/{javaagent,collector,configuration,javascript,python}/` is builder output that is not always
-  present in a checkout, so a test that reads it belongs in the integration suite. The
+  `public/data/{javaagent,collector,configuration,javascript,python}/` is builder output that is not
+  always present in a checkout, so a test that reads it belongs in the integration suite. The
   `typecheck-without-database` job in `.github/workflows/build-and-test.yml` enforces this on every
   PR. Check it locally before pushing:
 
