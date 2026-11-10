@@ -16,6 +16,7 @@ on:
           - "configuration"
           - "collector"
           - "javascript"
+          - "python"
         default: "all"
 
 permissions:

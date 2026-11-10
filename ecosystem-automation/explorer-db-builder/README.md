@@ -6,7 +6,7 @@ Automation tool for converting registry data into a content addressed database.
 
 On a nightly basis, the tool regenerates data based on the latest registry entries. It runs one
 pipeline per ecosystem listed in `ECOSYSTEMS` (`src/explorer_db_builder/ecosystems.py`):
-`collector`, `configuration`, `javaagent`, and `javascript`. Each writes into its own directory
+`collector`, `configuration`, `javaagent`, `javascript`, and `python`. Each writes into its own directory
 under `ecosystem-explorer/public/data/`.
 
 Those directories are owned **entirely** by this tool. A `--clean` build `rmtree`s each one before
@@ -55,6 +55,12 @@ ecosystem-explorer/
           instrumentation-express/
             instrumentation-express-<hash>.json
           ...
+      python/
+        index.json                  # Every package, its releases, and the hash each release uses
+        packages/                    # Content-addressed package metadata, shared across releases
+          opentelemetry-instrumentation-flask/
+            opentelemetry-instrumentation-flask-<hash>.json
+          ...
 ```
 
 js-contrib packages version independently, so `javascript/` has no `versions-index.json` or
@@ -62,6 +68,14 @@ per-version manifests. Package files leave out the version, and most releases on
 releases with identical metadata hash to the same file. `index.json` maps each release to its hash
 and is the only manifest. The published fields are listed in `PACKAGE_FIELDS` in
 `javascript_builder.py`.
+
+`python/` has the same shape, built by `python_builder.py` from `ecosystem-registry/python/`.
+python-contrib releases use PEP 440 versions such as `0.66b2`, which `semantic_version` cannot
+parse, so releases are ordered with `packaging.version` and the registry's own version strings are
+kept in `index.json`. Every release is listed, prereleases included, because every published
+python-contrib version so far is a beta. `supports_metrics` and `semantic_convention_status` are
+published exactly as the registry has them: `null` means upstream does not say, and is never turned
+into `false`. The published fields are listed in `PACKAGE_FIELDS` in `python_builder.py`.
 
 ## Usage
 

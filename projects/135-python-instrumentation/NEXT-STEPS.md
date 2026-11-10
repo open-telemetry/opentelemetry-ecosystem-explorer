@@ -41,7 +41,8 @@ for the design this implements.
 
 ## Later Phases (Future)
 
-- [ ] Populate database builder with Python ecosystem data
+- [x] Populate database builder with Python ecosystem data (`python` pipeline in `explorer-db-builder`;
+      the first data is published by the nightly Build Explorer Database run)
 - [ ] Integrate Python instrumentation into the Explorer frontend
 
 ## Open Questions

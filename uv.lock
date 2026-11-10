@@ -433,6 +433,8 @@ source = { editable = "ecosystem-automation/explorer-db-builder" }
 dependencies = [
     { name = "collector-watcher" },
     { name = "js-instrumentation-watcher" },
+    { name = "packaging" },
+    { name = "python-instrumentation-watcher" },
     { name = "pyyaml" },
     { name = "semantic-version" },
     { name = "watcher-common" },
@@ -448,8 +450,10 @@ dev = [
 requires-dist = [
     { name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" },
     { name = "js-instrumentation-watcher", editable = "ecosystem-automation/js-instrumentation-watcher" },
+    { name = "packaging", specifier = ">=24.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "python-instrumentation-watcher", editable = "ecosystem-automation/python-instrumentation-watcher" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "semantic-version", specifier = ">=2.10.0" },
     { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },

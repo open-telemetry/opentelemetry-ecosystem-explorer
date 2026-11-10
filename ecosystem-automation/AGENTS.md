@@ -101,7 +101,7 @@ were editing.
 - Manually deleting a version directory shifts the deprecation baseline for the collector watcher
   and produces false-positive deprecations on the next sync. Use the watcher's helpers instead.
 - The `explorer-db-builder` output directories
-  (`public/data/{javaagent,configuration,collector,javascript}/`) are builder-owned: `--clean`
+  (`public/data/{javaagent,configuration,collector,javascript,python}/`) are builder-owned: `--clean`
   `rmtree`s them, so a curated file committed inside one disappears on the next clean run (#882).
   Put hand-maintained frontend data in a sibling directory instead; the builder README's Methodology
   section lists them. A new pipeline's output directory is builder-owned and belongs in the list
