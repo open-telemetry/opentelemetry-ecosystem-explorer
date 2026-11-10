@@ -28,6 +28,7 @@
 import { Search } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { trackEvent } from "@/lib/telemetry";
 
 export interface FacetOption<T extends string = string> {
   value: T;
@@ -59,7 +60,9 @@ export function CheckboxFacet<T extends string = string>({
     else next.add(value);
     // Sorted to match the canonical order `listFilters` serialize/parse uses,
     // so checkbox-emitted state equals what a URL round-trip produces.
-    onChange(Array.from(next).sort());
+    const values = Array.from(next).sort();
+    trackEvent("filter_change", { facet: title, values: values.join(",") });
+    onChange(values);
   }
 
   return (
@@ -131,7 +134,11 @@ export function SearchFacet({
   // Emit only when the user's edits settle. Keyed on `debounced` alone: adding
   // `value` would re-fire the stale pre-clear text when the parent clears.
   useEffect(() => {
-    if (debounced !== value) onChange(debounced);
+    if (debounced !== value) {
+      if (debounced.trim())
+        trackEvent("search", { source: "list", query: debounced.trim() });
+      onChange(debounced);
+    }
     // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [debounced]);
 
@@ -141,7 +148,11 @@ export function SearchFacet({
         {title}
       </div>
       <div className="td-facet__search">
-        <Search className="td-facet__search-icon" aria-hidden focusable="false" />
+        <Search
+          className="td-facet__search-icon"
+          aria-hidden
+          focusable="false"
+        />
         <input
           type="search"
           className="td-facet__search-input"
@@ -164,7 +175,13 @@ export interface SelectFacetProps {
   emptyLabel: string;
 }
 
-export function SelectFacet({ title, options, value, onChange, emptyLabel }: SelectFacetProps) {
+export function SelectFacet({
+  title,
+  options,
+  value,
+  onChange,
+  emptyLabel,
+}: SelectFacetProps) {
   const headingId = useId();
   return (
     <div className="td-facet" aria-labelledby={headingId}>
@@ -174,7 +191,9 @@ export function SelectFacet({ title, options, value, onChange, emptyLabel }: Sel
       <select
         className="td-facet__select"
         value={value ?? ""}
-        onChange={(e) => onChange(e.target.value === "" ? null : e.target.value)}
+        onChange={(e) =>
+          onChange(e.target.value === "" ? null : e.target.value)
+        }
         aria-label={title}
       >
         <option value="">{emptyLabel}</option>

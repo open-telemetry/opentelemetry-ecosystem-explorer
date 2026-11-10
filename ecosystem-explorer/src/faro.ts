@@ -15,6 +15,7 @@
  */
 import { getWebInstrumentations, initializeFaro } from "@grafana/faro-react";
 import { TracingInstrumentation } from "@grafana/faro-web-tracing";
+import { isLikelyBot, registerOutboundClickTracking } from "@/lib/telemetry";
 
 const faroUrl = import.meta.env.VITE_FARO_URL;
 
@@ -23,10 +24,26 @@ if (faroUrl) {
     url: faroUrl,
     app: {
       name: "ecosystem-explorer",
-      version: "0.0.0",
+      version: __APP_VERSION__,
       environment: import.meta.env.MODE,
     },
-    instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
+    sessionTracking: {
+      enabled: true,
+      persistent: true,
+      // Faro merges these into both new and resumed persistent sessions.
+      session: { attributes: { is_bot: String(isLikelyBot()) } },
+    },
+    instrumentations: [
+      ...getWebInstrumentations(),
+      new TracingInstrumentation(),
+    ],
+    // Third-party analytics requests; filters both tracing spans and resource-timing events.
+    ignoreUrls: [
+      /google-analytics\.com/,
+      /googletagmanager\.com/,
+      /google\.com\/g\/collect/,
+      /doubleclick\.net/,
+    ],
     ignoreErrors: [
       /^ResizeObserver loop limit exceeded$/,
       /^ResizeObserver loop completed with undelivered notifications$/,
@@ -35,4 +52,5 @@ if (faroUrl) {
       /moz-extension:\/\//,
     ],
   });
+  registerOutboundClickTracking();
 }

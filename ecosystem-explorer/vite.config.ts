@@ -74,6 +74,12 @@ export default defineConfig({
       ],
     },
   },
+  define: {
+    // Netlify sets COMMIT_REF at build time; ties Faro sessions and errors to a deploy.
+    __APP_VERSION__: JSON.stringify(
+      process.env.COMMIT_REF?.slice(0, 12) ?? "dev",
+    ),
+  },
   plugins: lazyPlugins(() => [
     react(),
     dataContentIdPlugin(path.resolve(import.meta.dirname, "public/data")),
