@@ -22,6 +22,10 @@
       "releases": [
         {
           "hash": "da607c3025f6",
+          "version": "0.11.0"
+        },
+        {
+          "hash": "da607c3025f6",
           "version": "0.10.0"
         },
         {
@@ -73,7 +77,7 @@
           "version": "0.2.0"
         }
       ],
-      "version": "0.10.0"
+      "version": "0.11.0"
     },
     {
       "description": "OpenTelemetry instrumentation for the `amqplib` messaging client for RabbitMQ",
