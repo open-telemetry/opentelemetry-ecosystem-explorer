@@ -10,6 +10,9 @@
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
   prHourlyLimit: 10,
+  // The custom regex managers below update .bun-version and netlify.toml together
+  // in one PR; the built-in manager would open a duplicate PR for .bun-version alone.
+  "bun-version": { enabled: false },
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
