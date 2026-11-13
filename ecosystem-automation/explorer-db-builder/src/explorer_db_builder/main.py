@@ -41,6 +41,7 @@ from explorer_db_builder.instrumentation_transformer import (
 )
 from explorer_db_builder.javascript_builder import run_javascript_builder
 from explorer_db_builder.metadata_backfiller import backfill_metadata
+from explorer_db_builder.python_builder import run_python_builder
 from explorer_db_builder.telemetry_when_corrections import apply_telemetry_when_corrections
 
 logger = logging.getLogger(__name__)
@@ -337,6 +338,11 @@ def run_builder(clean: bool = False, ecosystem: str = "all", collector_audit_rep
     if ecosystem in ("javascript", "all"):
         logger.info("--- JavaScript ---")
         results.append(run_javascript_builder(clean=clean))
+        logger.info("")
+
+    if ecosystem in ("python", "all"):
+        logger.info("--- Python ---")
+        results.append(run_python_builder(clean=clean))
         logger.info("")
 
     return 1 if any(r != 0 for r in results) else 0

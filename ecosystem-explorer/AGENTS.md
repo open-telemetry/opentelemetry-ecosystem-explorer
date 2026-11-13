@@ -46,8 +46,8 @@ globally, so do not duplicate it per page. A new static route also needs an entr
 - Unit tests live next to source as `*.test.ts(x)` and run with `bun run test`. Integration tests
   use `*.integration.test.ts(x)` and run with `bun run test:integration`.
 - The unit suite and `bun run typecheck` must run without the generated database.
-  `public/data/{javaagent,collector,configuration,javascript}/` is builder output that is not always
-  present in a checkout, so a test that reads it belongs in the integration suite. The
+  `public/data/{javaagent,collector,configuration,javascript,python}/` is builder output that is not
+  always present in a checkout, so a test that reads it belongs in the integration suite. The
   `typecheck-without-database` job in `.github/workflows/build-and-test.yml` enforces this on every
   PR. Check it locally before pushing:
 
@@ -278,7 +278,7 @@ When reviewing UI components, always verify:
 - `bun run build` runs typecheck first; strict TypeScript blocks builds on unused locals or
   parameters.
 - Route params are unvalidated. Pages must validate URL params and handle missing data gracefully.
-- `public/data/{javaagent,configuration,collector,javascript}/` is generated and owned by
+- `public/data/{javaagent,configuration,collector,javascript,python}/` is generated and owned by
   `explorer-db-builder`: a `--clean` build `rmtree`s each one, so a curated file committed inside
   disappears without warning (#882). Hand-maintained data the frontend fetches goes in a sibling
   directory instead; see the Methodology section of

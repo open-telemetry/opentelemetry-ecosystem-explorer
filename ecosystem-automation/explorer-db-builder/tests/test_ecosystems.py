@@ -21,10 +21,11 @@ from explorer_db_builder.collector_database_writer import CollectorDatabaseWrite
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.ecosystems import DATA_ROOT, ECOSYSTEMS, ecosystem_dir
 from explorer_db_builder.javascript_database_writer import JavascriptDatabaseWriter
+from explorer_db_builder.python_database_writer import PythonDatabaseWriter
 
 
 def test_ecosystems_are_the_generated_directories():
-    assert ECOSYSTEMS == ("collector", "configuration", "javaagent", "javascript")
+    assert ECOSYSTEMS == ("collector", "configuration", "javaagent", "javascript", "python")
 
 
 def test_every_ecosystem_lives_under_the_data_root():
@@ -40,6 +41,7 @@ def test_topology_matches_the_writers_that_own_the_directories():
         "configuration": configuration_builder.OUTPUT_DIR,
         "javaagent": DatabaseWriter().database_dir,
         "javascript": JavascriptDatabaseWriter().database_dir,
+        "python": PythonDatabaseWriter().database_dir,
     }
 
     assert set(dirs) == set(ECOSYSTEMS)
