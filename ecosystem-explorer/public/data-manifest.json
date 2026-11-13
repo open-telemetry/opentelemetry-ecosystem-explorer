@@ -22,11 +22,11 @@
       "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
     },
     "javascript": {
-      "release_tag": "data-javascript-cc0580eac086",
+      "release_tag": "data-javascript-e24fb02f60df",
       "asset": "javascript.tar.gz",
-      "content_digest": "cc0580eac086c902b3e66ff56e1e180501158d95ad33faf94310a3ebd0cf898c",
-      "archive_sha256": "778a6eda0d1369708e362d88e90afa42c68e84d1f8218b5a4ef7becf088a37a2",
-      "registry_commit": "e3c3af547ff422e64a4a76d50a41360a29275d4b"
+      "content_digest": "e24fb02f60dffdbd447177539851024b5e1c0e9d970e952258c40eef94ef9de1",
+      "archive_sha256": "1eeb36014123d6a2aa4b56565a8d1028150359f5a45a53a4f4b8fcd04ab5018b",
+      "registry_commit": "a5aaf59d522a5aa4adb2c2c4481f8ad2db879c92"
     }
   }
 }
