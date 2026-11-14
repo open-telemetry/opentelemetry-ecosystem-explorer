@@ -7,7 +7,7 @@
       "evidence": [
         {
           "label": "model: model/gen-ai/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/58daeb9da6d24757c51b51ec044aecfb3c0e2844/model/gen-ai/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/e6658f14c9d9ea0760825f029cb82e7673f48fab/model/gen-ai/spans.yaml"
         }
       ],
       "fromStates": {
@@ -19,12 +19,12 @@
       "namespace": "gen_ai",
       "proposedType": "deprecation",
       "reasons": [
-        "1 of 133 gen_ai.* subjects became deprecated."
+        "1 of 132 gen_ai.* subjects became deprecated."
       ],
       "requiresReview": true,
       "scope": {
         "changed": 1,
-        "total": 133
+        "total": 132
       },
       "subjects": [
         "gen_ai.retrieval.client"
@@ -41,11 +41,11 @@
       "evidence": [
         {
           "label": "model: model/a2a/registry.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/58daeb9da6d24757c51b51ec044aecfb3c0e2844/model/a2a/registry.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/e6658f14c9d9ea0760825f029cb82e7673f48fab/model/a2a/registry.yaml"
         },
         {
           "label": "model: model/a2a/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/58daeb9da6d24757c51b51ec044aecfb3c0e2844/model/a2a/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/e6658f14c9d9ea0760825f029cb82e7673f48fab/model/a2a/spans.yaml"
         }
       ],
       "fromStates": {},
@@ -152,15 +152,19 @@
     "Make retrieval document `id` and `score` optional so instrumentations can omit values that are unavailable at runtime.",
     "Warn that `gen_ai.tool.description` and `gen_ai.tool.definitions` may contain sensitive information.",
     "Allow `gen_ai.conversation.id` on `execute_tool` spans when available.",
+    "Add `gen_ai.client.invoke_agent.duration` metric.",
     "Add `gen_ai.client.embeddings.duration` and `gen_ai.client.embeddings.operation.input_tokens` metrics, consolidate embeddings client span and metrics in `client-embeddings.md`.",
+    "Consolidate execute tool span, specialized tool call span, and duration metric conventions, and clarify that execute tool operations use `gen_ai.execute_tool.duration` instead of `gen_ai.client.operation.duration`.",
     "Deprecate the `gen_ai.retrieval.client` span. Calls to retrieval or search services should follow database or other applicable client semantic conventions; retrieval performed by GenAI frameworks and applications should use the `gen_ai.retrieval` span. ([#637](https://github.com/open-telemetry/seman",
     "Retrieval operations are no longer reported on `gen_ai.client.operation.duration`. ([#637](https://github.com/open-telemetry/semantic-conventions-genai/issues/637))",
     "Add the `gen_ai.retrieval` internal span and `gen_ai.retrieval.duration` metric for retrieval performed by GenAI frameworks and applications. ([#637](https://github.com/open-telemetry/semantic-conventions-genai/issues/637))",
+    "Require structured values for JSON-schema-defined attributes on spans and events, removing the JSON-string fallback for spans.",
     "Mark `gen_ai.agent.name` as sampling-relevant on `create_agent`, `invoke_agent` client, and `invoke_agent` internal spans.",
     "Add `gen_ai.invoke_workflow.duration` metric to track duration of a workflow.",
     "Add missing `gen_ai.tool.call.arguments` and `gen_ai.tool.call.result` opt-in attributes to MCP server span.",
     "Add GenAI memory operation span and attributes for memory store lifecycle (create/delete), memory record create/update/upsert/search/delete operations, and record counts.",
     "Add `document` value to the `Modality` enum in the GenAI input/output/system-instructions message JSON schemas. Enables capturing PDF/DOCX (and similar) parts that today have to fall through to the free-form `string` branch of the modality `anyOf`.",
+    "Make `BlobPart.content` optional in the `gen_ai.input.messages` and `gen_ai.output.messages`.",
     "Add `gen_ai.conversation.compacted` on GenAI inference spans and `CompactionPart` message schema support for reporting compacted GenAI conversation context.",
     "Add `gen_ai.prompt.version` and `gen_ai.prompt.variable` attributes to enhance prompt tracking with version support and template variable recording. ([#137](https://github.com/open-telemetry/semantic-conventions-genai/issues/137))",
     "Add A2A protocol semantic conventions for client/server spans, covering protocol, message,",
@@ -203,6 +207,7 @@
     "Add `gen_ai.system_instructions_ref`, `gen_ai.input.messages_ref`, `gen_ai.output.messages_ref`, and `gen_ai.tool.definitions_ref` attributes referencing GenAI content stored externally.",
     "Mark `gen_ai.agent.name` as sampling-relevant on the `execute_tool` and `plan` spans.",
     "Add `gen_ai.skill.*` attributes recorded on the `execute_tool` span, so an agent's use of [Agent Skills](https://agentskills.io) — loading a skill's instructions, reading a bundled resource, running a bundled script — is described where the framework already exposes it, as a tool execution.",
+    "Add `gen_ai.request.stream` to `gen_ai.fetch_response.client` and `gen_ai.invoke_agent.client` spans.",
     "Add guidance that `gen_ai.client.inference.operation.details` event severity should be set to DEBUG (severity number 5).",
     "Add `gen_ai.client.inference.duration` metric, consolidate inference client span, events and metrics in `client-inference.md`.",
     "Clarify that `gen_ai.invoke_agent.client` SHOULD be emitted for out-of-process agent invocations and `gen_ai.invoke_agent.internal` SHOULD be emitted for in-process agent execution.",
@@ -212,22 +217,27 @@
     "Clarify in-process propagation of shared GenAI attributes, including preference for values from the instrumented library and use only on signals that explicitly reference them.",
     "Clarify that `gen_ai.usage.input_tokens` and `gen_ai.usage.output_tokens` are totals across all modalities. Per-modality attributes on spans and events are recommended only when the provider reports them. On usage metrics, instrumentations SHOULD record tokens with no known modality as `unknown`.",
     "Clarify that the client inference span may have nested spans recorded by the model provider, and that its `gen_ai.response.model`, `gen_ai.response.id` and usage attributes reflect what the model provider returns for this inference operation.",
+    "Merge the `invoke_workflow` span and metric into `gen_ai.invoke_agent.internal` and `gen_ai.invoke_agent.duration`. Replace `gen_ai.workflow.name` with `gen_ai.agent.name`.",
+    "Add the `invoke_runner` operation name and the `invoke_{framework_entrypoint}` operation name pattern, and extend the recommended `gen_ai.invoke_agent.duration` buckets up to 24 hours.",
     "Make `gen_ai.client.inference.operation.details` event recommended instead of opt-in.",
     "Reject malformed known message parts in JSON schemas and recommend prefixing custom part types with `gen_ai.provider.name`.",
     "Reject malformed `function` tool definitions in `gen_ai.tool.definitions` JSON schema and recommend prefixing custom tool definition types with `gen_ai.provider.name`.",
     "Clarify the first response chunk and measurement boundaries, including authentication and retries, for the GenAI time-to-first-chunk metric and span attribute.",
     "Use `gen_ai.client.inference.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client inference operations to fail.",
     "Use `gen_ai.client.embeddings.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client embeddings operations to fail.",
+    "Add `ollama` to `gen_ai.provider.name` well-known values.",
     "Clarify that `gen_ai.invoke_agent.inference_calls` counts each logical inference operation once, regardless of retries.",
     "Use `gen_ai.client.invoke_agent.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client agent invocation operations to fail.",
     "Add `gen_ai.execute_tool.exception` for exceptions that cause tool execution operations to fail.",
     "Use `gen_ai.client.fetch_response.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client fetch response operations to fail.",
+    "Add `gen_ai.invoke_agent.exception` for exceptions that cause internal agent invocation operations to fail.",
+    "Remove `gen_ai.token.modality` from `gen_ai.client.inference.usage.reasoning.output_tokens`. Record the reasoning token count without a modality breakdown.",
     "Add `plan` operation for GenAI agent planning/task decomposition spans.",
     "Add `moonshot_ai` to `gen_ai.provider.name` well-known values."
   ],
-  "commit": "58daeb9da6d24757c51b51ec044aecfb3c0e2844",
-  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...58daeb9da6d24757c51b51ec044aecfb3c0e2844",
-  "date": "2026-11-05",
+  "commit": "e6658f14c9d9ea0760825f029cb82e7673f48fab",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...e6658f14c9d9ea0760825f029cb82e7673f48fab",
+  "date": "2026-11-06",
   "dateBasis": "commit-date",
   "gaps": [
     {
@@ -260,7 +270,15 @@
     },
     {
       "kind": "ambiguity",
+      "message": "Changelog entry for (no scope) suggests a milestone ('Remove `gen_ai.token.modality` from `gen_ai.client.inference.usage.reasoning.output_tokens`. Record the reasoning token ') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
       "message": "Changelog entry for (no scope) suggests a milestone ('Remove `gen_ai.usage.cache_read.input_tokens` and `gen_ai.usage.cache_write.input_tokens` from the internal `invoke_agen') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
+      "message": "Changelog entry for (no scope) suggests a milestone ('Require structured values for JSON-schema-defined attributes on spans and events, removing the JSON-string fallback for ') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
     }
   ],
   "incomplete": false,
@@ -269,11 +287,11 @@
     "extractor": "model-stability-diff",
     "filesParsed": 16,
     "filesUnparsed": [],
-    "relevantCommitCount": 103,
+    "relevantCommitCount": 113,
     "structure": {
       "groupsAdded": 40,
       "groupsRemoved": 13,
-      "subjectsAddedToExistingNamespaces": 74
+      "subjectsAddedToExistingNamespaces": 77
     }
   },
   "noMilestone": null,
