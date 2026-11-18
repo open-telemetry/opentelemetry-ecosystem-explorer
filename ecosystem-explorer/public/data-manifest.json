@@ -1,11 +1,11 @@
 {
   "ecosystems": {
     "collector": {
-      "release_tag": "data-collector-f0dcda2e94d5",
+      "release_tag": "data-collector-3323822654be",
       "asset": "collector.tar.gz",
-      "content_digest": "f0dcda2e94d5dd254d5a10ea15d7dd779755d84d3f738ec2741f6f54bd5fc102",
-      "archive_sha256": "1f0f0f5cf2ef52589ba5db5fe0cfcfe2915b9006da1d1cfc53e4df6ecbb2f83a",
-      "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
+      "content_digest": "3323822654be45f38f869cb4f9ffbb4c6bad0377283e06a3dc00e86971d9e7c0",
+      "archive_sha256": "172211afdd626c20dfdfd3eb8e9f2924bcd9519afcdf6e827eda4d63a93ca34b",
+      "registry_commit": "78f8d58a3205e05c5ba0794f226d6b0bd19bce99"
     },
     "configuration": {
       "release_tag": "data-configuration-ff3eb0ebf3a6",
@@ -22,11 +22,11 @@
       "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
     },
     "javascript": {
-      "release_tag": "data-javascript-212533357c67",
+      "release_tag": "data-javascript-e24fb02f60df",
       "asset": "javascript.tar.gz",
-      "content_digest": "212533357c67c788a381330a4d3975d11a557345b035b8d3334df188218ca00b",
-      "archive_sha256": "d7b65a7bdd222aaa1a043e1a9224d31ee73d0a6060f1271bcf363c63ba6c84b3",
-      "registry_commit": "d0d657cecbb229b0efe59384a703bad92b0bd8c5"
+      "content_digest": "e24fb02f60dffdbd447177539851024b5e1c0e9d970e952258c40eef94ef9de1",
+      "archive_sha256": "1eeb36014123d6a2aa4b56565a8d1028150359f5a45a53a4f4b8fcd04ab5018b",
+      "registry_commit": "a5aaf59d522a5aa4adb2c2c4481f8ad2db879c92"
     }
   }
 }

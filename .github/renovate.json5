@@ -10,6 +10,9 @@
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
   prHourlyLimit: 10,
+  // The custom regex managers below update .bun-version and netlify.toml together
+  // in one PR; the built-in manager would open a duplicate PR for .bun-version alone.
+  "bun-version": { enabled: false },
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
@@ -18,10 +21,6 @@
     minimumReleaseAgeBehaviour: "timestamp-optional",
   },
   packageRules: [
-    {
-      matchManagers: ["pre-commit"],
-      pinDigests: true,
-    },
     // package.json is managed by Renovate's "bun" manager here (bun.lock +
     // .bun-version), not "npm", so the pin rule must target "bun" or it is inert.
     {

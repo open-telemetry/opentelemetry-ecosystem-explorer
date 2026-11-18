@@ -1,0 +1,41 @@
+{
+  "description": null,
+  "display_name": "Resource Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-resourceprocessor",
+  "markdown_hash": "1deacc9be375",
+  "name": "resourceprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "jinja2",
+        "jkoronaAtCisco"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    },
+    "warnings": [
+      "Identity Conflict"
+    ]
+  },
+  "type": "processor"
+}
