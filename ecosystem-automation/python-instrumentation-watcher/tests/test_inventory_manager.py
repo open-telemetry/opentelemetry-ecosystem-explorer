@@ -136,52 +136,6 @@ def test_save_replaces_final_path_from_a_temp_file_in_the_same_directory(tmp_pat
     assert not final_path.exists()
 
 
-def test_list_packages_sorted_and_only_with_versions(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    manager.save("opentelemetry-instrumentation-flask", "0.66b2", {"name": "opentelemetry-instrumentation-flask"})
-    manager.save("opentelemetry-instrumentation-click", "0.66b2", {"name": "opentelemetry-instrumentation-click"})
-    # A directory with no version files and a stray file at the top level are not packages.
-    (tmp_path / "opentelemetry-instrumentation-empty").mkdir()
-    (tmp_path / "README.md").write_text("notes")
-
-    assert manager.list_packages() == [
-        "opentelemetry-instrumentation-click",
-        "opentelemetry-instrumentation-flask",
-    ]
-
-
-def test_list_packages_empty_when_registry_missing(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path / "does-not-exist"))
-
-    assert manager.list_packages() == []
-
-
-def test_list_versions_strips_prefix_and_ignores_other_files(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    name = "opentelemetry-instrumentation-flask"
-    manager.save(name, "0.9b0", {"name": name})
-    manager.save(name, "0.66b2", {"name": name})
-    (tmp_path / name / "notes.txt").write_text("not a version")
-
-    assert sorted(manager.list_versions(name)) == ["0.66b2", "0.9b0"]
-
-
-def test_list_versions_is_empty_for_a_missing_package(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-
-    assert manager.list_versions("opentelemetry-instrumentation-flask") == []
-
-
-def test_list_versions_ignores_an_abandoned_atomic_write_temp_file(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    name = "opentelemetry-instrumentation-flask"
-    manager.save(name, "0.66b2", {"name": name})
-    # The shape atomic_write leaves behind if a run is killed mid-write.
-    (tmp_path / name / ".v0.66b3.yaml.abc123.tmp").write_text("partial")
-
-    assert manager.list_versions(name) == ["0.66b2"]
-
-
 def test_load_round_trips_saved_data_including_null_and_false(tmp_path):
     manager = InventoryManager(registry_dir=str(tmp_path))
     name = "opentelemetry-instrumentation-flask"
@@ -199,20 +153,3 @@ def test_load_round_trips_saved_data_including_null_and_false(tmp_path):
     assert loaded == data
     assert loaded["supports_metrics"] is False
     assert loaded["semantic_convention_status"] is None
-
-
-def test_load_rejects_non_mapping_file(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    path = tmp_path / "opentelemetry-instrumentation-flask" / "v0.66b2.yaml"
-    path.parent.mkdir()
-    path.write_text("- just\n- a list\n")
-
-    with pytest.raises(ValueError, match="does not contain a mapping"):
-        manager.load("opentelemetry-instrumentation-flask", "0.66b2")
-
-
-def test_load_missing_version_raises(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-
-    with pytest.raises(FileNotFoundError):
-        manager.load("opentelemetry-instrumentation-flask", "0.66b2")

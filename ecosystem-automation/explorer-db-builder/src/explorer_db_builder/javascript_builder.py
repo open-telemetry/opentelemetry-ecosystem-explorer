@@ -14,15 +14,13 @@
 #
 """Orchestrates the JavaScript instrumentation database build pipeline."""
 
-import logging
 from typing import Any, Optional
 
 from js_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.javascript_database_writer import JavascriptDatabaseWriter
-
-logger = logging.getLogger(__name__)
+from explorer_db_builder.package_index_builder import build_package_index
 
 REGISTRY_DIR = "ecosystem-registry/javascript"
 
@@ -99,16 +97,23 @@ def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) 
     return entry
 
 
+def sort_versions(package_name: str, versions: list[str]) -> list[str]:
+    """Order registry version strings newest first as semver.
+
+    Sorted as text, 0.9.0 would land above 0.10.0.
+
+    Raises:
+        ValueError: If a version is not valid semver.
+    """
+    return [str(v) for v in sorted((Version(v) for v in versions), reverse=True)]
+
+
 def run_javascript_builder(
     inventory_manager: Optional[InventoryManager] = None,
     db_writer: Optional[JavascriptDatabaseWriter] = None,
     clean: bool = False,
 ) -> int:
     """Run the JavaScript instrumentation database build.
-
-    Every stored release of every package is listed in index.json, not just the
-    latest, so the detail page can offer a version picker later without a schema
-    change. Releases with identical metadata share one package file.
 
     Args:
         inventory_manager: Optional inventory manager (for testing).
@@ -118,63 +123,12 @@ def run_javascript_builder(
     Returns:
         Exit code (0 for success, 1 for failure).
     """
-    try:
-        inventory_manager = inventory_manager or InventoryManager(registry_dir=REGISTRY_DIR)
-        db_writer = db_writer or JavascriptDatabaseWriter()
-
-        if clean:
-            db_writer.clean()
-
-        packages = inventory_manager.list_packages()
-        if not packages:
-            raise ValueError("No packages found in the javascript registry")
-
-        logger.info(f"Processing {len(packages)} javascript packages")
-
-        index_entries: list[dict[str, Any]] = []
-        release_count = 0
-        for package_name in packages:
-            # Sorted as semver: sorted as text, 0.9.0 would land above 0.10.0.
-            versions = sorted((Version(v) for v in inventory_manager.list_versions(package_name)), reverse=True)
-
-            latest: dict[str, Any] = {}
-            releases: list[dict[str, str]] = []
-            for version in versions:
-                release = inventory_manager.load(package_name, str(version))
-                if release.get("name") != package_name:
-                    raise ValueError(f"Registry file for {package_name} v{version} has name {release.get('name')!r}")
-
-                package = make_package(release)
-                package_hash = db_writer.write_package(package)
-                releases.append({"version": str(version), "hash": package_hash})
-                release_count += 1
-                if not latest:
-                    latest = package
-
-            index_entries.append(make_index_package(latest, releases))
-
-        db_writer.write_index(index_entries)
-
-        # index.json (the reachability source) is on disk now. Skipped after
-        # --clean, which already wiped everything.
-        if not clean:
-            db_writer.remove_orphans()
-
-        stats = db_writer.get_stats()
-        total_mb = stats["total_bytes"] / (1024 * 1024)
-        logger.info("")
-        logger.info("JavaScript Database Statistics:")
-        logger.info(f"  Packages: {len(index_entries)} ({release_count} releases)")
-        logger.info(f"  Files written: {stats['files_written']}")
-        logger.info(f"  Total size: {stats['total_bytes']:,} bytes ({total_mb:.2f} MB)")
-        return 0
-
-    except ValueError as e:
-        logger.error(f"❌ Validation error: {e}")
-        return 1
-    except OSError as e:
-        logger.error(f"❌ File system error: {e}")
-        return 1
-    except Exception as e:
-        logger.error(f"❌ Unexpected error: {e}", exc_info=True)
-        return 1
+    return build_package_index(
+        "javascript",
+        inventory_manager or InventoryManager(registry_dir=REGISTRY_DIR),
+        db_writer or JavascriptDatabaseWriter(),
+        make_package=make_package,
+        make_index_package=make_index_package,
+        sort_versions=sort_versions,
+        clean=clean,
+    )

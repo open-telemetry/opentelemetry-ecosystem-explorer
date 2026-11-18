@@ -69,8 +69,10 @@ releases with identical metadata hash to the same file. `index.json` maps each r
 and is the only manifest. The published fields are listed in `PACKAGE_FIELDS` in
 `javascript_builder.py`.
 
-`python/` has the same shape, built by `python_builder.py` from `ecosystem-registry/python/`.
-python-contrib releases use PEP 440 versions such as `0.66b2`, which `semantic_version` cannot
+`python/` has the same shape, built from `ecosystem-registry/python/`. Both ecosystems share one
+writer (`package_index_database_writer.py`) and one build loop (`package_index_builder.py`). Each
+ecosystem's builder only supplies its published fields, its index entry shape and how its versions
+sort. python-contrib releases use PEP 440 versions such as `0.66b2`, which `semantic_version` cannot
 parse, so releases are ordered with `packaging.version` and the registry's own version strings are
 kept in `index.json`. Every release is listed, prereleases included, because every published
 python-contrib version so far is a beta. `supports_metrics` and `semantic_convention_status` are

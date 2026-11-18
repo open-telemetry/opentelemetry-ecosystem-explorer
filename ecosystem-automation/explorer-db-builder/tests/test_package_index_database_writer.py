@@ -12,13 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Tests for PythonDatabaseWriter."""
+"""Tests for PackageIndexDatabaseWriter, the writer shared by the javascript and python pipelines."""
 
 import json
 from pathlib import Path
 
 import pytest
+from explorer_db_builder.javascript_database_writer import JavascriptDatabaseWriter
+from explorer_db_builder.package_index_database_writer import PackageIndexDatabaseWriter
 from explorer_db_builder.python_database_writer import PythonDatabaseWriter
+
+
+@pytest.fixture(params=["javascript", "python"])
+def make_writer(request):
+    """Builds the shared writer for each ecosystem that uses it."""
+    return lambda database_dir: PackageIndexDatabaseWriter(request.param, str(database_dir))
 
 
 def _package(**extra) -> dict:
@@ -34,8 +42,8 @@ def _write_index(writer, name: str, *hashes: str) -> None:
     writer.write_index([{"name": name, "releases": releases}])
 
 
-def test_write_package_is_content_addressed(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_write_package_is_content_addressed(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
 
     package_hash = writer.write_package(_package())
 
@@ -48,8 +56,8 @@ def test_write_package_is_content_addressed(tmp_path):
     assert json.loads(path.read_text()) == _package()
 
 
-def test_write_package_skips_existing_file(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_write_package_skips_existing_file(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
 
     first = writer.write_package(_package())
     second = writer.write_package(_package())
@@ -58,8 +66,8 @@ def test_write_package_skips_existing_file(tmp_path):
     assert writer.get_stats()["files_written"] == 1
 
 
-def test_write_package_different_content_gets_different_file(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_write_package_different_content_gets_different_file(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
 
     old = writer.write_package(_package(requires_python=">=3.9"))
     new = writer.write_package(_package(requires_python=">=3.10"))
@@ -68,15 +76,15 @@ def test_write_package_different_content_gets_different_file(tmp_path):
     assert len(list((tmp_path / "packages" / "opentelemetry-instrumentation-flask").glob("*.json"))) == 2
 
 
-def test_write_package_requires_name(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_write_package_requires_name(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
 
     with pytest.raises(ValueError, match="missing a 'name'"):
         writer.write_package({"description": "no name"})
 
 
-def test_package_name_is_sanitized_in_paths(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_package_name_is_sanitized_in_paths(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
 
     package_hash = writer.write_package({"name": "../escape"})
 
@@ -84,18 +92,18 @@ def test_package_name_is_sanitized_in_paths(tmp_path):
     assert not (tmp_path.parent / "escape").exists()
 
 
-def test_write_index(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path / "python"))
+def test_write_index(make_writer, tmp_path):
+    writer = make_writer(tmp_path / "db")
     entries = [{"name": "opentelemetry-instrumentation-flask", "version": "0.66b2"}]
 
     writer.write_index(entries)
 
-    data = json.loads((tmp_path / "python" / "index.json").read_text())
-    assert data == {"ecosystem": "python", "packages": entries}
+    data = json.loads((tmp_path / "db" / "index.json").read_text())
+    assert data == {"ecosystem": writer.ecosystem, "packages": entries}
 
 
-def test_remove_orphans_keeps_referenced_and_removes_unreferenced(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_remove_orphans_keeps_referenced_and_removes_unreferenced(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
     live = writer.write_package(_package())
     # Written but not in index.json, e.g. left behind after the published
     # fields changed.
@@ -110,8 +118,8 @@ def test_remove_orphans_keeps_referenced_and_removes_unreferenced(tmp_path):
     assert not (package_dir / f"opentelemetry-instrumentation-flask-{stale}.json").exists()
 
 
-def test_remove_orphans_keeps_file_shared_by_several_releases(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_remove_orphans_keeps_file_shared_by_several_releases(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
     shared = writer.write_package(_package())
     _write_index(writer, "opentelemetry-instrumentation-flask", shared, shared, shared)
 
@@ -119,8 +127,8 @@ def test_remove_orphans_keeps_file_shared_by_several_releases(tmp_path):
     assert len(list((tmp_path / "packages").glob("*/*.json"))) == 1
 
 
-def test_remove_orphans_drops_emptied_package_directory(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_remove_orphans_drops_emptied_package_directory(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
     # A package that dropped out of the registry entirely.
     writer.write_package({"name": "opentelemetry-instrumentation-removed"})
     live = writer.write_package(_package())
@@ -131,8 +139,8 @@ def test_remove_orphans_drops_emptied_package_directory(tmp_path):
     assert not (tmp_path / "packages" / "opentelemetry-instrumentation-removed").exists()
 
 
-def test_remove_orphans_skips_without_index(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_remove_orphans_skips_without_index(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
     package_hash = writer.write_package(_package())
 
     # No index.json means nothing is known to be live, so nothing is deleted.
@@ -145,15 +153,15 @@ def test_remove_orphans_skips_without_index(tmp_path):
     ).exists()
 
 
-def test_remove_orphans_with_no_packages_directory(tmp_path):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_remove_orphans_with_no_packages_directory(make_writer, tmp_path):
+    writer = make_writer(tmp_path)
     writer.write_index([])
 
     assert writer.remove_orphans() == 0
 
 
-def test_remove_orphans_keeps_going_when_a_delete_fails(tmp_path, monkeypatch):
-    writer = PythonDatabaseWriter(str(tmp_path))
+def test_remove_orphans_keeps_going_when_a_delete_fails(make_writer, tmp_path, monkeypatch):
+    writer = make_writer(tmp_path)
     live = writer.write_package(_package())
     writer.write_package(_package(description="stale one"))
     writer.write_package(_package(description="stale two"))
@@ -175,9 +183,9 @@ def test_remove_orphans_keeps_going_when_a_delete_fails(tmp_path, monkeypatch):
     assert len(list((tmp_path / "packages").glob("*/*.json"))) == 2
 
 
-def test_clean_removes_everything(tmp_path):
-    database_dir = tmp_path / "python"
-    writer = PythonDatabaseWriter(str(database_dir))
+def test_clean_removes_everything(make_writer, tmp_path):
+    database_dir = tmp_path / "db"
+    writer = make_writer(database_dir)
     writer.write_package(_package())
     (database_dir / "hand-written.json").write_text("{}")
 
@@ -185,3 +193,17 @@ def test_clean_removes_everything(tmp_path):
 
     assert database_dir.is_dir()
     assert list(database_dir.iterdir()) == []
+
+
+def test_ecosystem_writers_default_to_their_own_output_directory():
+    assert JavascriptDatabaseWriter().database_dir == Path("ecosystem-explorer/public/data/javascript")
+    assert JavascriptDatabaseWriter().ecosystem == "javascript"
+    assert PythonDatabaseWriter().database_dir == Path("ecosystem-explorer/public/data/python")
+    assert PythonDatabaseWriter().ecosystem == "python"
+
+
+def test_ecosystem_writers_accept_another_directory(tmp_path):
+    writer = PythonDatabaseWriter(str(tmp_path))
+    writer.write_index([])
+
+    assert json.loads((tmp_path / "index.json").read_text()) == {"ecosystem": "python", "packages": []}

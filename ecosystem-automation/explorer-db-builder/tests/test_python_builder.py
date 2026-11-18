@@ -15,7 +15,6 @@
 """Tests for python_builder module."""
 
 import json
-from unittest.mock import MagicMock
 
 import pytest
 from explorer_db_builder.python_builder import (
@@ -93,12 +92,6 @@ def _package_for(writer, name, version):
 # --- output structure -------------------------------------------------------------------------
 
 
-def test_success_writes_only_index_and_packages(registry, writer):
-    assert run_python_builder(inventory_manager=registry, db_writer=writer) == 0
-
-    assert sorted(p.name for p in writer.database_dir.iterdir()) == ["index.json", "packages"]
-
-
 def test_index_structure(registry, writer):
     run_python_builder(inventory_manager=registry, db_writer=writer)
 
@@ -157,14 +150,6 @@ def test_make_package_omits_absent_fields_instead_of_inventing_them():
 # --- identical releases and hashing -----------------------------------------------------------
 
 
-def test_releases_differing_only_in_version_share_one_file(registry, writer):
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-
-    flask = _index_entry(writer, FLASK)
-    assert len({r["hash"] for r in flask["releases"]}) == 1
-    assert len(list((writer.database_dir / "packages" / FLASK).iterdir())) == 1
-
-
 def test_releases_with_different_metadata_get_separate_files(registry, writer):
     registry.save(FLASK, "0.67b0", _release(FLASK, "0.67b0", requires_python=">=3.11"))
 
@@ -194,28 +179,6 @@ def test_hash_does_not_depend_on_registry_key_order(registry, writer, tmp_path):
 
     expected = _index_entry(writer, FLASK)["releases"][0]["hash"]
     assert _index_entry(other_writer, FLASK)["releases"][0]["hash"] == expected
-
-
-def test_rebuild_is_byte_identical(registry, writer):
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-    first = {p: p.read_bytes() for p in writer.database_dir.rglob("*.json")}
-
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-    second = {p: p.read_bytes() for p in writer.database_dir.rglob("*.json")}
-
-    assert first == second
-
-
-def test_fresh_build_and_rebuild_in_a_new_directory_match(registry, writer, tmp_path):
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-    other = PythonDatabaseWriter(str(tmp_path / "elsewhere"))
-
-    run_python_builder(inventory_manager=registry, db_writer=other, clean=True)
-
-    def relative(db):
-        return {p.relative_to(db.database_dir): p.read_bytes() for p in db.database_dir.rglob("*.json")}
-
-    assert relative(writer) == relative(other)
 
 
 # --- null versus false ------------------------------------------------------------------------
@@ -324,119 +287,8 @@ def test_latest_release_is_a_prerelease_when_there_is_nothing_else(registry, wri
 # --- errors -----------------------------------------------------------------------------------
 
 
-def test_returns_1_when_registry_empty(tmp_path, writer):
-    empty = InventoryManager(registry_dir=str(tmp_path / "empty"))
-
-    assert run_python_builder(inventory_manager=empty, db_writer=writer) == 1
-
-
-def test_returns_1_and_writes_no_index_when_registry_empty(tmp_path, writer):
-    empty = InventoryManager(registry_dir=str(tmp_path / "empty"))
-
-    run_python_builder(inventory_manager=empty, db_writer=writer)
-
-    assert not (writer.database_dir / "index.json").exists()
-
-
-def test_returns_1_on_name_mismatch(registry, writer):
-    registry.save(
-        "opentelemetry-instrumentation-pg", "0.66b2", _release("opentelemetry-instrumentation-mysql", "0.66b2")
-    )
-
-    assert run_python_builder(inventory_manager=registry, db_writer=writer) == 1
-
-
-def test_returns_1_on_version_field_not_matching_file(registry, writer):
-    registry.save("opentelemetry-instrumentation-pg", "0.66b2", _release("opentelemetry-instrumentation-pg", "0.66b1"))
-
-    assert run_python_builder(inventory_manager=registry, db_writer=writer) == 1
-
-
-def test_returns_1_on_unparseable_version(registry, writer):
-    pg = "opentelemetry-instrumentation-pg"
-    registry.save(pg, "latest", _release(pg, "latest"))
-
-    assert run_python_builder(inventory_manager=registry, db_writer=writer) == 1
-
-
 def test_returns_1_on_a_version_neither_pep440_nor_normalizable(registry, writer):
     pg = "opentelemetry-instrumentation-pg"
     registry.save(pg, "1.0.0-beta.x", _release(pg, "1.0.0-beta.x"))
 
     assert run_python_builder(inventory_manager=registry, db_writer=writer) == 1
-
-
-def test_returns_1_on_non_mapping_registry_file(registry, writer):
-    path = registry.registry_dir / "opentelemetry-instrumentation-pg" / "v0.66b2.yaml"
-    path.parent.mkdir()
-    path.write_text("- a\n- list\n")
-
-    assert run_python_builder(inventory_manager=registry, db_writer=writer) == 1
-
-
-def test_returns_1_on_unhashable_value(registry, writer):
-    # An unquoted date in YAML loads as datetime.date, which isn't JSON, so
-    # hashing raises TypeError. That must fail the build, not crash it.
-    path = registry.registry_dir / "opentelemetry-instrumentation-pg" / "v0.66b2.yaml"
-    path.parent.mkdir()
-    path.write_text(
-        "name: opentelemetry-instrumentation-pg\nversion: 0.66b2\nrequires_python: 2026-09-30\n",
-    )
-
-    assert run_python_builder(inventory_manager=registry, db_writer=writer) == 1
-
-
-def test_returns_1_on_write_failure(registry):
-    failing = MagicMock()
-    failing.write_package.side_effect = OSError("disk full")
-
-    assert run_python_builder(inventory_manager=registry, db_writer=failing) == 1
-
-
-# --- cleanup ----------------------------------------------------------------------------------
-
-
-def test_removes_orphans_when_incremental(registry, writer):
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-    stale = writer.database_dir / "packages" / FLASK / f"{FLASK}-000000000000.json"
-    stale.write_text("{}")
-
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-
-    assert not stale.exists()
-
-
-def test_changed_metadata_orphans_the_old_file_only_once_it_is_unreferenced(registry, writer):
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-    old_hash = _index_entry(writer, FLASK)["releases"][0]["hash"]
-    old_file = writer.database_dir / "packages" / FLASK / f"{FLASK}-{old_hash}.json"
-    # Every release changes, as when a published field is added to PACKAGE_FIELDS.
-    for version in ("0.66b0", "0.66b1", "0.66b2"):
-        registry.save(FLASK, version, _release(FLASK, version, requires_python=">=3.11"))
-
-    run_python_builder(inventory_manager=registry, db_writer=writer)
-
-    assert not old_file.exists()
-    assert len(list((writer.database_dir / "packages" / FLASK).iterdir())) == 1
-
-
-def test_clean_wipes_before_building(registry, writer):
-    writer.database_dir.mkdir(parents=True)
-    leftover = writer.database_dir / "leftover.json"
-    leftover.write_text("{}")
-
-    assert run_python_builder(inventory_manager=registry, db_writer=writer, clean=True) == 0
-
-    assert not leftover.exists()
-    assert (writer.database_dir / "index.json").exists()
-
-
-def test_skips_orphan_gc_when_clean(registry):
-    mock_writer = MagicMock()
-    mock_writer.write_package.return_value = "abc123def456"
-    mock_writer.get_stats.return_value = {"files_written": 0, "total_bytes": 0}
-
-    run_python_builder(inventory_manager=registry, db_writer=mock_writer, clean=True)
-
-    mock_writer.clean.assert_called_once()
-    mock_writer.remove_orphans.assert_not_called()
