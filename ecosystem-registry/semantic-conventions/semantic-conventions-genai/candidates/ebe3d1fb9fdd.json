@@ -7,7 +7,7 @@
       "evidence": [
         {
           "label": "model: model/gen-ai/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/e6658f14c9d9ea0760825f029cb82e7673f48fab/model/gen-ai/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/76e0c19e7fe11dc693fe258642363a438af4d3aa/model/gen-ai/spans.yaml"
         }
       ],
       "fromStates": {
@@ -41,11 +41,11 @@
       "evidence": [
         {
           "label": "model: model/a2a/registry.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/e6658f14c9d9ea0760825f029cb82e7673f48fab/model/a2a/registry.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/76e0c19e7fe11dc693fe258642363a438af4d3aa/model/a2a/registry.yaml"
         },
         {
           "label": "model: model/a2a/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/e6658f14c9d9ea0760825f029cb82e7673f48fab/model/a2a/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/76e0c19e7fe11dc693fe258642363a438af4d3aa/model/a2a/spans.yaml"
         }
       ],
       "fromStates": {},
@@ -232,12 +232,13 @@
     "Use `gen_ai.client.fetch_response.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client fetch response operations to fail.",
     "Add `gen_ai.invoke_agent.exception` for exceptions that cause internal agent invocation operations to fail.",
     "Remove `gen_ai.token.modality` from `gen_ai.client.inference.usage.reasoning.output_tokens`. Record the reasoning token count without a modality breakdown.",
+    "Clarify the scope of `gen_ai.tool.definitions` on inference, realtime inference, agent-invocation, and fetch-response spans.",
     "Add `plan` operation for GenAI agent planning/task decomposition spans.",
     "Add `moonshot_ai` to `gen_ai.provider.name` well-known values."
   ],
-  "commit": "e6658f14c9d9ea0760825f029cb82e7673f48fab",
-  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...e6658f14c9d9ea0760825f029cb82e7673f48fab",
-  "date": "2026-11-06",
+  "commit": "76e0c19e7fe11dc693fe258642363a438af4d3aa",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...76e0c19e7fe11dc693fe258642363a438af4d3aa",
+  "date": "2026-11-19",
   "dateBasis": "commit-date",
   "gaps": [
     {
@@ -287,9 +288,9 @@
     "extractor": "model-stability-diff",
     "filesParsed": 16,
     "filesUnparsed": [],
-    "relevantCommitCount": 113,
+    "relevantCommitCount": 115,
     "structure": {
-      "groupsAdded": 40,
+      "groupsAdded": 41,
       "groupsRemoved": 13,
       "subjectsAddedToExistingNamespaces": 77
     }
