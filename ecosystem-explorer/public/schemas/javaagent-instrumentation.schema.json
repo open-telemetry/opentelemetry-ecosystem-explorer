@@ -203,7 +203,7 @@
                   "description": "Attributes associated with the metric.",
                   "type": "array",
                   "items": {
-                    "description": "An attribute associated with a metric or span.",
+                    "description": "An attribute associated with a metric, span, or event.",
                     "type": "object",
                     "properties": {
                       "name": {
@@ -257,7 +257,7 @@
                   "description": "Attributes associated with the span.",
                   "type": "array",
                   "items": {
-                    "description": "An attribute associated with a metric or span.",
+                    "description": "An attribute associated with a metric, span, or event.",
                     "type": "object",
                     "properties": {
                       "name": {
@@ -287,9 +287,63 @@
               "propertyOrder": ["span_kind", "attributes"],
               "required": ["span_kind"]
             }
+          },
+          "events": {
+            "description": "Events emitted by this instrumentation.",
+            "type": "array",
+            "items": {
+              "description": "Metadata for an event emitted by an instrumentation.",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The name of the event.",
+                  "type": "string"
+                },
+                "severity": {
+                  "description": "The severity of the event, when specified.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of what the event represents.",
+                  "type": "string"
+                },
+                "attributes": {
+                  "description": "Attributes associated with the event.",
+                  "type": "array",
+                  "items": {
+                    "description": "An attribute associated with a metric, span, or event.",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the attribute.",
+                        "type": "string"
+                      },
+                      "type": {
+                        "description": "The data type of the attribute value.",
+                        "enum": [
+                          "BOOLEAN",
+                          "BOOLEAN_ARRAY",
+                          "DOUBLE",
+                          "DOUBLE_ARRAY",
+                          "LONG",
+                          "LONG_ARRAY",
+                          "STRING",
+                          "STRING_ARRAY"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "propertyOrder": ["name", "type"],
+                    "required": ["name", "type"]
+                  }
+                }
+              },
+              "propertyOrder": ["name", "severity", "description", "attributes"],
+              "required": ["name"]
+            }
           }
         },
-        "propertyOrder": ["when", "metrics", "spans"],
+        "propertyOrder": ["when", "metrics", "spans", "events"],
         "required": ["when"]
       }
     },

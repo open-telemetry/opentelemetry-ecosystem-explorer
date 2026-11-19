@@ -20,7 +20,7 @@ import { SectionDivider } from "@/components/ui/section-divider";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { AttributeTable } from "./attribute-table";
 import { ConfigurationSelector } from "./configuration-selector";
-import type { Telemetry } from "@/types/javaagent";
+import type { Telemetry, TelemetryEvent } from "@/types/javaagent";
 
 interface TelemetrySectionProps {
   telemetry: Telemetry[];
@@ -68,6 +68,63 @@ function ExpandCollapseToggle({
           {t("telemetrySection.collapseAll")}
         </button>
       </div>
+    </div>
+  );
+}
+
+function EventCard({ event }: { event: TelemetryEvent }) {
+  const { t } = useTranslation("java-agent");
+  const [isExpanded, setExpanded] = useState(true);
+  const hasAttributes = Boolean(event.attributes?.length);
+  const hasDetails = Boolean(event.description) || hasAttributes;
+  const title = (
+    <>
+      <code className="text-foreground min-w-0 flex-1 text-left font-mono text-sm font-semibold break-all sm:text-base">
+        {event.name}
+      </code>
+      {event.severity && (
+        <GlowBadge variant="secondary" className="shrink-0 py-0.5 text-[9px]">
+          {event.severity}
+        </GlowBadge>
+      )}
+    </>
+  );
+
+  return (
+    <div className="border-border/40 bg-surface-card overflow-hidden rounded-2xl border shadow-sm">
+      {hasDetails ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+          className="hover:bg-muted/30 flex w-full cursor-pointer items-center gap-3 p-4 transition-colors sm:px-6 sm:py-5"
+        >
+          {title}
+          {isExpanded ? (
+            <ChevronUp className="text-muted-foreground/50 h-4 w-4 shrink-0" />
+          ) : (
+            <ChevronDown className="text-muted-foreground/50 h-4 w-4 shrink-0" />
+          )}
+        </button>
+      ) : (
+        <div className="flex items-center gap-3 p-4 sm:px-6 sm:py-5">{title}</div>
+      )}
+
+      {hasDetails && isExpanded && (
+        <div className="border-border/40 space-y-6 border-t p-4 sm:p-6 md:p-10">
+          {event.description && (
+            <p className="text-foreground/80 text-base leading-relaxed">{event.description}</p>
+          )}
+          {event.attributes && hasAttributes && (
+            <div className="space-y-4">
+              <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
+                {t("telemetrySection.attributes")}
+              </h4>
+              <AttributeTable attributes={event.attributes} />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -147,6 +204,8 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
 
   const hasMetrics = currentTelemetry?.metrics && currentTelemetry.metrics.length > 0;
   const hasSpans = currentTelemetry?.spans && currentTelemetry.spans.length > 0;
+  const events = currentTelemetry?.events ?? [];
+  const hasEvents = events.length > 0;
   const hasBothMetricsAndSpans = hasMetrics && hasSpans;
 
   return (
@@ -317,8 +376,19 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
         )}
       </div>
 
+      {hasEvents && (
+        <div key={effectiveSelectedWhen} className="space-y-6">
+          <SectionDivider className="mb-0">{t("telemetrySection.events")}</SectionDivider>
+          <div className="mx-auto max-w-3xl space-y-4">
+            {events.map((event, index) => (
+              <EventCard key={`${event.name}-${index}`} event={event} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Empty state */}
-      {!hasMetrics && !hasSpans && (
+      {!hasMetrics && !hasSpans && !hasEvents && (
         <div className="flex min-h-[200px] items-center justify-center">
           <p className="text-muted-foreground text-sm">{t("telemetrySection.empty")}</p>
         </div>
