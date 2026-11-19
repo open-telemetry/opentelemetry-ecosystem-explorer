@@ -134,3 +134,22 @@ def test_save_replaces_final_path_from_a_temp_file_in_the_same_directory(tmp_pat
     # confirms the final path only becomes visible via that one replace call, not
     # by writing to it directly beforehand.
     assert not final_path.exists()
+
+
+def test_load_round_trips_saved_data_including_null_and_false(tmp_path):
+    manager = InventoryManager(registry_dir=str(tmp_path))
+    name = "opentelemetry-instrumentation-flask"
+    data = {
+        "name": name,
+        "version": "0.66b2",
+        "supports_metrics": False,
+        "semantic_convention_status": None,
+        "instruments": [{"library": "flask", "version_range": ">= 1.0", "source_key": "instruments"}],
+    }
+    manager.save(name, "0.66b2", data)
+
+    loaded = manager.load(name, "0.66b2")
+
+    assert loaded == data
+    assert loaded["supports_metrics"] is False
+    assert loaded["semantic_convention_status"] is None
