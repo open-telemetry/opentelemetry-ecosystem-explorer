@@ -7,7 +7,7 @@
       "evidence": [
         {
           "label": "model: model/gen-ai/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/76e0c19e7fe11dc693fe258642363a438af4d3aa/model/gen-ai/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/622b2b6073b15e5ed886c3c12a65a892b9cd5c70/model/gen-ai/spans.yaml"
         }
       ],
       "fromStates": {
@@ -41,11 +41,11 @@
       "evidence": [
         {
           "label": "model: model/a2a/registry.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/76e0c19e7fe11dc693fe258642363a438af4d3aa/model/a2a/registry.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/622b2b6073b15e5ed886c3c12a65a892b9cd5c70/model/a2a/registry.yaml"
         },
         {
           "label": "model: model/a2a/spans.yaml",
-          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/76e0c19e7fe11dc693fe258642363a438af4d3aa/model/a2a/spans.yaml"
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/622b2b6073b15e5ed886c3c12a65a892b9cd5c70/model/a2a/spans.yaml"
         }
       ],
       "fromStates": {},
@@ -232,13 +232,14 @@
     "Use `gen_ai.client.fetch_response.exception` instead of `gen_ai.client.operation.exception` for exceptions that cause client fetch response operations to fail.",
     "Add `gen_ai.invoke_agent.exception` for exceptions that cause internal agent invocation operations to fail.",
     "Remove `gen_ai.token.modality` from `gen_ai.client.inference.usage.reasoning.output_tokens`. Record the reasoning token count without a modality breakdown.",
+    "Replace `gen_ai.prompt.variable` (`template[string]`) with `gen_ai.prompt.variables` (`any` object) to support structured and non-string prompt template variables, and remove prompt variables from MCP operation metrics. ([#677](https://github.com/open-telemetry/semantic-conventions-genai/issues/677)",
     "Clarify the scope of `gen_ai.tool.definitions` on inference, realtime inference, agent-invocation, and fetch-response spans.",
     "Add `plan` operation for GenAI agent planning/task decomposition spans.",
     "Add `moonshot_ai` to `gen_ai.provider.name` well-known values."
   ],
-  "commit": "76e0c19e7fe11dc693fe258642363a438af4d3aa",
-  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...76e0c19e7fe11dc693fe258642363a438af4d3aa",
-  "date": "2026-11-19",
+  "commit": "622b2b6073b15e5ed886c3c12a65a892b9cd5c70",
+  "compareUrl": "https://github.com/open-telemetry/semantic-conventions-genai/compare/ebe3d1fb9fdda3398099e11ef91c4c490912f88d...622b2b6073b15e5ed886c3c12a65a892b9cd5c70",
+  "date": "2026-11-20",
   "dateBasis": "commit-date",
   "gaps": [
     {
@@ -279,6 +280,10 @@
     },
     {
       "kind": "ambiguity",
+      "message": "Changelog entry for (no scope) suggests a milestone ('Replace `gen_ai.prompt.variable` (`template[string]`) with `gen_ai.prompt.variables` (`any` object) to support structure') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
+    },
+    {
+      "kind": "ambiguity",
       "message": "Changelog entry for (no scope) suggests a milestone ('Require structured values for JSON-schema-defined attributes on spans and events, removing the JSON-string fallback for ') but the structured diff shows none: it may back-reference an earlier release or describe a reorganisation."
     }
   ],
@@ -286,11 +291,11 @@
   "kind": "range",
   "method": {
     "extractor": "model-stability-diff",
-    "filesParsed": 16,
+    "filesParsed": 17,
     "filesUnparsed": [],
-    "relevantCommitCount": 115,
+    "relevantCommitCount": 119,
     "structure": {
-      "groupsAdded": 41,
+      "groupsAdded": 44,
       "groupsRemoved": 13,
       "subjectsAddedToExistingNamespaces": 77
     }
