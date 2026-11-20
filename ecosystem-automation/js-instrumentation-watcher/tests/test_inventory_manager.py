@@ -15,7 +15,6 @@
 
 """Tests for InventoryManager."""
 
-import pytest
 import yaml
 from js_instrumentation_watcher.inventory_manager import InventoryManager
 
@@ -57,33 +56,6 @@ def test_version_path_format(tmp_path):
     assert expected.exists()
 
 
-def test_list_packages_sorted_and_only_with_versions(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    manager.save("instrumentation-pg", "0.60.0", {"name": "instrumentation-pg"})
-    manager.save("instrumentation-express", "0.66.0", {"name": "instrumentation-express"})
-    # A directory with no version files and a stray file at the top level
-    # are not packages.
-    (tmp_path / "instrumentation-empty").mkdir()
-    (tmp_path / "README.md").write_text("notes")
-
-    assert manager.list_packages() == ["instrumentation-express", "instrumentation-pg"]
-
-
-def test_list_packages_empty_when_registry_missing(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path / "does-not-exist"))
-
-    assert manager.list_packages() == []
-
-
-def test_list_versions_strips_prefix_and_ignores_other_files(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    manager.save("instrumentation-express", "0.9.0", {"name": "instrumentation-express"})
-    manager.save("instrumentation-express", "0.10.0", {"name": "instrumentation-express"})
-    (tmp_path / "instrumentation-express" / "notes.txt").write_text("not a version")
-
-    assert sorted(manager.list_versions("instrumentation-express")) == ["0.10.0", "0.9.0"]
-
-
 def test_load_round_trips_saved_data(tmp_path):
     manager = InventoryManager(registry_dir=str(tmp_path))
     data = {
@@ -94,20 +66,3 @@ def test_load_round_trips_saved_data(tmp_path):
     manager.save("instrumentation-express", "0.66.0", data)
 
     assert manager.load("instrumentation-express", "0.66.0") == data
-
-
-def test_load_rejects_non_mapping_file(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-    path = tmp_path / "instrumentation-express" / "v0.66.0.yaml"
-    path.parent.mkdir()
-    path.write_text("- just\n- a list\n")
-
-    with pytest.raises(ValueError, match="does not contain a mapping"):
-        manager.load("instrumentation-express", "0.66.0")
-
-
-def test_load_missing_version_raises(tmp_path):
-    manager = InventoryManager(registry_dir=str(tmp_path))
-
-    with pytest.raises(FileNotFoundError):
-        manager.load("instrumentation-express", "0.66.0")

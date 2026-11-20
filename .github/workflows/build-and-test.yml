@@ -416,7 +416,7 @@ jobs:
       - name: Remove the generated database
         run:
           rm -rf public/data/javaagent public/data/collector public/data/configuration
-          public/data/javascript
+          public/data/javascript public/data/python
 
       - name: Typecheck
         run: bun run typecheck

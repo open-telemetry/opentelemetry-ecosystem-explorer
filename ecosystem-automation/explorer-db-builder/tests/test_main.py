@@ -801,6 +801,13 @@ class TestRunBuilderOrchestrator:
         with patch("explorer_db_builder.main.run_javascript_builder", return_value=0) as mock:
             yield mock
 
+    @pytest.fixture(autouse=True)
+    def mock_python(self):
+        # Same reason as mock_javascript: ecosystem="all" would otherwise run the real Python
+        # builder against the repo registry and write into ecosystem-explorer/public/data/python.
+        with patch("explorer_db_builder.main.run_python_builder", return_value=0) as mock:
+            yield mock
+
     @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
     @patch("explorer_db_builder.main.run_javaagent_builder")
@@ -960,6 +967,64 @@ class TestRunBuilderOrchestrator:
         mock_config.assert_called_once()
         mock_collector.assert_called_once()
 
+    @patch("explorer_db_builder.main.run_collector_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_configuration_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_javaagent_builder", return_value=0)
+    def test_all_runs_python(self, mock_java, mock_config, mock_collector, mock_python):
+        result = run_builder(clean=True)
+
+        assert result == 0
+        mock_python.assert_called_once_with(clean=True)
+
+    @patch("explorer_db_builder.main.run_collector_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_configuration_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_javaagent_builder", return_value=0)
+    def test_ecosystem_python_only(self, mock_java, mock_config, mock_collector, mock_python, mock_javascript):
+        result = run_builder(clean=False, ecosystem="python")
+
+        assert result == 0
+        mock_python.assert_called_once_with(clean=False)
+        mock_java.assert_not_called()
+        mock_config.assert_not_called()
+        mock_collector.assert_not_called()
+        mock_javascript.assert_not_called()
+
+    @patch("explorer_db_builder.main.run_collector_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_configuration_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_javaagent_builder", return_value=0)
+    def test_python_skipped_for_other_ecosystem(self, mock_java, mock_config, mock_collector, mock_python):
+        run_builder(clean=False, ecosystem="collector")
+
+        mock_python.assert_not_called()
+
+    @patch("explorer_db_builder.main.run_collector_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_configuration_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_javaagent_builder", return_value=0)
+    def test_python_failure_fails_build_but_other_pipelines_still_run(
+        self, mock_java, mock_config, mock_collector, mock_python, mock_javascript
+    ):
+        mock_python.return_value = 1
+
+        result = run_builder(clean=False)
+
+        assert result == 1
+        mock_java.assert_called_once()
+        mock_config.assert_called_once()
+        mock_collector.assert_called_once()
+        mock_javascript.assert_called_once()
+
+    @patch("explorer_db_builder.main.run_collector_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_configuration_builder", return_value=0)
+    @patch("explorer_db_builder.main.run_javaagent_builder", return_value=0)
+    def test_javascript_failure_does_not_stop_python(
+        self, mock_java, mock_config, mock_collector, mock_javascript, mock_python
+    ):
+        mock_javascript.return_value = 1
+
+        assert run_builder(clean=False) == 1
+
+        mock_python.assert_called_once_with(clean=False)
+
 
 def test_every_pipeline_is_an_archived_ecosystem():
     # emit_archives packs only ECOSYSTEMS, so a pipeline added to run_builder without a matching
@@ -996,4 +1061,18 @@ def test_cli_accepts_javascript_ecosystem(mock_exit, mock_run_builder, monkeypat
     main()
 
     mock_run_builder.assert_called_once_with(clean=False, ecosystem="javascript", collector_audit_report=None)
+    mock_exit.assert_called_once_with(0)
+
+
+@patch("explorer_db_builder.main.run_builder", return_value=0)
+@patch("explorer_db_builder.main.sys.exit")
+def test_cli_accepts_python_ecosystem(mock_exit, mock_run_builder, monkeypatch):
+    # Parses real argv, so a missing "python" choice fails here.
+    from explorer_db_builder.main import main
+
+    monkeypatch.setattr("sys.argv", ["explorer-db-builder", "--ecosystem", "python"])
+
+    main()
+
+    mock_run_builder.assert_called_once_with(clean=False, ecosystem="python", collector_audit_report=None)
     mock_exit.assert_called_once_with(0)
