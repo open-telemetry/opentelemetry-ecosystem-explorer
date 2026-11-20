@@ -15,18 +15,25 @@
       "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
     },
     "javaagent": {
-      "release_tag": "data-javaagent-4892ad3b0646",
+      "release_tag": "data-javaagent-1487f1a6dcc5",
       "asset": "javaagent.tar.gz",
-      "content_digest": "4892ad3b06461f19e6a1d7b136086e1c637b2ab7446e1d9825b165ec7f0d62c1",
-      "archive_sha256": "cde4bb84ed01c5f6823d501935e974f1f839ab5e66f6fec344e93311bda6262e",
-      "registry_commit": "d70783dba947ce1ed18fa5a122fd0bd6efb39316"
+      "content_digest": "1487f1a6dcc54a1cb8bfb518da263c9d597f79d52641b451f852774ba2e724cd",
+      "archive_sha256": "f52bc6f16522e80ab128e7ee861ca224887e145163bcb70542a96dde07c4d69d",
+      "registry_commit": "776c9c35897c27fa27a11ccfec735f778bd8cfc1"
     },
     "javascript": {
-      "release_tag": "data-javascript-e24fb02f60df",
+      "release_tag": "data-javascript-68c9b7c652ef",
       "asset": "javascript.tar.gz",
-      "content_digest": "e24fb02f60dffdbd447177539851024b5e1c0e9d970e952258c40eef94ef9de1",
-      "archive_sha256": "1eeb36014123d6a2aa4b56565a8d1028150359f5a45a53a4f4b8fcd04ab5018b",
-      "registry_commit": "a5aaf59d522a5aa4adb2c2c4481f8ad2db879c92"
+      "content_digest": "68c9b7c652efaa25b6b26e7355907c7f82ad55fe635e0939da7c16bb17c69fda",
+      "archive_sha256": "bda93bcfe30b7051af1468f7a748af6682ca5ea5397f2cde7f527388b6887b01",
+      "registry_commit": "776c9c35897c27fa27a11ccfec735f778bd8cfc1"
+    },
+    "python": {
+      "release_tag": "data-python-fae0de5da96f",
+      "asset": "python.tar.gz",
+      "content_digest": "fae0de5da96f1c90eb50f1d992a141bd7cee954dc971fc177dbda90ea6585072",
+      "archive_sha256": "898aa45a1467aa93c0a0d7db98f4ba1ba1f387e91485fd843fe85e362818c3dd",
+      "registry_commit": "776c9c35897c27fa27a11ccfec735f778bd8cfc1"
     }
   }
 }
