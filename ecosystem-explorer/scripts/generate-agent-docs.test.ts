@@ -88,6 +88,40 @@ describe("agent docs: Java telemetry rendering", () => {
     expect(md).toContain("| SERVER | `error.type` (STRING) |");
   });
 
+  it("renders an events-only group with severity and attributes under its own condition", () => {
+    const condition = "otel.semconv.exception.signal.preview=logs";
+    const md = buildJavaInstrumentationPage(
+      {
+        name: "jdbc",
+        telemetry: [
+          instr.telemetry[0],
+          {
+            when: condition,
+            events: [
+              {
+                name: "db.client.operation.exception",
+                severity: "WARN",
+                description: "A database exception.",
+                attributes: [{ name: "exception.type", type: "STRING" }],
+              },
+              { name: "db.example" },
+            ],
+          },
+        ],
+      },
+      "/data/x.json"
+    );
+
+    const [defaultSection, eventSection] = md.split(`### When \`${condition}\`\n`);
+    expect(defaultSection).toContain("### When `default`");
+    expect(defaultSection).not.toContain("db.client.operation.exception");
+    expect(eventSection ?? "").toContain("**Events**");
+    expect(eventSection).toContain(
+      "| `db.client.operation.exception` | WARN | A database exception. | `exception.type` (STRING) |"
+    );
+    expect(eventSection).toContain("| `db.example` |  |  |  |");
+  });
+
   it("omits the Telemetry section when there is no telemetry", () => {
     expect(buildJavaInstrumentationPage({ name: "x" }, "/data/x.json")).not.toContain(
       "## Telemetry"
