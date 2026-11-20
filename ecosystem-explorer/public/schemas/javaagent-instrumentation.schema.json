@@ -362,6 +362,10 @@
     "has_metrics": {
       "description": "Precomputed presence flag: whether any telemetry block emits metrics. See `has_spans`.",
       "type": "boolean"
+    },
+    "has_events": {
+      "description": "Precomputed presence flag: whether any telemetry block emits events. See `has_spans`.",
+      "type": "boolean"
     }
   },
   "propertyOrder": [
@@ -383,7 +387,8 @@
     "markdown_hash",
     "_is_custom",
     "has_spans",
-    "has_metrics"
+    "has_metrics",
+    "has_events"
   ],
   "required": ["name", "scope"],
   "$schema": "https://json-schema.org/draft-07/schema#"

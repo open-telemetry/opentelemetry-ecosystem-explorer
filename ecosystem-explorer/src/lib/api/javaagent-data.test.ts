@@ -452,6 +452,7 @@ describe("javaagent-data", () => {
       ...mockInstrumentationData,
       name: "spring-webmvc",
       scope: { name: "io.opentelemetry.spring-webmvc" },
+      telemetry: [{ when: "default", events: [{ name: "spring.webmvc.request" }] }],
     };
 
     it("should load all instrumentations from manifest", async () => {
@@ -474,6 +475,7 @@ describe("javaagent-data", () => {
           description: "Instrumentation for Akka Actor",
           has_spans: false,
           has_metrics: false,
+          has_events: false,
           _is_custom: false,
         })
       );
@@ -483,6 +485,7 @@ describe("javaagent-data", () => {
           scope: { name: "io.opentelemetry.spring-webmvc" },
           has_spans: false,
           has_metrics: false,
+          has_events: true,
           _is_custom: false,
         })
       );

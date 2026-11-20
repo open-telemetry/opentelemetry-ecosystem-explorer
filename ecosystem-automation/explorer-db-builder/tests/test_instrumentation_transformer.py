@@ -44,12 +44,28 @@ class TestMakeListInstrumentation:
         # Presence flags precomputed from telemetry; the heavy telemetry array dropped.
         assert entry["has_spans"] is True
         assert entry["has_metrics"] is False
+        assert entry["has_events"] is False
         assert "telemetry" not in entry
         assert entry["_is_custom"] is False
         # Fields the list page reads are preserved.
         assert entry["name"] == "akka-actor-2.3"
         assert entry["semantic_conventions"] == ["messaging"]
         assert entry["scope"] == {"name": "io.opentelemetry.akka-actor-2.3"}
+
+    def test_precomputes_has_events_from_any_telemetry_block(self):
+        instrumentation = {
+            "name": "jdbc",
+            "telemetry": [
+                {"when": "default", "spans": [{"span_kind": "CLIENT"}]},
+                {"when": "otel.instrumentation.jdbc.logs.enabled=true", "events": [{"name": "db.query"}]},
+            ],
+        }
+
+        entry = make_list_instrumentation(instrumentation, is_custom=False)
+
+        assert entry["has_events"] is True
+        assert entry["has_spans"] is True
+        assert entry["has_metrics"] is False
 
     def test_preserves_configurations_for_config_builder(self):
         # The Configuration Builder reads `configurations` off the slim list
@@ -86,6 +102,7 @@ class TestMakeListInstrumentation:
         assert entry["_is_custom"] is True
         assert entry["has_spans"] is False
         assert entry["has_metrics"] is False
+        assert entry["has_events"] is False
         # Absent optional fields are omitted so the content hash stays stable.
         assert "display_name" not in entry
         assert "semantic_conventions" not in entry
