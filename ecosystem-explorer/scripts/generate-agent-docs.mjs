@@ -464,7 +464,8 @@ export function buildJavaInstrumentationPage(instr, jsonUrl, latestJsonUrl) {
   for (const group of telemetry) {
     const metrics = group?.metrics ?? [];
     const spans = group?.spans ?? [];
-    if (!metrics.length && !spans.length) continue;
+    const events = group?.events ?? [];
+    if (!metrics.length && !spans.length && !events.length) continue;
     telemetryLines.push(`### When \`${escapeCell(group?.when ?? "default")}\``, "");
 
     if (metrics.length) {
@@ -504,6 +505,23 @@ export function buildJavaInstrumentationPage(instr, jsonUrl, latestJsonUrl) {
           `| ${escapeCell(span?.span_kind ?? "unknown")} | ${formatJavaAttributes(
             span?.attributes
           )} |`
+        );
+      }
+      telemetryLines.push("");
+    }
+
+    if (events.length) {
+      telemetryLines.push(
+        "**Events**",
+        "",
+        "| Event | Severity | Description | Attributes |",
+        "| --- | --- | --- | --- |"
+      );
+      for (const event of events) {
+        telemetryLines.push(
+          `| \`${escapeCell(event.name)}\` | ${escapeCell(event.severity)} | ${escapeCell(
+            event.description
+          )} | ${formatJavaAttributes(event.attributes)} |`
         );
       }
       telemetryLines.push("");

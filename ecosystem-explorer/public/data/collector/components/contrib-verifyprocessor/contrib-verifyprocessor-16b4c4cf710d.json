@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-verifyprocessor",
+  "markdown_hash": "91c71a4ceb64",
+  "name": "verifyprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "hilmarf",
+        "jmacd",
+        "MJarmo"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    },
+    "warnings": []
+  },
+  "type": "processor"
+}

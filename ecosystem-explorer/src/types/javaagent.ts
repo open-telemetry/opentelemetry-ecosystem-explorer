@@ -200,6 +200,8 @@ export interface Telemetry {
   metrics?: Metric[];
   /** Spans emitted by this instrumentation. */
   spans?: Span[];
+  /** Events emitted by this instrumentation. */
+  events?: TelemetryEvent[];
 }
 
 /**
@@ -238,7 +240,21 @@ export interface Span {
 }
 
 /**
- * An attribute associated with a metric or span.
+ * Metadata for an event emitted by an instrumentation.
+ */
+export interface TelemetryEvent {
+  /** The name of the event. */
+  name: string;
+  /** The severity of the event, when specified. */
+  severity?: string;
+  /** Description of what the event represents. */
+  description?: string;
+  /** Attributes associated with the event. */
+  attributes?: Attribute[];
+}
+
+/**
+ * An attribute associated with a metric, span, or event.
  */
 export interface Attribute {
   /** The name of the attribute. */

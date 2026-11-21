@@ -183,6 +183,73 @@ describe("TelemetrySection", () => {
     });
   });
 
+  describe("Events", () => {
+    it("renders events for the selected configuration, including an events-only group", async () => {
+      const user = userEvent.setup();
+      const condition = "otel.semconv.exception.signal.preview=logs";
+      const telemetry: Telemetry[] = [
+        { when: "default", metrics: [mockMetric] },
+        {
+          when: condition,
+          events: [
+            {
+              name: "db.client.operation.exception",
+              severity: "WARN",
+              attributes: [{ name: "exception.type", type: "STRING" }],
+            },
+          ],
+        },
+      ];
+
+      render(<TelemetrySection telemetry={telemetry} />);
+      expect(screen.queryByText("Events")).not.toBeInTheDocument();
+
+      await user.selectOptions(screen.getByTestId("config-select"), condition);
+
+      expect(screen.getByText("Events")).toBeInTheDocument();
+      expect(screen.getByText("db.client.operation.exception")).toBeInTheDocument();
+      expect(screen.getByText("WARN")).toBeInTheDocument();
+      expect(screen.getByText("exception.type: STRING")).toBeInTheDocument();
+      expect(screen.queryByText("http.server.duration")).not.toBeInTheDocument();
+      expect(screen.queryByText(/defined for this configuration/)).not.toBeInTheDocument();
+
+      await user.selectOptions(screen.getByTestId("config-select"), "default");
+
+      expect(screen.queryByText("db.client.operation.exception")).not.toBeInTheDocument();
+      expect(screen.getByText("http.server.duration")).toBeInTheDocument();
+    });
+
+    it("shows events alongside existing signals and supports individual expansion", async () => {
+      const user = userEvent.setup();
+      const telemetry: Telemetry[] = [
+        {
+          when: "default",
+          metrics: [mockMetric],
+          spans: [mockSpan],
+          events: [
+            { name: "db.example", description: "A database event." },
+            { name: "gen_ai.choice" },
+          ],
+        },
+      ];
+
+      render(<TelemetrySection telemetry={telemetry} />);
+
+      expect(screen.getByText("Metrics")).toBeInTheDocument();
+      expect(screen.getByText("Spans")).toBeInTheDocument();
+      expect(screen.getByText("gen_ai.choice")).toBeInTheDocument();
+
+      const event = screen.getByRole("button", { name: "db.example" });
+      expect(event).toHaveAttribute("aria-expanded", "true");
+      expect(screen.getByText("A database event.")).toBeInTheDocument();
+
+      await user.click(event);
+
+      expect(event).toHaveAttribute("aria-expanded", "false");
+      expect(screen.queryByText("A database event.")).not.toBeInTheDocument();
+    });
+  });
+
   describe("Metrics Rendering", () => {
     it("renders metrics section when metrics exist", () => {
       const telemetry: Telemetry[] = [
@@ -360,23 +427,21 @@ describe("TelemetrySection", () => {
 
       render(<TelemetrySection telemetry={telemetry} />);
 
-      expect(
-        screen.getByText("No metrics or spans defined for this configuration.")
-      ).toBeInTheDocument();
+      expect(screen.getByText("No telemetry defined for this configuration.")).toBeInTheDocument();
     });
 
     it("does not show empty state when telemetry exists", () => {
       const withMetrics: Telemetry[] = [{ when: "default", metrics: [mockMetric] }];
       const { unmount } = render(<TelemetrySection telemetry={withMetrics} />);
       expect(
-        screen.queryByText("No metrics or spans defined for this configuration.")
+        screen.queryByText("No telemetry defined for this configuration.")
       ).not.toBeInTheDocument();
       unmount();
 
       const withSpans: Telemetry[] = [{ when: "default", spans: [mockSpan] }];
       render(<TelemetrySection telemetry={withSpans} />);
       expect(
-        screen.queryByText("No metrics or spans defined for this configuration.")
+        screen.queryByText("No telemetry defined for this configuration.")
       ).not.toBeInTheDocument();
     });
 
@@ -397,16 +462,14 @@ describe("TelemetrySection", () => {
       render(<TelemetrySection telemetry={telemetry} />);
 
       // Initially shows default metric
-      expect(screen.queryByText("No metrics or spans defined")).not.toBeInTheDocument();
+      expect(screen.queryByText("No telemetry defined")).not.toBeInTheDocument();
 
       // Switch to empty configuration
       const select = screen.getByTestId("config-select");
       await user.selectOptions(select, "empty");
 
       // Now shows empty state
-      expect(
-        screen.getByText("No metrics or spans defined for this configuration.")
-      ).toBeInTheDocument();
+      expect(screen.getByText("No telemetry defined for this configuration.")).toBeInTheDocument();
     });
   });
 
@@ -416,9 +479,7 @@ describe("TelemetrySection", () => {
 
       render(<TelemetrySection telemetry={telemetry} />);
 
-      expect(
-        screen.getByText("No metrics or spans defined for this configuration.")
-      ).toBeInTheDocument();
+      expect(screen.getByText("No telemetry defined for this configuration.")).toBeInTheDocument();
     });
   });
 

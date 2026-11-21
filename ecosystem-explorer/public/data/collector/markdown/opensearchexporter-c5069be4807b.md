@@ -1,0 +1,356 @@
+OpenSearch exporter supports sending OpenTelemetry signals as documents to [OpenSearch](https://www.opensearch.org).
+
+The documents are sent using [observability catalog](https://github.com/opensearch-project/opensearch-catalog/tree/main/schema/observability) schema.
+
+## Configuration options
+
+### Indexing Options
+
+The Observability indices would follow the recommended pattern for immutable data stream ingestion using
+the [data_stream](https://opensearch.org/docs/latest/dashboards/im-dashboards/datastream) concepts.
+Index pattern will follow the next naming template `ss4o_{type}-{dataset}-{namespace}`
+
+- `dataset` (default=`default`) a user-provided label to classify source of telemetry. It is used to construct the name of the destination index or data stream.
+- `namespace` (default=`namespace`) a user-provided label to group telemetry. It is used to construct the name of the destination index or data stream.
+
+#### Dynamic Indexing
+
+The OpenSearch exporter supports dynamic index names for logs, traces and metrics using placeholders. You can use any attribute or context key as a placeholder to construct index names dynamically per record.
+
+> Caution: In practice, OpenSearch clusters can become unstable or even break down when index counts reach a very high level. Introducing attributes with high cardinality resulting in many separate indices can significantly impact the stability of your target cluster.
+
+**Configuration Options:**
+
+- `logs_index` - Custom index name pattern for logs
+- `logs_index_fallback` - Fallback value when placeholder is missing (default: `unknown`)
+- `logs_index_time_format` - Time suffix format for logs
+- `traces_index` - Custom index name pattern for traces
+- `traces_index_fallback` - Fallback value when placeholder is missing (default: `unknown`)
+- `traces_index_time_format` - Time suffix format for traces
+- `metrics_index` - Custom index name pattern for metrics
+- `metrics_index_fallback` - Fallback value when placeholder is missing (default: `unknown`)
+- `metrics_index_time_format` - Time suffix format for metrics
+
+**Placeholder Syntax:**
+
+- Placeholder: `%{key}`
+  - Example: `otel-logs-%{service.name}` or `otel-traces-%{service.name}-%{env}`
+  - Multiple placeholders are supported per index name
+  - The value is looked up from item attributes (log/span/metric data point), scope attributes, and resource attributes (in that precedence order)
+  - If the key is missing, the fallback value is used
+  - Generated index names must adhere to [OpenSearch index naming restrictions](https://docs.opensearch.org/latest/api-reference/index-apis/create-index/#index-naming-restrictions)
+  - A substituted attribute value that is empty, starts with `.`, or contains `..` is skipped as if the key were missing, so the next attribute in the precedence order (then the fallback) is used. This keeps a value from resolving to a system index (e.g. `.kibana`) or a different index via a `..` segment. Other values are substituted as-is; a value OpenSearch rejects (uppercase, spaces, forbidden characters) surfaces as an indexing error rather than being silently rerouted. The configured fallback value is trusted and is not validated.
+
+**Time Suffix Format:**
+
+Logs, traces and metrics support time-formatted suffixes using `*_time_format` options. The time suffix only supports UTC.
+
+- **Valid tokens** (case-sensitive):
+  - `yyyy` (4-digit year), `yy` (2-digit year)
+  - `MM` (2-digit month), `dd` (2-digit day)
+  - `HH` (2-digit hour, 24h), `mm` (2-digit minute), `ss` (2-digit second)
+- **Allowed separators**: `-`, `.`, `_`, `+`
+- **Examples:** `yyyy.MM.dd` → `2024.06.07`, `yyyy-MM` → `2024-06`, `yyMMdd` → `240607`
+
+**Default Behavior:**
+
+If custom index names are not set, the exporter uses default patterns:
+- Logs: `ss4o_logs-{dataset}-{namespace}`
+- Traces: `ss4o_traces-{dataset}-{namespace}`
+- Metrics: `ss4o_metrics-{dataset}-{namespace}`
+
+##### Example Configuration
+
+```yaml
+exporters:
+  opensearch:
+    http:
+      endpoint: http://opensearch.example.com:9200
+    # Logs configuration
+    logs_index: "otel-logs-%{service.name}-%{env}"
+    logs_index_fallback: "default"
+    logs_index_time_format: "yyyy.MM.dd"
+    # Traces configuration
+    traces_index: "otel-traces-%{service.name}-%{deployment.environment}"
+    traces_index_fallback: "unknown"
+    traces_index_time_format: "yyyy.MM.dd"
+    sending_queue:
+      batch:
+```
+
+This configuration will create:
+- Log indexes like: `otel-logs-myservice-prod-2024.06.07`
+- Trace indexes like: `otel-traces-myservice-production-2024.06.07`
+
+If any placeholder key is missing, the fallback value is used e.g.:
+- `otel-logs-myservice-default-2024.06.07`).
+- `otel-traces-unknown-production-2024.06.07`
+
+### OpenSearch document mapping
+
+
+The mapping mode can be controlled via the scope attribute `opensearch.mapping.mode`.
+
+The OpenSearch exporter supports several document schemas and preprocessing behaviors, which may be configured through the following settings:
+
+- `mapping`:
+  - `mode` (default=`ss4o`): Configures the field mappings. Supported modes are:
+    - `ss4o`: Exports logs in the [Simple Schema for Observability](https://opensearch.org/docs/latest/observing-your-data/ss4o/) standard.
+    - `ecs`: Maps fields defined in the OpenTelemetry Semantic Conventions to the [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/current/index.html)
+    - `flatten_attributes`: Uses the ECS mapping but flattens all resource and log attributes in the record to the top-level.
+    - `bodymap`: uses the "body" of a log record as the exact content of the OpenSearch document, without any transformation. This mapping mode is intended for use cases where the client wishes to have complete control over the OpenSearch document structure.
+    - `otel-v1`: exports logs and traces using the Data Prepper OTel v1 schema, compatible with OpenSearch Observability dashboards.
+  - `manage_index_template`: (optional, default=`false`) When `true`, creates composable index templates on startup. Only valid with `otel-v1` mode.
+  - `index_template_file`: (optional) Path to a JSON file whose contents are deep-merged over the built-in `otel-v1` index template before it is created. Requires `manage_index_template: true` and `otel-v1` mode. See [Custom index mappings](#custom-index-mappings).
+  - `ism`: (optional) Opt-in [Index State Management](#index-state-management-ism-rollover) rollover for `otel-v1` indices. Only valid with `otel-v1` mode.
+    - `enabled`: (optional, default=`false`) When `true`, creates a rollover policy and an initial write-aliased index on startup.
+    - `policy_file`: (optional) Path to a JSON file containing a full ISM policy body. When set, it is used verbatim and the `rollover_*` options are ignored.
+    - `rollover_min_size`: (optional, default=`50gb`) Minimum index size before rollover. Used only by the built-in policy.
+    - `rollover_min_index_age`: (optional, default=`24h`) Minimum index age before rollover. Used only by the built-in policy.
+    - `rollover_priority`: (optional, default=`100`) ISM template priority used to claim the `<alias>-*` index pattern. Increase it if the cluster already has an ISM policy managing the same pattern — OpenSearch rejects overlapping ISM templates that share a priority. Used only by the built-in policy.
+  - `timestamp_field`: (optional) Field to store the timestamp in. If not set, uses the default `@timestamp`.
+  - `unix_timestamp`: (optional) Whether to store the timestamp in epoch milliseconds.
+  - `dedup`: (optional) removes fields from the document, that have duplicate keys. The filtering only keeps the last value for a key.
+  - `dedot`: (optional) convert dotted keys into nested JSON objects.
+
+#### SS4O mapping mode
+
+The default [`Simple Schema for Observability`](https://docs.opensearch.org/latest/observing-your-data/ss4o/) mapping mode.
+
+In `ss4o` mapping mode, the OpenSearch exporter stores documents using the SS4O schema, which is designed for observability data in OpenSearch. Documents use standardized field names and structure to facilitate integration with OpenSearch dashboards and tools.
+
+| Signal    | Supported          |
+| --------- | ------------------ |
+| Logs      | :white_check_mark: |
+| Traces    | :white_check_mark: |
+| Metrics   | :white_check_mark: |
+
+Metrics follow the [SS4O metrics schema](https://github.com/opensearch-project/opensearch-catalog/tree/main/schema/observability/metrics); each metric data point is exported as one document. All OpenTelemetry metric types are supported: gauge, sum, histogram, exponential histogram and summary.
+
+> [!NOTE]
+> Install the [SS4O metrics index template](https://github.com/opensearch-project/opensearch-catalog/tree/main/schema/observability/metrics) before indexing metrics. Without it, OpenSearch's dynamic mapping infers field types from the first document it sees, which can produce inconsistent types (e.g. histogram bucket boundaries) and cause subsequent documents to be rejected.
+>
+> The catalog template maps `value@int` as a 32-bit `integer`; OpenTelemetry integer data points are 64-bit, so values beyond ±2³¹ are rejected. Change that field to `long` in the template before installing it ([Data Prepper's reference template](https://github.com/opensearch-project/data-prepper/blob/main/data-prepper-plugins/opensearch/src/main/resources/index-template/metrics-otel-v1-index-standard-template.json) already uses `long`).
+
+#### ECS mapping mode
+
+> [!WARNING]
+> The ECS mapping mode is currently undergoing changes, and its behaviour is unstable.
+
+In `ecs` mapping mode, the OpenSearch exporter maps fields from [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/reference/specification/trace/semantic_conventions/) to [Elastic Common Schema (ECS)](https://www.elastic.co/guide/en/ecs/current/index.html) where possible. This mode may be used for compatibility with dashboards and tools that expect ECS.
+
+| Signal    | `ecs`              |
+| --------- | ------------------ |
+| Logs      | :white_check_mark: |
+| Traces    | :no_entry_sign:    |
+| Metrics   | :no_entry_sign:    |
+
+#### Flatten attributes mapping mode
+
+> [!WARNING]
+> The Flatten attributes mapping mode is currently undergoing changes, and its behaviour is unstable.
+
+In `flatten_attributes` mapping mode, the OpenSearch exporter uses the ECS mapping but flattens all resource and log attributes in the record to the top-level of the document.
+
+| Signal    | `flatten_attributes` |
+| --------- | -------------------- |
+| Logs      | :white_check_mark:   |
+| Traces    | :no_entry_sign:      |
+| Metrics   | :no_entry_sign:      |
+
+#### Bodymap mapping mode
+
+In `bodymap` mapping mode, the OpenSearch exporter supports only logs and uses the "body" of a log record as the exact content of the OpenSearch document, without any transformation. This mapping mode is intended for use cases where the client wishes to have complete control over the OpenSearch document structure.
+
+The bodymap mapping mode only supports log records where the body is of type Map. If the log body is not a Map, encoding will fail with an error. This ensures that only structured map data can be used as the document content in bodymap mode.
+
+| Signal    | `bodymap`           |
+| --------- | ------------------- |
+| Logs      | :white_check_mark:  |
+| Traces    | :no_entry_sign:     |
+| Metrics   | :no_entry_sign:     |
+
+#### OTel v1 mapping mode
+
+In `otel-v1` mapping mode, the OpenSearch exporter produces documents compatible with [Data Prepper's](https://github.com/opensearch-project/data-prepper) OTel v1 index schemas. This enables interoperability with OpenSearch Observability dashboards that consume Data Prepper indices.
+
+Default index names:
+- Traces: `otel-v1-apm-span`
+- Logs: `otel-v1-logs`
+- Metrics: `otel-v1-metrics`
+
+These defaults can be overridden using `traces_index`, `logs_index` and `metrics_index` configuration options.
+
+The `manage_index_template` option controls whether the exporter automatically creates composable index templates on startup. This ensures correct field mappings (e.g., `date_nanos` timestamps, dynamic attribute typing) are in place before documents are indexed.
+
+Template creation is best-effort: if the cluster is temporarily unreachable or rejects the request, the exporter logs a warning and continues — the failure is not propagated through `Start()`. The affected index will then fall back to OpenSearch's dynamic mapping (timestamp fields inferred as `date` rather than `date_nanos`) until the template is installed. If templates with the same names already exist (for example, user-customized variants), they are left in place rather than overwritten.
+
+| Signal    | `otel-v1`           |
+| --------- | ------------------- |
+| Logs      | :white_check_mark:  |
+| Traces    | :white_check_mark:  |
+| Metrics   | :white_check_mark:  |
+
+Schema references:
+- [otel-v1-apm-span index template](https://github.com/opensearch-project/data-prepper/blob/main/data-prepper-plugins/opensearch/src/main/resources/index-template/otel-v1-apm-span-index-standard-template.json)
+- [logs-otel-v1 index template](https://github.com/opensearch-project/data-prepper/blob/main/data-prepper-plugins/opensearch/src/main/resources/index-template/logs-otel-v1-index-standard-template.json)
+- [metrics-otel-v1 index template](https://github.com/opensearch-project/data-prepper/blob/main/data-prepper-plugins/opensearch/src/main/resources/index-template/metrics-otel-v1-index-standard-template.json)
+
+> [!NOTE]
+> The exporter emits nanosecond-precision timestamps in the document body, but OpenSearch's dynamic mapping will infer `date` (millisecond precision) unless a matching index template is installed before indexing begins. Set `manage_index_template: true` to have the exporter create the templates on startup, or install them out-of-band — see the schema references above.
+
+##### Example Configuration
+
+```yaml
+exporters:
+  opensearch:
+    http:
+      endpoint: http://opensearch.example.com:9200
+    mapping:
+      mode: "otel-v1"
+      manage_index_template: true
+    sending_queue:
+      batch:
+```
+
+##### Custom index mappings
+
+The built-in `otel-v1` template maps every unique attribute key as its own field via
+`dynamic_templates`. On high-cardinality data this can lead to *mapping explosion* — a large field
+count that strains the cluster, and where a single bad key can produce a mapping conflict that
+affects unrelated documents. Rather than hardcoding one attribute shape for everyone, the exporter
+lets you supply your own mapping overlay so you can tune how attributes land in your cluster.
+
+Set `index_template_file` to a JSON file that is **deep-merged over the built-in template** (requires
+`manage_index_template: true`). Object values are merged recursively; array and scalar values in your
+file replace the built-in ones. This lets you, for example, uplift common attributes to typed fields
+for aggregations, or keep the free-form `attributes` object un-indexed to bound the field count —
+without restating the whole template. The overlay is applied to both the span and logs templates, so
+include only keys valid for both (extra keys are harmless).
+
+```yaml
+exporters:
+  opensearch:
+    http:
+      endpoint: http://opensearch.example.com:9200
+    mapping:
+      mode: "otel-v1"
+      manage_index_template: true
+      index_template_file: /etc/otelcol/otel-v1-overlay.json
+```
+
+Example overlay that keeps span `attributes` un-indexed (stored but not searchable) to avoid mapping
+explosion, while uplifting one common attribute to a typed field:
+
+```json
+{
+  "template": {
+    "mappings": {
+      "properties": {
+        "attributes": { "type": "object", "enabled": false },
+        "http.response.status_code": { "type": "integer" }
+      }
+    }
+  }
+}
+```
+
+> [!NOTE]
+> The overlay is a deep merge: nested objects are merged, but arrays (including `dynamic_templates`)
+> replace the built-in ones wholesale. To adjust dynamic attribute typing, either restate the full
+> `dynamic_templates` array or override specific fields under `properties` as shown above.
+
+A configured-but-unreadable or non-JSON `index_template_file` fails startup (`Start()` returns an
+error) rather than silently falling back to the built-in template — a path you set is honored or
+surfaced, never quietly ignored. The cluster-side template creation itself remains best-effort (see
+above).
+
+##### Index State Management (ISM) rollover
+
+For `otel-v1` mode, `mapping.ism.enabled: true` makes the exporter provision an
+[Index State Management](https://opensearch.org/docs/latest/im-plugin/ism/index/) rollover policy and
+an initial write-aliased index (`<alias>-000001` with the write alias `<alias>`) on startup, so
+indices roll over by size/age instead of growing unbounded. The default policy rolls over at
+`rollover_min_size` (default `50gb`) or `rollover_min_index_age` (default `24h`), whichever comes
+first. Provide `policy_file` to use a full custom ISM policy instead.
+
+`ism.enabled` works independently of `manage_index_template`. Rollover functions on its own, but
+without a managed (or pre-existing) `otel-v1` index template, rolled-over backing indices
+(`<alias>-000002`, …) fall back to dynamic mapping — timestamps become `date` instead of `date_nanos`
+and typed fields are lost, degrading Data Prepper–compatible dashboards. Enable
+`manage_index_template: true` (or install the template out-of-band) for full mapping fidelity.
+
+The built-in policy claims the `<alias>-*` index pattern at `rollover_priority` (default `100`). If
+the target cluster already manages the same pattern with another ISM policy — for example a Data
+Prepper deployment, whose `raw-span-policy` also owns `otel-v1-apm-span-*` — OpenSearch rejects the
+overlapping template unless the priority differs; set a distinct `rollover_priority` in that case.
+
+ISM is incompatible with dynamic index placeholders (`%{...}`) in `logs_index`/`traces_index`, since
+rollover writes through a fixed alias. A configured-but-invalid `policy_file` fails startup; the
+cluster-side policy and index calls are best-effort and do not fail `Start()`.
+
+```yaml
+exporters:
+  opensearch:
+    http:
+      endpoint: http://opensearch.example.com:9200
+    mapping:
+      mode: "otel-v1"
+      manage_index_template: true
+      ism:
+        enabled: true
+        rollover_min_size: 50gb
+        rollover_min_index_age: 24h
+```
+
+### HTTP Connection Options
+
+OpenSearch export supports standard [HTTP client settings](https://github.com/open-telemetry/opentelemetry-collector/tree/main/config/confighttp#client-configuration).
+
+- `http.endpoint` (required) `<url>:<port>` of OpenSearch node to send data to.
+
+### TLS settings
+
+Supports standard TLS settings as part of HTTP settings. See [TLS Configuration/Client Settings](https://github.com/open-telemetry/opentelemetry-collector/blob/main/config/configtls/README.md#client-configuration).
+
+### Retry Options
+
+- `retry_on_failure`: See [retry_on_failure](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md)
+
+### Sending Queue Options
+
+- `sending_queue`: See [sending_queue](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md)
+
+### Timeout Options
+
+- `timeout` : See [timeout](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md)
+
+### Bulk Indexer Options
+
+- `bulk_action` (optional): the [action](https://opensearch.org/docs/2.9/api-reference/document-apis/bulk/) for ingesting data. Only `create` and `index` are allowed here.
+- `pipeline` (optional): the ID of an [ingest pipeline](https://opensearch.org/docs/latest/ingest-pipelines/) to apply when indexing documents. When set, all documents sent via the bulk API will be processed by the specified pipeline before being indexed. The ingest pipeline must exist in the cluster and there must be at least one node with the `ingest` node role assigned.
+
+## Example
+
+```yaml
+extensions:
+  basicauth/client:
+    client_auth:
+      username: username
+      password: password
+
+exporters:
+  opensearch/trace:
+    http:
+      endpoint: https://opensearch.example.com:9200
+      auth:
+        authenticator: basicauth/client
+    sending_queue:
+      batch:
+# ······
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [opensearch/trace]
+```

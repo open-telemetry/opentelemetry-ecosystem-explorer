@@ -327,10 +327,11 @@
     "collapseAll": "Contraer todo",
     "metrics": "Métricas",
     "spans": "Spans",
+    "events": "Eventos",
     "unit": "Unidad",
     "attributes": "Atributos",
     "spanTitle": "Span {{kind}}",
-    "empty": "No hay métricas ni spans definidos para esta configuración."
+    "empty": "No hay telemetría definida para esta configuración."
   },
   "versionSelectorPanel": {
     "banner": "Compara telemetría entre dos versiones",

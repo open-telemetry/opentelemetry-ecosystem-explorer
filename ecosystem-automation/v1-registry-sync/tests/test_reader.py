@@ -16,6 +16,7 @@
 
 import pytest
 import yaml
+from collector_watcher.type_defs import COMPONENT_TYPES
 from v1_registry_sync.reader import (
     _build_go_module_path,
     _build_v1_index,
@@ -24,12 +25,22 @@ from v1_registry_sync.reader import (
 )
 
 
+def _make_version_dir(distribution_dir, version):
+    """Create a version directory with every component file, as a completed scan leaves it.
+
+    Directories missing any component file are not counted as scanned versions.
+    """
+    version_dir = distribution_dir / version
+    version_dir.mkdir(parents=True)
+    for component_type in COMPONENT_TYPES:
+        (version_dir / f"{component_type}.yaml").write_text("components: []\n", encoding="utf-8")
+
+
 @pytest.fixture()
 def fake_registry(tmp_path):
     """Build a minimal fake V2 registry with two versions."""
     for version in ["v0.9.0", "v0.10.0"]:
-        version_dir = tmp_path / "contrib" / version
-        version_dir.mkdir(parents=True)
+        _make_version_dir(tmp_path / "contrib", version)
 
     receiver_data = {
         "distribution": "contrib",
@@ -194,8 +205,7 @@ class TestReadLatestV2Components:
     def test_skips_snapshot_versions(self, tmp_path):
         """list_release_versions excludes SNAPSHOT dirs so unreleased data is not picked up."""
         for version in ["v0.9.0", "v0.10.0-SNAPSHOT"]:
-            version_dir = tmp_path / "contrib" / version
-            version_dir.mkdir(parents=True)
+            _make_version_dir(tmp_path / "contrib", version)
 
         receiver_data = {
             "distribution": "contrib",

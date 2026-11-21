@@ -1,0 +1,45 @@
+distribution: prometheus
+version: 0.163.0
+repository: opentelemetry-collector-releases
+components:
+- type: exporter
+  source: contrib
+  name: prometheusexporter
+- type: exporter
+  source: contrib
+  name: prometheusremotewriteexporter
+- type: exporter
+  source: core
+  name: debugexporter
+- type: exporter
+  source: core
+  name: otlpexporter
+- type: exporter
+  source: core
+  name: otlphttpexporter
+- type: extension
+  source: contrib
+  name: healthcheckextension
+- type: extension
+  source: contrib
+  name: opampextension
+- type: extension
+  source: core
+  name: zpagesextension
+- type: processor
+  source: core
+  name: memorylimiterprocessor
+- type: receiver
+  source: contrib
+  name: prometheusreceiver
+- type: receiver
+  source: contrib
+  name: prometheusremotewritereceiver
+- type: receiver
+  source: core
+  name: otlpreceiver
+external:
+- github.com/prometheus/prometheus-opentelemetry-collector/receivers/blackbox
+- github.com/prometheus/prometheus-opentelemetry-collector/receivers/postgres
+- github.com/prometheus/prometheus-opentelemetry-collector/receivers/stackdriver
+- github.com/prometheus/prometheus-opentelemetry-collector/receivers/yace

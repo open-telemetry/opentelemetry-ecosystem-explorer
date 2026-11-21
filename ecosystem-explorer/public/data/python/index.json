@@ -1,0 +1,1076 @@
+{
+  "ecosystem": "python",
+  "packages": [
+    {
+      "description": "OpenTelemetry Aio-pika instrumentation",
+      "name": "opentelemetry-instrumentation-aio-pika",
+      "releases": [
+        {
+          "hash": "0ead4a0d2080",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "0ead4a0d2080",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "0ead4a0d2080",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry aiohttp client instrumentation",
+      "name": "opentelemetry-instrumentation-aiohttp-client",
+      "releases": [
+        {
+          "hash": "fab82fbb9ba4",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "fab82fbb9ba4",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "fab82fbb9ba4",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Aiohttp server instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-aiohttp-server",
+      "releases": [
+        {
+          "hash": "81f46e99c0ac",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "81f46e99c0ac",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "81f46e99c0ac",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry aiokafka instrumentation",
+      "name": "opentelemetry-instrumentation-aiokafka",
+      "releases": [
+        {
+          "hash": "e1a20a045862",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "e1a20a045862",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "e1a20a045862",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry aiopg instrumentation",
+      "name": "opentelemetry-instrumentation-aiopg",
+      "releases": [
+        {
+          "hash": "f40aaf8589d3",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "f40aaf8589d3",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "f40aaf8589d3",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "ASGI instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-asgi",
+      "releases": [
+        {
+          "hash": "d00b8ae72e08",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "d00b8ae72e08",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "d00b8ae72e08",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Async Click instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-asyncclick",
+      "releases": [
+        {
+          "hash": "624cee2485f2",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "624cee2485f2",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "624cee2485f2",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry instrumentation for asyncio",
+      "name": "opentelemetry-instrumentation-asyncio",
+      "releases": [
+        {
+          "hash": "04a1f0f03947",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "04a1f0f03947",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "04a1f0f03947",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry instrumentation for AsyncPG",
+      "name": "opentelemetry-instrumentation-asyncpg",
+      "releases": [
+        {
+          "hash": "d395ecf9644b",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "d395ecf9644b",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "d395ecf9644b",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry AWS Lambda instrumentation",
+      "name": "opentelemetry-instrumentation-aws-lambda",
+      "releases": [
+        {
+          "hash": "b470b77e2eb3",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "b470b77e2eb3",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "b470b77e2eb3",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Boto3 SQS service tracing for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-boto3sqs",
+      "releases": [
+        {
+          "hash": "ebc9f1a58f24",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "ebc9f1a58f24",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "ebc9f1a58f24",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Botocore instrumentation",
+      "name": "opentelemetry-instrumentation-botocore",
+      "releases": [
+        {
+          "hash": "a6b8b0ddbd95",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "a6b8b0ddbd95",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "a6b8b0ddbd95",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Cassandra instrumentation",
+      "name": "opentelemetry-instrumentation-cassandra",
+      "releases": [
+        {
+          "hash": "ad3c7c101e19",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "ad3c7c101e19",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "ad3c7c101e19",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Celery Instrumentation",
+      "name": "opentelemetry-instrumentation-celery",
+      "releases": [
+        {
+          "hash": "58948a60e6e8",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "58948a60e6e8",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "58948a60e6e8",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Click instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-click",
+      "releases": [
+        {
+          "hash": "9fc76661e3e6",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "9fc76661e3e6",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "9fc76661e3e6",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Confluent Kafka instrumentation",
+      "name": "opentelemetry-instrumentation-confluent-kafka",
+      "releases": [
+        {
+          "hash": "65fef8671206",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "65fef8671206",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "65fef8671206",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Database API instrumentation",
+      "name": "opentelemetry-instrumentation-dbapi",
+      "releases": [
+        {
+          "hash": "f679bf3100a1",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "f679bf3100a1",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "f679bf3100a1",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Instrumentation for Django",
+      "name": "opentelemetry-instrumentation-django",
+      "releases": [
+        {
+          "hash": "f87fd61477f8",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "f87fd61477f8",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "f87fd61477f8",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry unhandled exceptions instrumentation",
+      "name": "opentelemetry-instrumentation-exceptions",
+      "releases": [
+        {
+          "hash": "bcbb1a02b3dd",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "bcbb1a02b3dd",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "bcbb1a02b3dd",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": false,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Falcon instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-falcon",
+      "releases": [
+        {
+          "hash": "2d6f9967fa1b",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "2d6f9967fa1b",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "2d6f9967fa1b",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry FastAPI Instrumentation",
+      "name": "opentelemetry-instrumentation-fastapi",
+      "releases": [
+        {
+          "hash": "66bbade23015",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "66bbade23015",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "66bbade23015",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Flask instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-flask",
+      "releases": [
+        {
+          "hash": "1e953423ec22",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "1e953423ec22",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "1e953423ec22",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry gRPC instrumentation",
+      "name": "opentelemetry-instrumentation-grpc",
+      "releases": [
+        {
+          "hash": "53ad6aff21bd",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "53ad6aff21bd",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "53ad6aff21bd",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry HTTPX Instrumentation",
+      "name": "opentelemetry-instrumentation-httpx",
+      "releases": [
+        {
+          "hash": "184eba98423f",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "184eba98423f",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "184eba98423f",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry jinja2 instrumentation",
+      "name": "opentelemetry-instrumentation-jinja2",
+      "releases": [
+        {
+          "hash": "451e514bf7c9",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "451e514bf7c9",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "451e514bf7c9",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Kafka-Python instrumentation",
+      "name": "opentelemetry-instrumentation-kafka-python",
+      "releases": [
+        {
+          "hash": "ea46cc45ab61",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "ea46cc45ab61",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "ea46cc45ab61",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Logging instrumentation",
+      "name": "opentelemetry-instrumentation-logging",
+      "releases": [
+        {
+          "hash": "9085187e0256",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "9085187e0256",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "9085187e0256",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry MySQL instrumentation",
+      "name": "opentelemetry-instrumentation-mysql",
+      "releases": [
+        {
+          "hash": "202be9162213",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "202be9162213",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "202be9162213",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry mysqlclient instrumentation",
+      "name": "opentelemetry-instrumentation-mysqlclient",
+      "releases": [
+        {
+          "hash": "3dc663e3fc11",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "3dc663e3fc11",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "3dc663e3fc11",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry pika instrumentation",
+      "name": "opentelemetry-instrumentation-pika",
+      "releases": [
+        {
+          "hash": "dc9595632c0d",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "dc9595632c0d",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "dc9595632c0d",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry psycopg instrumentation",
+      "name": "opentelemetry-instrumentation-psycopg",
+      "releases": [
+        {
+          "hash": "1a56d823178d",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "1a56d823178d",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "1a56d823178d",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry psycopg2 instrumentation",
+      "name": "opentelemetry-instrumentation-psycopg2",
+      "releases": [
+        {
+          "hash": "021ece3a0262",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "021ece3a0262",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "021ece3a0262",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry pymemcache instrumentation",
+      "name": "opentelemetry-instrumentation-pymemcache",
+      "releases": [
+        {
+          "hash": "f94934f4624d",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "f94934f4624d",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "f94934f4624d",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry pymongo instrumentation",
+      "name": "opentelemetry-instrumentation-pymongo",
+      "releases": [
+        {
+          "hash": "cbee06133d5d",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "cbee06133d5d",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "cbee06133d5d",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry pymssql instrumentation",
+      "name": "opentelemetry-instrumentation-pymssql",
+      "releases": [
+        {
+          "hash": "d36a4809a12e",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "d36a4809a12e",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "d36a4809a12e",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry PyMySQL instrumentation",
+      "name": "opentelemetry-instrumentation-pymysql",
+      "releases": [
+        {
+          "hash": "f5587d00cedc",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "f5587d00cedc",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "f5587d00cedc",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Pyramid instrumentation",
+      "name": "opentelemetry-instrumentation-pyramid",
+      "releases": [
+        {
+          "hash": "cb1f1766137b",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "cb1f1766137b",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "cb1f1766137b",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Redis instrumentation",
+      "name": "opentelemetry-instrumentation-redis",
+      "releases": [
+        {
+          "hash": "d947c00cb304",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "d947c00cb304",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "d947c00cb304",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Remoulade instrumentation",
+      "name": "opentelemetry-instrumentation-remoulade",
+      "releases": [
+        {
+          "hash": "093a4e207349",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "093a4e207349",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "093a4e207349",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry requests instrumentation",
+      "name": "opentelemetry-instrumentation-requests",
+      "releases": [
+        {
+          "hash": "7cb490b59645",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "7cb490b59645",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "7cb490b59645",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry SQLAlchemy instrumentation",
+      "name": "opentelemetry-instrumentation-sqlalchemy",
+      "releases": [
+        {
+          "hash": "288803f2f8cd",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "288803f2f8cd",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "288803f2f8cd",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry SQLite3 instrumentation",
+      "name": "opentelemetry-instrumentation-sqlite3",
+      "releases": [
+        {
+          "hash": "e1483a7d34d4",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "e1483a7d34d4",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "e1483a7d34d4",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Starlette Instrumentation",
+      "name": "opentelemetry-instrumentation-starlette",
+      "releases": [
+        {
+          "hash": "95d6545a1c24",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "95d6545a1c24",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "95d6545a1c24",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry structlog instrumentation",
+      "name": "opentelemetry-instrumentation-structlog",
+      "releases": [
+        {
+          "hash": "212f4504ab03",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "212f4504ab03",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "212f4504ab03",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry System Metrics Instrumentation",
+      "name": "opentelemetry-instrumentation-system-metrics",
+      "releases": [
+        {
+          "hash": "46bb5a826540",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "46bb5a826540",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "46bb5a826540",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Thread context propagation support for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-threading",
+      "releases": [
+        {
+          "hash": "8f014625d366",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "8f014625d366",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "8f014625d366",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": null,
+      "supports_metrics": false,
+      "version": "0.66b2"
+    },
+    {
+      "description": "Tornado instrumentation for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-tornado",
+      "releases": [
+        {
+          "hash": "51787a92802e",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "51787a92802e",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "51787a92802e",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry Instrumentation for Tortoise ORM",
+      "name": "opentelemetry-instrumentation-tortoiseorm",
+      "releases": [
+        {
+          "hash": "71081b99ed55",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "71081b99ed55",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "71081b99ed55",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": null,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry urllib instrumentation",
+      "name": "opentelemetry-instrumentation-urllib",
+      "releases": [
+        {
+          "hash": "f7dbf6bc860b",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "f7dbf6bc860b",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "f7dbf6bc860b",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "OpenTelemetry urllib3 instrumentation",
+      "name": "opentelemetry-instrumentation-urllib3",
+      "releases": [
+        {
+          "hash": "acacce8ac837",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "acacce8ac837",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "acacce8ac837",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    },
+    {
+      "description": "WSGI Middleware for OpenTelemetry",
+      "name": "opentelemetry-instrumentation-wsgi",
+      "releases": [
+        {
+          "hash": "a4ea419a9739",
+          "version": "0.66b2"
+        },
+        {
+          "hash": "a4ea419a9739",
+          "version": "0.66b1"
+        },
+        {
+          "hash": "a4ea419a9739",
+          "version": "0.66b0"
+        }
+      ],
+      "semantic_convention_status": "migration",
+      "supports_metrics": true,
+      "version": "0.66b2"
+    }
+  ]
+}

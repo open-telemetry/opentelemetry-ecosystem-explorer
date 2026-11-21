@@ -1,0 +1,14 @@
+distribution: otlp
+version: 0.157.0
+repository: opentelemetry-collector-releases
+components:
+- type: exporter
+  source: core
+  name: otlpexporter
+- type: exporter
+  source: core
+  name: otlphttpexporter
+- type: receiver
+  source: core
+  name: otlpreceiver
+external: []

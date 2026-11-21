@@ -25,7 +25,7 @@ from pathlib import Path
 # invoked from the root; emit_archives reports the expected working directory if it is not.
 DATA_ROOT = Path("ecosystem-explorer/public/data")
 
-ECOSYSTEMS = ("collector", "configuration", "javaagent", "javascript")
+ECOSYSTEMS = ("collector", "configuration", "javaagent", "javascript", "python")
 
 
 def ecosystem_dir(ecosystem: str) -> Path:

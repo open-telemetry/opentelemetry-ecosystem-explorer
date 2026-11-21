@@ -118,6 +118,99 @@ class BaseInventoryManager:
         return False
 
 
+VERSION_FILE_GLOB = "v*.yaml"
+
+
+class PackageInventoryManager:
+    """Base class for registries that keep one file per package version.
+
+    Manages the layout used by independently versioned ecosystems (JavaScript, Python):
+        registry_dir/{package-name}/v{version}.yaml
+
+    Versions are plain strings here, not ``semantic_version.Version``, because each ecosystem has its
+    own version scheme (semver for npm, PEP 440 for Python). Subclasses add ``save``, which differs
+    in how it writes, and callers that need ordering sort the strings with their own scheme.
+    """
+
+    def __init__(self, registry_dir: str):
+        """
+        Args:
+            registry_dir: Base registry directory, e.g. 'ecosystem-registry/python'
+        """
+        self.registry_dir = Path(registry_dir)
+
+    def version_exists(self, package_name: str, version: str) -> bool:
+        """
+        Check if a specific package version already exists in the registry.
+
+        Args:
+            package_name: Package directory name
+            version: Version string as stored in the file name, without the leading 'v'
+
+        Returns:
+            True if the version file exists
+        """
+        return self._version_path(package_name, version).exists()
+
+    def list_packages(self) -> list[str]:
+        """
+        List every package that has at least one version in the registry.
+
+        Returns:
+            Package directory names, sorted alphabetically. Empty if the
+            registry directory doesn't exist yet.
+        """
+        if not self.registry_dir.is_dir():
+            return []
+
+        return sorted(
+            item.name for item in self.registry_dir.iterdir() if item.is_dir() and any(item.glob(VERSION_FILE_GLOB))
+        )
+
+    def list_versions(self, package_name: str) -> list[str]:
+        """
+        List the version strings stored for a package.
+
+        Args:
+            package_name: Package directory name
+
+        Returns:
+            Version strings without the leading 'v', in no particular order. Callers that need
+            ordering must sort them with the ecosystem's own version scheme, not as text: '0.9.0'
+            sorts above '0.10.0' as a string.
+        """
+        package_dir = self.registry_dir / package_name
+        return [path.stem.removeprefix("v") for path in package_dir.glob(VERSION_FILE_GLOB)]
+
+    def load(self, package_name: str, version: str) -> dict:
+        """
+        Load one package version from the registry.
+
+        Args:
+            package_name: Package directory name
+            version: Version string, as returned by list_versions
+
+        Returns:
+            The metadata dict that was saved for that version
+
+        Raises:
+            FileNotFoundError: If that version isn't in the registry
+            ValueError: If the file doesn't contain a YAML mapping
+        """
+        path = self._version_path(package_name, version)
+        with path.open(encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+
+        if not isinstance(data, dict):
+            raise ValueError(f"Registry file {path} does not contain a mapping")
+
+        return data
+
+    def _version_path(self, package_name: str, version: str) -> Path:
+        """Build the path for a package version file."""
+        return self.registry_dir / package_name / f"v{version}.yaml"
+
+
 class JavaagentInventoryManager(BaseInventoryManager):
     """Manages Java instrumentation inventory storage and retrieval."""
 

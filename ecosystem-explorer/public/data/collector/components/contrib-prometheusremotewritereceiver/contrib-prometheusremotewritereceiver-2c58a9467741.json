@@ -1,0 +1,67 @@
+{
+  "attributes": {
+    "metric_type": {
+      "description": "The kind of series the receiver dropped.",
+      "enum": [
+        "classic_histogram",
+        "summary"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "This receiver implements the [Prometheus Remote Write 2.0 protocol](https://prometheus.io/docs/specs/prw/remote_write_spec_2_0/).",
+  "display_name": "Prometheus Remote Write Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-prometheusremotewritereceiver",
+  "markdown_hash": "c94e61852aec",
+  "name": "prometheusremotewritereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "ArthurSens",
+        "perebaj",
+        "himanshu130700"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "receiver_prometheusremotewrite_dropped_series": {
+        "attributes": [
+          "metric_type"
+        ],
+        "description": "Number of classic histogram and summary series dropped because the receiver does not support them. Their samples are still reported as written.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{series}"
+      },
+      "receiver_prometheusremotewrite_resource_cache_evictions": {
+        "description": "Number of job/instance entries evicted from the resource metrics cache because it was full.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{entries}"
+      }
+    }
+  },
+  "type": "receiver"
+}

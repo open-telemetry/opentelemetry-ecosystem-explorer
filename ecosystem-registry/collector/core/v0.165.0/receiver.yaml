@@ -1,0 +1,101 @@
+distribution: core
+version: 0.165.0
+repository: opentelemetry-collector
+component_type: receiver
+schema_hash: a13cd490860c
+components:
+- name: nopreceiver
+  metadata:
+    display_name: No-op Receiver
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: receiver
+      codeowners:
+        active:
+        - evan-bradley
+      distributions:
+      - contrib
+      - core
+      stability:
+        alpha:
+        - profiles
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: nop
+- name: otlpreceiver
+  metadata:
+    config:
+      properties:
+        protocols:
+          description: Is the configuration for the supported protocols, currently
+            gRPC and HTTP (Proto and JSON).
+          go_struct:
+            custom_validator: null
+          properties:
+            grpc:
+              $ref: /config/configgrpc.server_config
+              default:
+                net_addr:
+                  endpoint: localhost:4317
+                read_buffer_size: 524288
+              go_struct:
+                field_name: GRPC
+                optional_mode: default
+              optional: true
+            http:
+              $ref: http_config
+              default:
+                logs_url_path: /v1/logs
+                metrics_url_path: /v1/metrics
+                server_config:
+                  net_addr:
+                    endpoint: localhost:4318
+                  read_header_timeout: 0
+                  tls: null
+                  write_timeout: 0
+                traces_url_path: /v1/traces
+              go_struct:
+                optional_mode: default
+              optional: true
+      required:
+      - protocols
+    display_name: OTLP Receiver
+    exported_configs:
+      http_config:
+        optional: true
+        properties:
+          logs_url_path:
+            $ref: sanitized_url_path
+            description: Is the URL path to receive logs on. If omitted "/v1/logs"
+              will be used.
+          metrics_url_path:
+            $ref: sanitized_url_path
+            description: Is the URL path to receive metrics on. If omitted "/v1/metrics"
+              will be used.
+          server_config:
+            $ref: /config/confighttp.server_config
+            embed: true
+          traces_url_path:
+            $ref: sanitized_url_path
+            description: Is the URL path to receive traces on. If omitted "/v1/traces"
+              will be used.
+      sanitized_url_path:
+        type: string
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: receiver
+      distributions:
+      - contrib
+      - core
+      - k8s
+      - otlp
+      stability:
+        alpha:
+        - profiles
+        stable:
+        - logs
+        - metrics
+        - traces
+    type: otlp

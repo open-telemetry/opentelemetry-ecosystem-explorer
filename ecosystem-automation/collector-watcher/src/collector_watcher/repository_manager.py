@@ -25,25 +25,27 @@ from typing import Optional
 from semantic_version import Version
 from watcher_common.repository_manager import BaseRepositoryManager
 
-from .type_defs import DistributionName
+from .type_defs import DistributionName, RepositoryName
 
 logger = logging.getLogger(__name__)
 
 REPO_URLS = {
     "core": "https://github.com/open-telemetry/opentelemetry-collector.git",
     "contrib": "https://github.com/open-telemetry/opentelemetry-collector-contrib.git",
+    "releases": "https://github.com/open-telemetry/opentelemetry-collector-releases.git",
 }
 
 ENV_VAR_NAMES = {
     "core": "OTEL_COLLECTOR_CORE_PATH",
     "contrib": "OTEL_COLLECTOR_CONTRIB_PATH",
+    "releases": "OTEL_COLLECTOR_RELEASES_PATH",
 }
 
 
 class RepositoryManager(BaseRepositoryManager):
     """Manages OpenTelemetry Collector repository locations and setup."""
 
-    def get_repository_path(self, distribution: DistributionName) -> Optional[Path]:
+    def get_repository_path(self, distribution: RepositoryName) -> Optional[Path]:
         """
         Get the path to a repository from environment variable.
 
@@ -57,7 +59,7 @@ class RepositoryManager(BaseRepositoryManager):
 
     def setup_repository(
         self,
-        distribution: DistributionName,
+        distribution: RepositoryName,
         version: Optional[Version] = None,
         update: bool = True,
     ) -> Path:

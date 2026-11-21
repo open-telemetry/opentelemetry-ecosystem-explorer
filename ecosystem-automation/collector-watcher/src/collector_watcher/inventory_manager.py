@@ -22,6 +22,7 @@ from typing import Any
 
 import yaml
 from semantic_version import Version
+from watcher_common.fileio import atomic_write
 from watcher_common.readme_store import (
     ReadmeStore,
     parse_readme_filename,
@@ -30,7 +31,7 @@ from watcher_common.readme_store import (
     write_readme_index,
 )
 
-from .type_defs import COMPONENT_TYPES, DistributionName
+from .type_defs import COMPONENT_TYPES, DistributionName, ManifestDistributionName
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ class InventoryManager:
 
     README_DIR = "readmes"
     README_INDEX_FILE = "component-readmes.yaml"
+    DISTRIBUTION_MANIFEST_FILE = "manifest.yaml"
 
     def __init__(self, inventory_dir: str = "ecosystem-registry/collector"):
         """
@@ -198,6 +200,49 @@ class InventoryManager:
             "components": components,
         }
 
+    def distribution_manifest_exists(self, distribution: ManifestDistributionName, version: Version) -> bool:
+        """Whether this release's manifest record has been written for ``distribution``."""
+        return (self.get_version_dir(distribution, version) / self.DISTRIBUTION_MANIFEST_FILE).is_file()
+
+    def save_distribution_manifest(
+        self,
+        distribution: ManifestDistributionName,
+        version: Version,
+        repository: str,
+        components: list[dict[str, str]],
+        external: list[str],
+    ) -> None:
+        """Write the core/contrib components a manifest distribution ships at ``version``.
+
+        Args:
+            components: ``{type, source, name}`` entries, already sorted
+            external: Module paths shipped from outside core/contrib (no registry record)
+        """
+        data = {
+            "distribution": distribution,
+            "version": str(version),
+            "repository": repository,
+            "components": components,
+            "external": external,
+        }
+        # distribution_manifest_exists() is the sync completion signal, so the file must appear
+        # only once complete; a failed overwrite keeps the previous record.
+        content = yaml.dump(data, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        atomic_write(
+            self.get_version_dir(distribution, version) / self.DISTRIBUTION_MANIFEST_FILE, content.encode("utf-8")
+        )
+
+    def load_distribution_manifest(
+        self, distribution: ManifestDistributionName, version: Version
+    ) -> list[dict[str, str]] | None:
+        """Return the ``{type, source, name}`` components, or None if no record exists."""
+        path = self.get_version_dir(distribution, version) / self.DISTRIBUTION_MANIFEST_FILE
+        if not path.is_file():
+            return None
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        return data.get("components") or []
+
     def readme_index_exists(self, distribution: DistributionName, version: Version) -> bool:
         """Accept only a validated index as the README sync completion signal."""
         path = self.get_version_dir(distribution, version) / self.README_INDEX_FILE
@@ -259,9 +304,35 @@ class InventoryManager:
 
         return sorted(versions, reverse=True)
 
+    def has_component_inventory(self, distribution: DistributionName, version: Version) -> bool:
+        """
+        Whether a source scan of this version completed.
+
+        A version directory can hold only a ``manifest.yaml`` (the releases-repo manifest
+        for a manifest-only distribution, or a core/contrib manifest written before the
+        source scan), which is not a source inventory. Every component type file is written
+        by ``save_versioned_inventory``, so all of them must be present.
+        """
+        version_dir = self.get_version_dir(distribution, version)
+        return all((version_dir / f"{component_type}.yaml").is_file() for component_type in COMPONENT_TYPES)
+
+    def list_inventory_versions(self, distribution: DistributionName) -> list[Version]:
+        """
+        List versions with a completed source scan, excluding manifest-only directories.
+
+        Args:
+            distribution: Distribution name
+
+        Returns:
+            List of versions, sorted newest to oldest
+        """
+        return [v for v in self.list_versions(distribution) if self.has_component_inventory(distribution, v)]
+
     def list_release_versions(self, distribution: DistributionName) -> list[Version]:
         """
-        List all release (non-prerelease) versions for a distribution.
+        List all release (non-prerelease) versions with a source inventory for a distribution.
+
+        Manifest-only version directories are excluded; see ``has_component_inventory``.
 
         Args:
             distribution: Distribution name
@@ -269,17 +340,17 @@ class InventoryManager:
         Returns:
             List of release versions, sorted newest to oldest
         """
-        all_versions = self.list_versions(distribution)
-        return [v for v in all_versions if not v.prerelease]
+        return [v for v in self.list_inventory_versions(distribution) if not v.prerelease]
 
     def prune_release_versions_not_in(self, distribution: DistributionName, keep_versions: Iterable[Version]) -> int:
         """
         Delete release version directories not present in ``keep_versions``.
 
-        Orphaned schema files are pruned once after deletion.
+        Orphaned schema files are pruned once after deletion. Manifest-only version
+        directories are pruned too, so this covers every distribution.
 
         Args:
-            distribution: Distribution name (core or contrib)
+            distribution: Distribution name
             keep_versions: Release versions to keep; every other release version
                 is removed
 
@@ -289,8 +360,8 @@ class InventoryManager:
         keep = {str(v) for v in keep_versions}
         removed = 0
 
-        for version in self.list_release_versions(distribution):
-            if str(version) in keep:
+        for version in self.list_versions(distribution):
+            if version.prerelease or str(version) in keep:
                 continue
             version_dir = self.get_version_dir(distribution, version)
             if version_dir.exists():
@@ -305,17 +376,18 @@ class InventoryManager:
 
     def version_exists(self, distribution: DistributionName, version: Version) -> bool:
         """
-        Check if a specific version exists for a distribution.
+        Check if a specific version has a completed source scan for a distribution.
+
+        A directory holding only a manifest does not count; see ``has_component_inventory``.
 
         Args:
             distribution: Distribution name
             version: Version to check
 
         Returns:
-            True if version directory exists
+            True if the version's component inventory exists
         """
-        version_dir = self.get_version_dir(distribution, version)
-        return version_dir.exists()
+        return self.has_component_inventory(distribution, version)
 
     def delete_version(self, distribution: DistributionName, version: Version) -> bool:
         """

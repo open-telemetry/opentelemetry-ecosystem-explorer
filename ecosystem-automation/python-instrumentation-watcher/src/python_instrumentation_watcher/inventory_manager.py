@@ -16,15 +16,15 @@
 """Inventory manager for Python instrumentation registry storage."""
 
 import logging
-from pathlib import Path
 
 import yaml
 from watcher_common.fileio import atomic_write
+from watcher_common.inventory_manager import PackageInventoryManager
 
 logger = logging.getLogger(__name__)
 
 
-class InventoryManager:
+class InventoryManager(PackageInventoryManager):
     """
     Manages storage of Python instrumentation metadata in the registry.
 
@@ -32,26 +32,6 @@ class InventoryManager:
     projects/135-python-instrumentation/02-schema-design.md §3):
         ecosystem-registry/python/{package-name}/v{version}.yaml
     """
-
-    def __init__(self, registry_dir: str):
-        """
-        Args:
-            registry_dir: Base registry directory, e.g. 'ecosystem-registry/python'
-        """
-        self.registry_dir = Path(registry_dir)
-
-    def version_exists(self, package_name: str, version: str) -> bool:
-        """
-        Check if a specific package version already exists in the registry.
-
-        Args:
-            package_name: Package directory name, e.g. 'opentelemetry-instrumentation-flask'
-            version: Version string, e.g. '0.48b0'
-
-        Returns:
-            True if the version file exists
-        """
-        return self._version_path(package_name, version).exists()
 
     def save(self, package_name: str, version: str, data: dict) -> None:
         """
@@ -82,16 +62,3 @@ class InventoryManager:
         atomic_write(path, content.encode("utf-8"))
 
         logger.debug("Saved %s v%s to %s", package_name, version, path)
-
-    def _version_path(self, package_name: str, version: str) -> Path:
-        """
-        Build the path for a package version file.
-
-        Args:
-            package_name: Package directory name
-            version: Version string
-
-        Returns:
-            Path to the version YAML file
-        """
-        return self.registry_dir / package_name / f"v{version}.yaml"
