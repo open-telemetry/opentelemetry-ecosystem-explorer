@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useMemo, type ReactNode } from "react";
-import {
-  Routes,
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-} from "react-router-dom";
+import { Routes, createRoutesFromChildren, matchRoutes, useLocation } from "react-router-dom";
 import { setTrackedView } from "@/lib/telemetry";
 
 /**

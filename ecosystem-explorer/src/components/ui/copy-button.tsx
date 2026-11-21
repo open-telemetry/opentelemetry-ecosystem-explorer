@@ -74,13 +74,11 @@ export function CopyButton({
       },
       () => {
         // Clipboard write rejected (permissions, insecure context). Stay silent.
-      },
+      }
     );
   };
 
-  const visibleLabel = copied
-    ? (copiedLabel ?? t("copied"))
-    : (label ?? t("copy"));
+  const visibleLabel = copied ? (copiedLabel ?? t("copied")) : (label ?? t("copy"));
 
   return (
     <button

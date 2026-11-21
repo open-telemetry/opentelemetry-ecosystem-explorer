@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vite-plus/test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockFaro = vi.hoisted(() => ({
   api: undefined as
@@ -51,14 +44,12 @@ describe("isLikelyBot", () => {
     expect(isLikelyBot({ webdriver: true, userAgent: chrome })).toBe(true);
   });
 
-  it.each([
-    "HeadlessChrome/130.0.0.0",
-    "Googlebot/2.1",
-    "AhrefsBot",
-    "Chrome-Lighthouse",
-  ])("is true for crawler user agent %s", (ua) => {
-    expect(isLikelyBot({ webdriver: false, userAgent: ua })).toBe(true);
-  });
+  it.each(["HeadlessChrome/130.0.0.0", "Googlebot/2.1", "AhrefsBot", "Chrome-Lighthouse"])(
+    "is true for crawler user agent %s",
+    (ua) => {
+      expect(isLikelyBot({ webdriver: false, userAgent: ua })).toBe(true);
+    }
+  );
 });
 
 describe("trackEvent / setTrackedView", () => {

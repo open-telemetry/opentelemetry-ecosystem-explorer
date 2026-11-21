@@ -20,9 +20,7 @@ const MAX_ATTRIBUTE_LENGTH = 100;
 const BOT_USER_AGENT = /HeadlessChrome|bot|crawl|spider|slurp|lighthouse/i;
 
 /** Heuristic only: headless crawlers that spoof a desktop UA and clear webdriver slip through. */
-export function isLikelyBot(
-  nav: Pick<Navigator, "webdriver" | "userAgent"> = navigator,
-): boolean {
+export function isLikelyBot(nav: Pick<Navigator, "webdriver" | "userAgent"> = navigator): boolean {
   return nav.webdriver === true || BOT_USER_AGENT.test(nav.userAgent);
 }
 
@@ -30,17 +28,11 @@ export function isLikelyBot(
  * Pushes a Faro event. `faro.api` is undefined until `initializeFaro` runs, which only happens
  * when `VITE_FARO_URL` is set, so this is a no-op in dev, previews, and tests.
  */
-export function trackEvent(
-  name: string,
-  attributes?: Record<string, string>,
-): void {
+export function trackEvent(name: string, attributes?: Record<string, string>): void {
   if (!faro.api) return;
   const capped = attributes
     ? Object.fromEntries(
-        Object.entries(attributes).map(([k, v]) => [
-          k,
-          v.slice(0, MAX_ATTRIBUTE_LENGTH),
-        ]),
+        Object.entries(attributes).map(([k, v]) => [k, v.slice(0, MAX_ATTRIBUTE_LENGTH)])
       )
     : undefined;
   faro.api.pushEvent(name, capped);
@@ -65,8 +57,7 @@ export function registerOutboundClickTracking(doc: Document = document): void {
     } catch {
       return;
     }
-    if (!url.protocol.startsWith("http") || url.host === doc.location.host)
-      return;
+    if (!url.protocol.startsWith("http") || url.host === doc.location.host) return;
     trackEvent("outbound_click", {
       href: url.href,
       host: url.host,

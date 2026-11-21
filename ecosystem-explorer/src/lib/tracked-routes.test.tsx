@@ -27,13 +27,10 @@ function renderAt(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <TrackedRoutes>
         <Route path="/" element={<p>home</p>} />
-        <Route
-          path="/collector/components/:distribution/:name"
-          element={<p>detail</p>}
-        />
+        <Route path="/collector/components/:distribution/:name" element={<p>detail</p>} />
         <Route path="*" element={<p>not found</p>} />
       </TrackedRoutes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -41,9 +38,7 @@ describe("TrackedRoutes", () => {
   it("renders the matched route and names the view after its pattern", () => {
     renderAt("/collector/components/core/otlpreceiver");
     expect(screen.getByText("detail")).toBeInTheDocument();
-    expect(setTrackedView).toHaveBeenLastCalledWith(
-      "/collector/components/:distribution/:name",
-    );
+    expect(setTrackedView).toHaveBeenLastCalledWith("/collector/components/:distribution/:name");
   });
 
   it("uses the splat pattern for unmatched paths", () => {

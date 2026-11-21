@@ -135,8 +135,7 @@ export function SearchFacet({
   // `value` would re-fire the stale pre-clear text when the parent clears.
   useEffect(() => {
     if (debounced !== value) {
-      if (debounced.trim())
-        trackEvent("search", { source: "list", query: debounced.trim() });
+      if (debounced.trim()) trackEvent("search", { source: "list", query: debounced.trim() });
       onChange(debounced);
     }
     // oxlint-disable-next-line react-hooks/exhaustive-deps
@@ -148,11 +147,7 @@ export function SearchFacet({
         {title}
       </div>
       <div className="td-facet__search">
-        <Search
-          className="td-facet__search-icon"
-          aria-hidden
-          focusable="false"
-        />
+        <Search className="td-facet__search-icon" aria-hidden focusable="false" />
         <input
           type="search"
           className="td-facet__search-input"
@@ -175,13 +170,7 @@ export interface SelectFacetProps {
   emptyLabel: string;
 }
 
-export function SelectFacet({
-  title,
-  options,
-  value,
-  onChange,
-  emptyLabel,
-}: SelectFacetProps) {
+export function SelectFacet({ title, options, value, onChange, emptyLabel }: SelectFacetProps) {
   const headingId = useId();
   return (
     <div className="td-facet" aria-labelledby={headingId}>
@@ -191,9 +180,7 @@ export function SelectFacet({
       <select
         className="td-facet__select"
         value={value ?? ""}
-        onChange={(e) =>
-          onChange(e.target.value === "" ? null : e.target.value)
-        }
+        onChange={(e) => onChange(e.target.value === "" ? null : e.target.value)}
         aria-label={title}
       >
         <option value="">{emptyLabel}</option>

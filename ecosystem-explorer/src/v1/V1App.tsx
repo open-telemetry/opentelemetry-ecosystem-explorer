@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 import { lazy, Suspense } from "react";
-import {
-  Navigate,
-  Route,
-  useLocation,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { Navigate, Route, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { isEnabled } from "@/lib/feature-flags";
 import { CncfCallout } from "@/v1/components/layout/cncf-callout";
@@ -50,82 +44,78 @@ import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-ver
  */
 
 const HomePage = lazy(() =>
-  import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 })),
+  import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 }))
 );
 const JavaAgentPage = lazy(() =>
   import("@/v1/features/ecosystem/java-agent-landing").then((m) => ({
     default: m.JavaAgentLandingV1,
-  })),
+  }))
 );
 const CollectorPage = lazy(() =>
   import("@/v1/features/ecosystem/collector-landing").then((m) => ({
     default: m.CollectorLandingV1,
-  })),
+  }))
 );
 const CollectorListPage = lazy(() =>
   import("@/v1/features/list/list-page").then((m) => ({
     default: m.CollectorListPageV1,
-  })),
+  }))
 );
 const CollectorDetailPage = lazy(() =>
   import("@/v1/features/detail/detail-page").then((m) => ({
     default: m.CollectorDetailPageV1,
-  })),
+  }))
 );
 const CollectorDiffPage = lazy(() =>
   import("@/v1/features/detail/diff-page").then((m) => ({
     default: m.CollectorDiffPageV1,
-  })),
+  }))
 );
 const NotFoundPage = lazy(() =>
   import("@/features/not-found/not-found-page").then((m) => ({
     default: m.NotFoundPage,
-  })),
+  }))
 );
 const JavaInstrumentationListPage = lazy(() =>
   import("@/features/java-agent/java-instrumentation-list-page").then((m) => ({
     default: m.JavaInstrumentationListPage,
-  })),
+  }))
 );
 const JavaConfigurationListPage = lazy(() =>
   import("@/features/java-agent/java-configuration-list-page").then((m) => ({
     default: m.JavaConfigurationListPage,
-  })),
+  }))
 );
 const JavaReleaseComparisonPage = lazy(() =>
   import("@/features/java-agent/java-release-comparison-page").then((m) => ({
     default: m.JavaReleaseComparisonPage,
-  })),
+  }))
 );
 
 const ConfigurationBuilderPage = lazy(() =>
-  import("@/features/java-agent/configuration/configuration-builder-page").then(
-    (m) => ({
-      default: m.ConfigurationBuilderPage,
-    }),
-  ),
+  import("@/features/java-agent/configuration/configuration-builder-page").then((m) => ({
+    default: m.ConfigurationBuilderPage,
+  }))
 );
 const AboutPage = lazy(() =>
-  import("@/features/about/about-page").then((m) => ({ default: m.AboutPage })),
+  import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
 );
 // Not yet redesigned for v1: reuses the legacy component verbatim under v1 chrome,
 // same as AboutPage/JavaReleaseComparisonPage above.
 const SemanticConventionsPage = lazy(() =>
-  import("@/features/semantic-conventions/semantic-conventions-page").then(
-    (m) => ({
-      default: m.SemanticConventionsPage,
-    }),
-  ),
+  import("@/features/semantic-conventions/semantic-conventions-page").then((m) => ({
+    default: m.SemanticConventionsPage,
+  }))
 );
 const SemanticConventionsTimelinePage = lazy(() =>
   import("@/features/semantic-conventions/timeline-page").then((m) => ({
     default: m.SemanticConventionsTimelinePage,
-  })),
+  }))
 );
 const DevComponentsPage = lazy(() =>
   import("@/v1/features/_dev/components-page").then((m) => ({
     default: m.DevComponentsPage,
-  })),
+  }))
 );
 
 function CollectorVersionRedirect() {
@@ -136,13 +126,7 @@ function CollectorVersionRedirect() {
     searchParams,
     pathVersion: version,
   });
-  return (
-    <Navigate
-      to={`${release.listHref}${location.hash}`}
-      replace
-      state={location.state}
-    />
-  );
+  return <Navigate to={`${release.listHref}${location.hash}`} replace state={location.state} />;
 }
 
 export function V1App() {
@@ -155,10 +139,7 @@ export function V1App() {
             <TrackedRoutes>
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
-              <Route
-                path="/java-agent/instrumentation"
-                element={<JavaInstrumentationListPage />}
-              />
+              <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
 
               <Route
                 path="/java-agent/instrumentation/:param"
@@ -169,27 +150,15 @@ export function V1App() {
                 element={<LegacyNameVersionRedirect />}
               />
 
-              <Route
-                path="/java-agent/configuration"
-                element={<JavaConfigurationListPage />}
-              />
-              <Route
-                path="/java-agent/releases"
-                element={<JavaReleaseComparisonPage />}
-              />
+              <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
+              <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
               <Route
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}
               />
               <Route path="/collector" element={<CollectorPage />} />
-              <Route
-                path="/collector/components"
-                element={<CollectorListPage />}
-              />
-              <Route
-                path="/collector/components/:version"
-                element={<CollectorVersionRedirect />}
-              />
+              <Route path="/collector/components" element={<CollectorListPage />} />
+              <Route path="/collector/components/:version" element={<CollectorVersionRedirect />} />
               <Route
                 path="/collector/components/:distribution/:name"
                 element={<CollectorDetailPage />}
@@ -198,20 +167,14 @@ export function V1App() {
                 path="/collector/components/:distribution/:name/diff"
                 element={<CollectorDiffPage />}
               />
-              <Route
-                path="/semantic-conventions"
-                element={<SemanticConventionsPage />}
-              />
+              <Route path="/semantic-conventions" element={<SemanticConventionsPage />} />
               <Route
                 path="/semantic-conventions/timeline"
                 element={<SemanticConventionsTimelinePage />}
               />
               <Route path="/about" element={<AboutPage />} />
               {isEnabled("DEV_SHOWCASE") && (
-                <Route
-                  path="/_dev/components"
-                  element={<DevComponentsPage />}
-                />
+                <Route path="/_dev/components" element={<DevComponentsPage />} />
               )}
               <Route path="*" element={<NotFoundPage />} />
             </TrackedRoutes>

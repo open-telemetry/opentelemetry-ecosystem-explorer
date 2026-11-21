@@ -30,14 +30,7 @@
  */
 
 import { Search } from "lucide-react";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { GlowBadge } from "@/components/ui/glow-badge";
@@ -64,8 +57,7 @@ const DEFAULT_SUGGESTIONS = [
   { label: "trace sampling" },
 ];
 
-type GlowVariant =
-  "accent" | "secondary" | "success" | "info" | "warning" | "error" | "muted";
+type GlowVariant = "accent" | "secondary" | "success" | "info" | "warning" | "error" | "muted";
 
 const ECOSYSTEM_VARIANT: Record<SearchResultEcosystem, GlowVariant> = {
   collector: "info", // blue family — Collector is the technical-platform face
@@ -73,10 +65,7 @@ const ECOSYSTEM_VARIANT: Record<SearchResultEcosystem, GlowVariant> = {
   page: "muted", // navigational chrome, low emphasis
 };
 
-function metaLine(
-  result: SearchResult,
-  ecosystemLabel: (id: string) => string,
-): string {
+function metaLine(result: SearchResult, ecosystemLabel: (id: string) => string): string {
   return [
     result.ecosystem && ecosystemLabel(result.ecosystem),
     ...(result.facets ?? []),
@@ -95,11 +84,9 @@ export interface GlobalSearchProps {
 export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
   const { t } = useTranslation("home");
   // Display names for ecosystem ids; ids without a translation fall back to the raw id.
-  const ecosystemLabel = (id: string) =>
-    t(`homeV1.ecosystemNames.${id}`, { defaultValue: id });
+  const ecosystemLabel = (id: string) => t(`homeV1.ecosystemNames.${id}`, { defaultValue: id });
   const resolvedPlaceholder =
-    placeholder ??
-    t("homeV1.search.placeholder", { total: INTEGRATIONS_STAT_VALUE });
+    placeholder ?? t("homeV1.search.placeholder", { total: INTEGRATIONS_STAT_VALUE });
   const [query, setQuery] = useState<string>(() => {
     if (typeof window === "undefined") return "";
     try {
@@ -128,15 +115,8 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
   // sessionStorage would otherwise trigger a full index build (hundreds of
   // HTTP requests) on every home-page mount, with the user never seeing the
   // results.
-  const {
-    data: results,
-    loading,
-    error,
-  } = useSearch(isOpen ? debouncedQuery : "");
-  const visibleResults = useMemo(
-    () => (results ?? []).slice(0, MAX_VISIBLE_RESULTS),
-    [results],
-  );
+  const { data: results, loading, error } = useSearch(isOpen ? debouncedQuery : "");
+  const visibleResults = useMemo(() => (results ?? []).slice(0, MAX_VISIBLE_RESULTS), [results]);
   const totalMatches = results?.length ?? 0;
   const overflowCount = totalMatches - visibleResults.length;
   const hasVisibleResults = visibleResults.length > 0;
@@ -213,7 +193,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
       else void navigate(path);
       setIsOpen(false);
     },
-    [navigate, onSelect, query],
+    [navigate, onSelect, query]
   );
 
   const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -225,9 +205,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       lastKeyboardNavAt.current = Date.now();
-      setHighlightedIndex(
-        (i) => (i - 1 + visibleResults.length) % visibleResults.length,
-      );
+      setHighlightedIndex((i) => (i - 1 + visibleResults.length) % visibleResults.length);
     } else if (event.key === "Enter") {
       const target = visibleResults[safeHighlightedIndex];
       if (target) {
@@ -242,9 +220,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
   // option/listbox ids that aren't rendered (dropdown closed, or open but
   // loading/empty/errored) breaks the combobox pattern for assistive tech.
   const listboxRendered = showDropdown && hasVisibleResults;
-  const activeOptionId = listboxRendered
-    ? `${idPrefix}-option-${safeHighlightedIndex}`
-    : undefined;
+  const activeOptionId = listboxRendered ? `${idPrefix}-option-${safeHighlightedIndex}` : undefined;
   // Keep-stale-while-loading: when a new query is in flight but prior results
   // exist, dim them instead of blanking to "Searching…". Only blank on the
   // very first search.
@@ -290,11 +266,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
               {t("homeV1.search.error")}
             </p>
           ) : loading && !hasVisibleResults ? (
-            <p
-              className="td-search__result-empty"
-              role="status"
-              aria-live="polite"
-            >
+            <p className="td-search__result-empty" role="status" aria-live="polite">
               {t("homeV1.search.searching")}
             </p>
           ) : !hasVisibleResults ? (
@@ -336,8 +308,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
                         // arrow-key nav — programmatic scrollIntoView can
                         // slide a row under a stationary cursor and yank
                         // the highlight away from the keyboard target.
-                        if (Date.now() - lastKeyboardNavAt.current < 150)
-                          return;
+                        if (Date.now() - lastKeyboardNavAt.current < 150) return;
                         setHighlightedIndex(index);
                       }}
                       onClick={(e) => {
@@ -369,17 +340,11 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
                       </div>
                       <div className="td-search__result-body">
                         <div className="td-search__result-title">{r.title}</div>
-                        <div className="td-search__result-description">
-                          {r.description}
-                        </div>
-                        <div className="td-search__result-meta">
-                          {metaLine(r, ecosystemLabel)}
-                        </div>
+                        <div className="td-search__result-description">{r.description}</div>
+                        <div className="td-search__result-meta">{metaLine(r, ecosystemLabel)}</div>
                       </div>
                       <div className="td-search__result-pill td-search__result-pill--trail">
-                        {r.stability ? (
-                          <StatusPill stability={r.stability} />
-                        ) : null}
+                        {r.stability ? <StatusPill stability={r.stability} /> : null}
                       </div>
                     </Link>
                   );
@@ -399,9 +364,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
       )}
 
       <div className="td-search__suggestions">
-        <span className="td-search__suggest-label">
-          {t("homeV1.search.tryLabel")}
-        </span>
+        <span className="td-search__suggest-label">{t("homeV1.search.tryLabel")}</span>
         {DEFAULT_SUGGESTIONS.map((s) => (
           <button
             key={s.label}

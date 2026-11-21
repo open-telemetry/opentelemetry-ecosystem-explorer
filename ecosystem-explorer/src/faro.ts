@@ -33,10 +33,7 @@ if (faroUrl) {
       // Faro merges these into both new and resumed persistent sessions.
       session: { attributes: { is_bot: String(isLikelyBot()) } },
     },
-    instrumentations: [
-      ...getWebInstrumentations(),
-      new TracingInstrumentation(),
-    ],
+    instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
     // Third-party analytics requests; filters both tracing spans and resource-timing events.
     ignoreUrls: [
       /google-analytics\.com/,
