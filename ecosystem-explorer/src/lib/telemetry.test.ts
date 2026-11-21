@@ -124,6 +124,24 @@ describe("registerOutboundClickTracking", () => {
     });
   });
 
+  it("tracks middle-clicks on external links", () => {
+    document
+      .getElementById("inner")!
+      .dispatchEvent(new MouseEvent("auxclick", { bubbles: true, button: 1 }));
+    expect(mockFaro.api!.pushEvent).toHaveBeenCalledWith("outbound_click", {
+      href: "https://github.com/open-telemetry",
+      host: "github.com",
+      path: window.location.pathname,
+    });
+  });
+
+  it("ignores right-clicks on external links", () => {
+    document
+      .getElementById("inner")!
+      .dispatchEvent(new MouseEvent("auxclick", { bubbles: true, button: 2 }));
+    expect(mockFaro.api!.pushEvent).not.toHaveBeenCalled();
+  });
+
   it("ignores same-host links", () => {
     click("internal");
     expect(mockFaro.api!.pushEvent).not.toHaveBeenCalled();

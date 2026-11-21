@@ -50,27 +50,29 @@ export function setTrackedView(name: string): void {
   faro.api?.setView({ name });
 }
 
-/** Reports clicks on links that leave the site. One listener covers every external anchor. */
+/**
+ * Reports clicks on links that leave the site. One listener covers every external anchor.
+ * `click` doesn't fire for a middle-click, so `auxclick` is also handled for new-tab opens.
+ */
 export function registerOutboundClickTracking(doc: Document = document): void {
-  doc.addEventListener(
-    "click",
-    (event) => {
-      const anchor = (event.target as Element | null)?.closest?.("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement)) return;
-      let url: URL;
-      try {
-        url = new URL(anchor.href, doc.location.href);
-      } catch {
-        return;
-      }
-      if (!url.protocol.startsWith("http") || url.host === doc.location.host)
-        return;
-      trackEvent("outbound_click", {
-        href: url.href,
-        host: url.host,
-        path: doc.location.pathname,
-      });
-    },
-    { capture: true },
-  );
+  const handler = (event: MouseEvent) => {
+    if (event.type === "auxclick" && event.button !== 1) return;
+    const anchor = (event.target as Element | null)?.closest?.("a[href]");
+    if (!(anchor instanceof HTMLAnchorElement)) return;
+    let url: URL;
+    try {
+      url = new URL(anchor.href, doc.location.href);
+    } catch {
+      return;
+    }
+    if (!url.protocol.startsWith("http") || url.host === doc.location.host)
+      return;
+    trackEvent("outbound_click", {
+      href: url.href,
+      host: url.host,
+      path: doc.location.pathname,
+    });
+  };
+  doc.addEventListener("click", handler, { capture: true });
+  doc.addEventListener("auxclick", handler, { capture: true });
 }
