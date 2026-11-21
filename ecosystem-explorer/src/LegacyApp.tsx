@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Loader } from "@/components/ui/loader";
+import { TrackedRoutes } from "@/lib/tracked-routes";
 import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
 import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
 
@@ -27,10 +28,14 @@ const HomePage = lazy(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))
 );
 const JavaAgentPage = lazy(() =>
-  import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
+  import("@/features/java-agent/java-agent-page").then((m) => ({
+    default: m.JavaAgentPage,
+  }))
 );
 const CollectorPage = lazy(() =>
-  import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
+  import("@/features/collector/collector-page").then((m) => ({
+    default: m.CollectorPage,
+  }))
 );
 const CollectorComponentsPage = lazy(() =>
   import("@/features/collector/collector-components-page").then((m) => ({
@@ -46,10 +51,14 @@ const CollectorDetailPage = lazy(() =>
 // import the v1 component (same pattern as /_dev/components below). Kept in
 // sync per the route-table mirror rule until this file is deleted.
 const CollectorDiffPage = lazy(() =>
-  import("@/v1/features/detail/diff-page").then((m) => ({ default: m.CollectorDiffPageV1 }))
+  import("@/v1/features/detail/diff-page").then((m) => ({
+    default: m.CollectorDiffPageV1,
+  }))
 );
 const NotFoundPage = lazy(() =>
-  import("@/features/not-found/not-found-page").then((m) => ({ default: m.NotFoundPage }))
+  import("@/features/not-found/not-found-page").then((m) => ({
+    default: m.NotFoundPage,
+  }))
 );
 const JavaInstrumentationListPage = lazy(() =>
   import("@/features/java-agent/java-instrumentation-list-page").then((m) => ({
@@ -86,7 +95,9 @@ const SemanticConventionsTimelinePage = lazy(() =>
   }))
 );
 const DevComponentsPage = lazy(() =>
-  import("@/v1/features/_dev/components-page").then((m) => ({ default: m.DevComponentsPage }))
+  import("@/v1/features/_dev/components-page").then((m) => ({
+    default: m.DevComponentsPage,
+  }))
 );
 
 /*
@@ -106,7 +117,7 @@ export function LegacyApp() {
       <main className="flex-1 pt-16">
         <ErrorBoundary>
           <Suspense fallback={<Loader label="Loading…" />}>
-            <Routes>
+            <TrackedRoutes>
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
               <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
@@ -146,7 +157,7 @@ export function LegacyApp() {
                 <Route path="/_dev/components" element={<DevComponentsPage />} />
               )}
               <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            </TrackedRoutes>
           </Suspense>
         </ErrorBoundary>
       </main>

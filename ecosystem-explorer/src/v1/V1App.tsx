@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { lazy, Suspense } from "react";
-import { Navigate, Routes, Route, useLocation, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, Route, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { isEnabled } from "@/lib/feature-flags";
 import { CncfCallout } from "@/v1/components/layout/cncf-callout";
@@ -22,6 +22,7 @@ import { FooterV1 } from "@/v1/components/layout/footer";
 import { NavBar } from "@/v1/components/layout/nav-bar";
 import { collectorReleaseContext } from "@/v1/lib/collector-release";
 import { Loader } from "@/components/ui/loader";
+import { TrackedRoutes } from "@/lib/tracked-routes";
 import "@/v1/styles/index.css";
 import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
 import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
@@ -56,16 +57,24 @@ const CollectorPage = lazy(() =>
   }))
 );
 const CollectorListPage = lazy(() =>
-  import("@/v1/features/list/list-page").then((m) => ({ default: m.CollectorListPageV1 }))
+  import("@/v1/features/list/list-page").then((m) => ({
+    default: m.CollectorListPageV1,
+  }))
 );
 const CollectorDetailPage = lazy(() =>
-  import("@/v1/features/detail/detail-page").then((m) => ({ default: m.CollectorDetailPageV1 }))
+  import("@/v1/features/detail/detail-page").then((m) => ({
+    default: m.CollectorDetailPageV1,
+  }))
 );
 const CollectorDiffPage = lazy(() =>
-  import("@/v1/features/detail/diff-page").then((m) => ({ default: m.CollectorDiffPageV1 }))
+  import("@/v1/features/detail/diff-page").then((m) => ({
+    default: m.CollectorDiffPageV1,
+  }))
 );
 const NotFoundPage = lazy(() =>
-  import("@/features/not-found/not-found-page").then((m) => ({ default: m.NotFoundPage }))
+  import("@/features/not-found/not-found-page").then((m) => ({
+    default: m.NotFoundPage,
+  }))
 );
 const JavaInstrumentationListPage = lazy(() =>
   import("@/features/java-agent/java-instrumentation-list-page").then((m) => ({
@@ -104,14 +113,19 @@ const SemanticConventionsTimelinePage = lazy(() =>
   }))
 );
 const DevComponentsPage = lazy(() =>
-  import("@/v1/features/_dev/components-page").then((m) => ({ default: m.DevComponentsPage }))
+  import("@/v1/features/_dev/components-page").then((m) => ({
+    default: m.DevComponentsPage,
+  }))
 );
 
 function CollectorVersionRedirect() {
   const { version } = useParams<{ version: string }>();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const release = collectorReleaseContext({ searchParams, pathVersion: version });
+  const release = collectorReleaseContext({
+    searchParams,
+    pathVersion: version,
+  });
   return <Navigate to={`${release.listHref}${location.hash}`} replace state={location.state} />;
 }
 
@@ -122,7 +136,7 @@ export function V1App() {
       <main className="flex-1 pt-16">
         <ErrorBoundary>
           <Suspense fallback={<Loader label="Loading…" />}>
-            <Routes>
+            <TrackedRoutes>
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
               <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
@@ -163,7 +177,7 @@ export function V1App() {
                 <Route path="/_dev/components" element={<DevComponentsPage />} />
               )}
               <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            </TrackedRoutes>
           </Suspense>
         </ErrorBoundary>
       </main>
