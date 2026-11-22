@@ -25,6 +25,7 @@ import { useTheme, type ThemeMode } from "@/theme-context";
 const NAV_ITEMS = [
   { to: "/java-agent", labelKey: "header.nav.javaAgent" },
   { to: "/collector", labelKey: "header.nav.collector" },
+  { to: "/python/instrumentation", labelKey: "header.nav.python" },
   { to: "/about", labelKey: "header.nav.about" },
 ] as const;
 

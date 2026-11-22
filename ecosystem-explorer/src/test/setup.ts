@@ -28,6 +28,7 @@ import aboutEn from "../../public/locales/en/about.json";
 import listEn from "../../public/locales/en/list.json";
 import detailEn from "../../public/locales/en/detail.json";
 import semanticConventionsEn from "../../public/locales/en/semantic-conventions.json";
+import pythonEn from "../../public/locales/en/python.json";
 
 void i18n.use(initReactI18next).init({
   lng: "en",
@@ -43,6 +44,7 @@ void i18n.use(initReactI18next).init({
     "list",
     "detail",
     "semantic-conventions",
+    "python",
   ],
   defaultNS: "common",
   resources: {
@@ -57,6 +59,7 @@ void i18n.use(initReactI18next).init({
       list: listEn,
       detail: detailEn,
       "semantic-conventions": semanticConventionsEn,
+      python: pythonEn,
     },
   },
 });

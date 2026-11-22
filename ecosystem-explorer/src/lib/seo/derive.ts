@@ -140,6 +140,12 @@ export const STATIC_ROUTE_META: Record<string, SeoMeta> = {
       "Browse and search all OpenTelemetry Collector components — receivers, processors, " +
       "exporters, and connectors — by distribution, type, and stability.",
   },
+  "/python/instrumentation": {
+    title: "Python Instrumentation — OpenTelemetry Ecosystem Explorer",
+    description:
+      "Browse and search OpenTelemetry Python contrib instrumentation packages: instrumented " +
+      "libraries, supported versions, metrics and semantic convention status.",
+  },
   "/java-agent": {
     title: "OpenTelemetry Java Agent — Ecosystem Explorer",
     description:

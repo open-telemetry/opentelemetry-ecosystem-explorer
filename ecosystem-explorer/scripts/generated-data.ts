@@ -21,6 +21,7 @@ const SENTINELS = [
   "collector/versions-index.json",
   "configuration/versions-index.json",
   "javascript/index.json",
+  "python/index.json",
 ];
 
 export function missingGeneratedData(dataDir: string): string[] {

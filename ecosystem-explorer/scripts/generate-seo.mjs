@@ -53,6 +53,7 @@ const STATIC_SITEMAP_HINTS = {
   "/java-agent": { changefreq: "daily", priority: "0.9" },
   "/collector/components": { changefreq: "daily", priority: "0.8" },
   "/java-agent/instrumentation": { changefreq: "daily", priority: "0.8" },
+  "/python/instrumentation": { changefreq: "daily", priority: "0.8" },
   "/java-agent/configuration": { changefreq: "weekly", priority: "0.7" },
   "/java-agent/configuration/builder": { changefreq: "weekly", priority: "0.6" },
   "/java-agent/releases": { changefreq: "weekly", priority: "0.7" },

@@ -122,10 +122,11 @@ async function fetchMarkdown(context: Context, mdPath: string): Promise<string |
 
 // Parameterized routes that are valid but not enumerated in routes.json (they
 // resolve client-side): versioned Collector lists and the Java instrumentation
-// version list. Anything else not in the manifest is a real 404.
+// version list, and Python package pages. Anything else not in the manifest is a real 404.
 function isDynamicKnownRoute(pathname: string): boolean {
   if (/^\/collector\/components\/[^/]+$/.test(pathname)) return true;
   if (/^\/java-agent\/instrumentation\/(latest|\d[\w.+-]*)$/.test(pathname)) return true;
+  if (/^\/python\/instrumentation\/[^/]+$/.test(pathname)) return true;
   if (pathname === "/_dev/components") return true;
   return false;
 }

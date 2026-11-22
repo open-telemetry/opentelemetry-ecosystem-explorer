@@ -65,6 +65,21 @@ describe("Header", () => {
     expect(collectorLink).toHaveAttribute("href", "/collector");
   });
 
+  it("links to the Python instrumentation catalogue", () => {
+    render(
+      <MemoryRouter>
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getAllByRole("link", { name: "Python" })[0]).toHaveAttribute(
+      "href",
+      "/python/instrumentation"
+    );
+  });
+
   it("renders the logo as a link to home", () => {
     render(
       <MemoryRouter>

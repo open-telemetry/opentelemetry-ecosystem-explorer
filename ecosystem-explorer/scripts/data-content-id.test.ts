@@ -28,6 +28,7 @@ const SENTINELS = [
   "collector/versions-index.json",
   "configuration/versions-index.json",
   "javascript/index.json",
+  "python/index.json",
 ];
 
 let dataDir: string;
