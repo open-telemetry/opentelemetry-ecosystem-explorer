@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
-    "@tailwindcss/postcss": "4.3.3",
+    "@tailwindcss/postcss": "4.3.5",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "14.6.8",
@@ -69,7 +69,7 @@
     "playwright": "1.64.1",
     "pngjs": "7.0.0",
     "postcss": "8.5.32",
-    "tailwindcss": "4.3.3",
+    "tailwindcss": "4.3.5",
     "typescript": "6.0.3",
     "typescript-json-schema": "0.68.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
