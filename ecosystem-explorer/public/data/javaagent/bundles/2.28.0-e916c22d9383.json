@@ -33,6 +33,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the ActiveJ HTTP server.",
     "display_name": "ActiveJ",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -53,6 +54,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -68,6 +70,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -197,6 +200,7 @@
       "HTTP_ROUTE",
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -225,6 +229,7 @@
     ],
     "description": "The Alibaba Druid instrumentation generates database connection pool metrics for druid data sources.",
     "display_name": "Alibaba Druid",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -250,6 +255,7 @@
     ],
     "description": "This instrumentation enables database connection pools metrics for Apache DBCP.\nThe instrumentation uses `MBeanRegistration` methods for lifecycle detection, therefore it only activates if the `BasicDataSource` is registered to an `MBeanServer`. If using Spring Boot, this happens automatically as all Spring beans that support JMX registration are automatically registered by default.",
     "display_name": "Apache DBCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -293,6 +299,7 @@
     ],
     "description": "The Apache Dubbo instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for Apache Dubbo RPC calls.",
     "display_name": "Apache Dubbo",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -320,6 +327,7 @@
     ],
     "description": "This instrumentation enables spans for Apache ElasticJob job executions.",
     "display_name": "Apache ElasticJob",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -424,6 +432,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Apache HttpAsyncClient.",
     "display_name": "Apache HttpAsyncClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -533,6 +542,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for versions 2 and 3 of the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -642,6 +652,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for version 4 of the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -659,6 +670,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration that enables HTTP client spans and HTTP client metrics for the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -768,6 +780,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for version 5 of the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -785,6 +798,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration that enables HTTP client spans and HTTP client metrics for the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -814,6 +828,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -942,6 +957,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -962,6 +978,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client spans and metrics for the Armeria gRPC client, and RPC server spans and metrics for the Armeria gRPC server.",
     "display_name": "Armeria gRPC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1066,6 +1083,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
     "display_name": "AsyncHttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1175,6 +1193,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
     "display_name": "AsyncHttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1284,6 +1303,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
     "display_name": "AsyncHttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1304,6 +1324,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1325,6 +1346,7 @@
     ],
     "description": "Provides lightweight instrumentation of the Lambda core library, supporting all versions. It generates FaaS server spans with the `faas.invocation_id` attribute. Use this package if you only use `RequestStreamHandler` or know you don't use any event classes from `aws-lambda-java-events`. This also includes when you are using `aws-serverless-java-container` to run e.g., a Spring Boot application on Lambda.\nFor custom wrappers when using library instrumentation, you can configure the `OTEL_INSTRUMENTATION_AWS_LAMBDA_HANDLER` environment variable to contain your lambda handler method (in the format `package.ClassName::methodName`) and use one of wrappers as your lambda `Handler`.",
     "display_name": "AWS Lambda Core",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1357,6 +1379,7 @@
     ],
     "description": "This instrumentation enables FaaS spans and messaging spans for AWS Lambda functions handling event types.",
     "display_name": "AWS Lambda Events",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1382,6 +1405,7 @@
     ],
     "description": "This library instrumentation provides FaaS spans and messaging spans for AWS Lambda functions handling event types.",
     "display_name": "AWS Lambda Events",
+    "has_events": false,
     "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
@@ -1421,6 +1445,7 @@
     ],
     "description": "This instrumentation covers the AWS SDK 1.11+ client library, enabling messaging and client spans and metrics for calls to AWS services including DynamoDB, EC2, Kinesis, Lambda, RDS, S3, secrets manager, SNS/SQS and step functions.",
     "display_name": "AWS SDK",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1486,6 +1511,7 @@
     ],
     "description": "This instrumentation covers the AWS SDK 2.2+ client library, enabling messaging and client spans and metrics for calls to AWS services including DynamoDB, EC2, Kinesis, Lambda, RDS, S3, SNS/SQS and Bedrock.",
     "display_name": "AWS SDK",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1511,6 +1537,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1527,6 +1554,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1543,6 +1571,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1559,6 +1588,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1571,6 +1601,7 @@
     "_is_custom": false,
     "description": "The c3p0 instrumentation provides connection pool metrics for c3p0 data sources.",
     "display_name": "c3p0",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -1599,6 +1630,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1633,6 +1665,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
     "display_name": "Cassandra Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1658,6 +1691,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
     "display_name": "Cassandra Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1690,6 +1724,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
     "display_name": "Cassandra Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1716,6 +1751,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the ClickHouse Java Client.",
     "display_name": "ClickHouse Java Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1741,6 +1777,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the ClickHouse Java Client.",
     "display_name": "ClickHouse Java Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1773,6 +1810,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Couchbase 2.0 operations. It automatically traces key-value operations (get, upsert, replace, remove), view queries, N1QL queries, and cluster management operations.",
     "display_name": "Couchbase Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1805,6 +1843,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Couchbase 2.6 operations. It automatically traces key-value operations (get, upsert, replace, remove), view queries, N1QL queries, and cluster management operations.",
     "display_name": "Couchbase Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1824,6 +1863,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1842,6 +1882,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1860,6 +1901,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1878,6 +1920,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1903,6 +1946,7 @@
     "description": "The dropwizard-metrics instrumentation for the dropwizard/codahale metrics library produces OpenTelemetry compliant versions of the metrics generated by the Dropwizard MetricRegistry.\nThe Dropwizard metrics API does not have a concept of metric labels/tags/attributes, thus the data produced by this integration might be of very low quality, depending on how the API is used in the instrumented application.",
     "disabled_by_default": true,
     "display_name": "Dropwizard Metrics",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1927,6 +1971,7 @@
     "features": [
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1939,6 +1984,7 @@
     "_is_custom": false,
     "description": "This instrumentation enriches Elasticsearch database client spans generated by the elasticsearch-rest-7.0 instrumentation by adding `db.elasticsearch.path_parts.id` and `db.elasticsearch.path_parts.index` attributes. It does not emit any telemetry on its own. Versions 8.10 and later of the Elasticsearch Java client have native OpenTelemetry support.",
     "display_name": "Elasticsearch API Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1967,6 +2013,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
     "display_name": "Elasticsearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1999,6 +2046,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
     "display_name": "Elasticsearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2031,6 +2079,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
     "display_name": "Elasticsearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2057,6 +2106,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch transport client requests. Each call produces a span named after the Elasticsearch action, enriched with transport-specific attributes.",
     "display_name": "Elasticsearch Transport Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2082,6 +2132,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch transport client requests. Each call produces a span named after the Elasticsearch action, enriched with transport-specific attributes.",
     "display_name": "Elasticsearch Transport Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2107,6 +2158,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch transport client requests. Each call produces a span named after the Elasticsearch action, enriched with transport-specific attributes.",
     "display_name": "Elasticsearch Transport Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2146,6 +2198,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2158,6 +2211,7 @@
     "_is_custom": false,
     "description": "This standalone instrumentation enables metrics for Failsafe circuit breakers.",
     "display_name": "Failsafe",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": false,
     "has_standalone_library": true,
@@ -2173,6 +2227,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2198,6 +2253,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2219,6 +2275,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Apache Geode cache operations.",
     "display_name": "Apache Geode",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2327,6 +2384,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Google HTTP Client.",
     "display_name": "Google HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2357,6 +2415,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2392,6 +2451,7 @@
     ],
     "description": "This instrumentation enables spans for GraphQL operations.",
     "display_name": "GraphQL Java",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2445,6 +2505,7 @@
     ],
     "description": "This instrumentation enables spans for GraphQL operations.",
     "display_name": "GraphQL Java",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2491,6 +2552,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Grizzly.",
     "display_name": "Eclipse Grizzly",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2542,6 +2604,7 @@
     ],
     "description": "This instrumentation enables RPC client and RPC server spans and metrics for gRPC.",
     "display_name": "gRPC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2573,6 +2636,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2586,6 +2650,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC server spans for GWT RPC requests.",
     "display_name": "GWT",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2634,6 +2699,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2661,6 +2727,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate ORM operations.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2682,6 +2749,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate ORM operations.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2703,6 +2771,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate ORM operations.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2724,6 +2793,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate stored procedure calls.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2739,6 +2809,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2751,6 +2822,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database connection pool metrics for HikariCP.",
     "display_name": "HikariCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -2859,6 +2931,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for requests made using java.net.HttpURLConnection.",
     "display_name": "HttpURLConnection",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2885,6 +2958,7 @@
     ],
     "description": "This instrumentation enables spans for Hystrix command executions and fallbacks.",
     "display_name": "Netflix Hystrix",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2897,6 +2971,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a standalone library integration that enables metrics for Apache Iceberg table scans.",
     "display_name": "Apache Iceberg",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": false,
     "has_standalone_library": true,
@@ -2918,6 +2993,7 @@
     ],
     "description": "This instrumentation enables database client spans and metrics for the InfluxDB Java client.",
     "display_name": "InfluxDB Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3026,6 +3102,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for requests made using the Java HTTP client.",
     "display_name": "Java HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3099,6 +3176,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the Java HTTP server.",
     "display_name": "Java HTTP Server",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3129,6 +3207,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3144,6 +3223,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3159,6 +3239,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3185,6 +3266,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3218,6 +3300,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3250,6 +3333,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3282,6 +3366,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3314,6 +3399,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3346,6 +3432,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3379,6 +3466,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3411,6 +3499,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3443,6 +3532,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3467,6 +3557,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3492,6 +3583,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3517,6 +3609,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3542,6 +3635,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3567,6 +3661,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3602,6 +3697,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3614,6 +3710,7 @@
     "_is_custom": false,
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the JBoss LogManager MDC, it does not emit any telemetry on its own.",
     "display_name": "JBoss Log Manager",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3695,6 +3792,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for JDBC operations. There is also a datasource instrumentation that creates spans for datasource connections (disabled by default). Note: The instrumentation unwraps pooled connections to cache metadata against the underlying physical connection; without proper unwrapping, repeated metadata extraction can cause performance degradation.",
     "display_name": "JDBC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3746,6 +3844,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3796,6 +3895,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3821,6 +3921,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3870,6 +3971,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3917,6 +4019,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Jetty.",
     "display_name": "Eclipse Jetty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3964,6 +4067,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Jetty.",
     "display_name": "Eclipse Jetty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4073,6 +4177,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jetty HTTP Client.",
     "display_name": "Eclipse Jetty HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4183,6 +4288,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jetty HTTP Client.",
     "display_name": "Eclipse Jetty HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4214,6 +4320,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4242,6 +4349,7 @@
     ],
     "description": "This instrumentation enables messaging spans for JMS (Java Message Service) message producers and consumers.",
     "display_name": "JMS (Java Message Service)",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4273,6 +4381,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Jakarta JMS (Java Message Service) message producers and consumers.",
     "display_name": "JMS (Java Message Service)",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4380,6 +4489,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jodd HTTP.",
     "display_name": "Jodd HTTP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4409,6 +4519,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4433,6 +4544,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4457,6 +4569,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4481,6 +4594,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4512,6 +4626,7 @@
     "features": [
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4554,6 +4669,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Kafka producers and consumers, and collects internal Kafka client metrics.",
     "display_name": "Apache Kafka Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4569,6 +4685,7 @@
     "_is_custom": false,
     "description": "This standalone instrumentation enables messaging spans for Kafka producers and consumers, and collects internal Kafka client metrics.",
     "display_name": "Apache Kafka Client",
+    "has_events": false,
     "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
@@ -4584,6 +4701,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables messaging spans for Kafka Connect sink tasks.",
     "display_name": "Apache Kafka Connect",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4622,6 +4740,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Kafka Streams processing.",
     "display_name": "Apache Kafka Streams",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4640,6 +4759,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -4652,6 +4772,7 @@
     "_is_custom": false,
     "description": "This instrumentation adds support for @WithSpan annotations on methods that return Kotlin Flow.",
     "display_name": "Kotlin Coroutines Flow",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -4667,6 +4788,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -4800,6 +4922,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4936,6 +5059,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5055,6 +5179,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Kubernetes Client for Java.",
     "display_name": "Kubernetes Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5113,6 +5238,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
     "display_name": "Lettuce",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5177,6 +5303,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
     "display_name": "Lettuce",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5209,6 +5336,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
     "display_name": "Lettuce",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5270,6 +5398,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and metrics for IBM WebSphere Liberty application server.",
     "display_name": "Liberty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5316,6 +5445,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and metrics for the IBM WebSphere Liberty HTTP dispatcher layer.",
     "display_name": "Liberty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5362,6 +5492,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5418,6 +5549,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5468,6 +5600,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to Log4j's ThreadContext, it does not emit any telemetry on its own.",
     "display_name": "Log4j",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5517,6 +5650,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to Log4j's ThreadContext, it does not emit any telemetry on its own.",
     "display_name": "Log4j",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5559,6 +5693,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the Log4j MDC, it does not emit any telemetry on its own.",
     "display_name": "Log4j",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5650,6 +5785,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5700,6 +5836,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the Logback MDC, it does not emit any telemetry on its own.",
     "display_name": "Logback",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5741,6 +5878,7 @@
     "description": "This instrumentation enables a Micrometer MeterRegistry that bridges Micrometer metrics to the OpenTelemetry Metrics SDK. It is disabled by default because it may produce metrics that overlap with metrics already captured by other instrumentations.",
     "disabled_by_default": true,
     "display_name": "Micrometer",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5770,6 +5908,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
     "display_name": "MongoDB Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5803,6 +5942,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
     "display_name": "MongoDB Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5835,6 +5975,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
     "display_name": "MongoDB Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5867,6 +6008,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB async Java driver.",
     "display_name": "MongoDB Driver (Async)",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5884,6 +6026,7 @@
     "description": "This instrumentation enables spans for MyBatis mapper method executions.",
     "disabled_by_default": true,
     "display_name": "MyBatis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -5905,6 +6048,7 @@
     ],
     "description": "This instrumentation enables messaging spans for NATS message producers and consumers.",
     "display_name": "NATS Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -6034,6 +6178,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework.",
     "display_name": "Netty HTTP codec",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6180,6 +6325,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework.",
     "display_name": "Netty HTTP codec",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6326,6 +6472,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework. Does not currently support capturing HTTP/2 traffic.",
     "display_name": "Netty HTTP codec",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6438,6 +6585,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for OkHttp.",
     "display_name": "OkHttp",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6547,6 +6695,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for OkHttp.",
     "display_name": "OkHttp",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6574,6 +6723,7 @@
     ],
     "description": "This instrumentation enables Gen AI client spans and metrics for the OpenAI Java SDK.",
     "display_name": "OpenAI Java SDK",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6600,6 +6750,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the OpenSearch Java client.",
     "display_name": "OpenSearch Java Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6616,6 +6767,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for OpenSearch REST clients.",
     "display_name": "OpenSearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6632,6 +6784,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for OpenSearch REST clients.",
     "display_name": "OpenSearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6648,6 +6801,7 @@
     "_is_custom": false,
     "description": "The Oracle Universal Connection Pool (UCP) instrumentation enables database connection pool metrics for Oracle UCP data sources.",
     "display_name": "Oracle UCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -6673,6 +6827,7 @@
     ],
     "description": "When the OSHI library is detected on the classpath, this instrumentation enables system metrics for memory, disk, and network operations.",
     "display_name": "OSHI",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -6689,6 +6844,7 @@
     "_is_custom": false,
     "description": "This instrumentation prevents Payara's built-in OpenTracing integration from interfering with OpenTelemetry server spans, it does not emit any telemetry on its own.",
     "display_name": "Payara",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -6704,6 +6860,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -6833,6 +6990,7 @@
       "HTTP_ROUTE",
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6865,6 +7023,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -6890,6 +7049,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -6994,6 +7154,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Play WS.",
     "display_name": "Play WS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7103,6 +7264,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Play WS.",
     "display_name": "Play WS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7212,6 +7374,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Play WS.",
     "display_name": "Play WS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7238,6 +7401,7 @@
     ],
     "description": "This instrumentation enables spans for PowerJob job processor executions.",
     "display_name": "PowerJob",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7273,6 +7437,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Apache Pulsar message producers and consumers.",
     "display_name": "Apache Pulsar Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7291,6 +7456,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7312,6 +7478,7 @@
     ],
     "description": "This instrumentation enables spans for Quartz job execution.",
     "display_name": "Quartz",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7373,6 +7540,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for R2DBC (Reactive Relational Database Connectivity).",
     "display_name": "R2DBC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7413,6 +7581,7 @@
     ],
     "description": "This instrumentation enables messaging spans for RabbitMQ message producers and consumers.",
     "display_name": "RabbitMQ",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7471,6 +7640,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7607,6 +7777,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7639,6 +7810,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7655,6 +7827,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7690,6 +7863,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Reactor Kafka message consumers.",
     "display_name": "Reactor Kafka",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7708,6 +7882,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7819,6 +7994,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Reactor Netty HTTP client.",
     "display_name": "Reactor Netty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7836,6 +8012,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for Rediscala.",
     "display_name": "Rediscala",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7852,6 +8029,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for Redisson Redis client operations.",
     "display_name": "Redisson",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7868,6 +8046,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for Redisson Redis client operations.",
     "display_name": "Redisson",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7887,6 +8066,7 @@
     "features": [
       "RESOURCE_DETECTOR"
     ],
+    "has_events": false,
     "has_metrics": false,
     "has_spans": false,
     "has_standalone_library": true,
@@ -7932,6 +8112,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7983,6 +8164,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8001,6 +8183,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client spans and RPC server spans for Java RMI (Remote Method Invocation).",
     "display_name": "RMI (Remote Method Invocation)",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8033,6 +8216,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Apache RocketMQ message producers and consumers using the Remoting Protocol.",
     "display_name": "Apache RocketMQ Client - Remoting Protocol",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8065,6 +8249,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Apache RocketMQ message producers and consumers using the gRPC/Protobuf Protocol.",
     "display_name": "Apache RocketMQ Client - gRPC Protocol",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8117,6 +8302,7 @@
     ],
     "description": "This instrumentation enables JVM runtime metrics using JMX (Java 8+) and JFR (Java 17+) to monitor classes, CPU, garbage collection, memory, and threads.",
     "display_name": "JVM Runtime Telemetry",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -8145,6 +8331,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8170,6 +8357,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8195,6 +8383,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8208,6 +8397,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables context propagation for Scala fork-join tasks, it does not emit any telemetry on its own.",
     "display_name": "Scala ForkJoinPool",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8253,6 +8443,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8306,6 +8497,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8357,6 +8549,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8378,6 +8571,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8414,6 +8608,7 @@
     "description": "This instrumentation enables spans for Spring Batch job execution, including job, step, and chunk processing.",
     "disabled_by_default": true,
     "display_name": "Spring Batch",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8427,6 +8622,7 @@
     "description": "This instrumentation configures the OpenTelemetry Micrometer bridge to receive metrics from Spring Boot Actuator. It does not produce telemetry on its own.",
     "disabled_by_default": true,
     "display_name": "Spring Boot Actuator Autoconfigure",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8442,6 +8638,7 @@
     "features": [
       "RESOURCE_DETECTOR"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8454,6 +8651,7 @@
     "_is_custom": false,
     "description": "This instrumentation enhances messaging span creation for Spring Cloud AWS SQS. It coordinates with the AWS SDK instrumentation to create spans at the appropriate points in Spring Cloud AWS message handling.",
     "display_name": "Spring Cloud AWS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8478,6 +8676,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8499,6 +8698,7 @@
     ],
     "description": "This instrumentation enhances tracing for Spring Cloud Gateway Server WebMVC. It does not generate any telemetry on its own, but rather enriches existing traces produced by other instrumentations like Spring WebMVC with Spring Cloud Gateway-specific attributes.",
     "display_name": "Spring Cloud Gateway Server WebMVC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8514,6 +8714,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8526,6 +8727,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables spans for Spring Data repository method invocations.",
     "display_name": "Spring Data",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8561,6 +8763,7 @@
     ],
     "description": "This instrumentation enables producer and consumer messaging spans for Spring Integration.",
     "display_name": "Spring Integration",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8590,6 +8793,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Spring JMS message consumers.",
     "display_name": "Spring JMS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8621,6 +8825,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Spring JMS message consumers.",
     "display_name": "Spring JMS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8659,6 +8864,7 @@
     ],
     "description": "This instrumentation enables consumer messaging spans for Spring Kafka listeners.",
     "display_name": "Spring Kafka",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8698,6 +8904,7 @@
     ],
     "description": "This instrumentation enables consumer messaging spans for Spring Pulsar listeners.",
     "display_name": "Spring Pulsar",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8722,6 +8929,7 @@
     ],
     "description": "This instrumentation enables consumer messaging spans for Spring RabbitMQ listeners.",
     "display_name": "Spring Rabbit",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8737,6 +8945,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client and RPC server spans for Spring RMI applications.",
     "display_name": "Spring RMI",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8762,6 +8971,7 @@
     ],
     "description": "This instrumentation enables tracing for Spring Scheduling tasks.",
     "display_name": "Spring Scheduling",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8811,6 +9021,7 @@
     ],
     "description": "This instrumentation does not emit any telemetry on its own. Instead, it captures enduser attributes, and is only enabled when at least one of the `enduser` configurations is enabled.\nNOTE: The `enduser` attributes have been deprecated and will be removed in 3.0+ of the java agent.",
     "display_name": "Spring Security",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8824,6 +9035,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration that enables capturing HTTP client spans and metrics for Spring's RestTemplate.",
     "display_name": "Spring Web",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -8883,6 +9095,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8908,6 +9121,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8921,6 +9135,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration for the Spring WebFlux WebClient and Webflux server versions 5.3+ that enables HTTP client and server spans and metrics.",
     "display_name": "Spring WebFlux",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -8968,6 +9183,7 @@
       "CONTROLLER_SPANS",
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8983,6 +9199,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -9028,6 +9245,7 @@
       "CONTROLLER_SPANS",
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9054,6 +9272,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9075,6 +9294,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Memcached operations using the Spymemcached client.",
     "display_name": "Spymemcached",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9104,6 +9324,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9129,6 +9350,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9154,6 +9376,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9166,6 +9389,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client and RPC server spans and metrics for Apache Thrift.",
     "display_name": "Apache Thrift",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9232,6 +9456,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9296,6 +9521,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9322,6 +9548,7 @@
     ],
     "description": "This instrumentation enables database connection pool metrics for Tomcat JDBC.",
     "display_name": "Tomcat JDBC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -9346,6 +9573,7 @@
     ],
     "description": "This instrumentation enables client spans for Twilio SDK API calls such as sending messages and making phone calls.",
     "display_name": "Twilio",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9388,6 +9616,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Undertow.",
     "display_name": "Undertow",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9418,6 +9647,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9522,6 +9752,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for requests made using the Vert.x HTTP client.",
     "display_name": "Vert.x HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9631,6 +9862,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Vert.x HTTP client.",
     "display_name": "Vert.x HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9740,6 +9972,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Vert.x HTTP client.",
     "display_name": "Vert.x HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9788,6 +10021,7 @@
     "description": "This instrumentation enables messaging spans for Kafka consumers using the Vert.x Kafka Client library.",
     "disabled_by_default": true,
     "display_name": "Vert.x Kafka Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9837,6 +10071,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Redis operations using the Vert.x Redis Client library.",
     "display_name": "Vert.x Redis Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9856,6 +10091,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9877,6 +10113,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Vert.x SQL Client operations.",
     "display_name": "Vert.x SQL Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9902,6 +10139,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Vert.x SQL Client operations.",
     "display_name": "Vert.x SQL Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9921,6 +10159,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9933,6 +10172,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database connection pool metrics for Vibur DBCP data sources.",
     "display_name": "Vibur DBCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -9952,6 +10192,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9973,6 +10214,7 @@
     ],
     "description": "This instrumentation enables spans for XXL-Job task executions.",
     "display_name": "XXL-Job",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9994,6 +10236,7 @@
     ],
     "description": "This instrumentation enables spans for XXL-Job task executions.",
     "display_name": "XXL-Job",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10015,6 +10258,7 @@
     ],
     "description": "This instrumentation enables spans for XXL-Job task executions.",
     "display_name": "XXL-Job",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10030,6 +10274,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10045,6 +10290,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10081,6 +10327,7 @@
     ],
     "description": "The external-annotations instrumentation acts as a \"shim\" that automatically instruments methods annotated with custom or third-party tracing annotations. This is particularly useful if you have existing annotations (such as a custom @Trace or third-party annotation) that you want to leverage with OpenTelemetry. At runtime, this module recognizes those annotations and applies the appropriate OpenTelemetry instrumentation logic, including span creation and context propagation. Covers many common vendor annotations by default, and additional annotations can be targeted using the configuration property \"otel.instrumentation.external-annotations.include\".",
     "display_name": "External Annotations",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10123,6 +10370,7 @@
     ],
     "description": "Collects and reports metrics exposed through Java Management Extensions (JMX). It can be configured to extract JVM and application-level telemetry data from JMX MBeans such as memory usage, thread counts, and garbage collection statistics, and translate these measurements into OpenTelemetry metrics.",
     "display_name": "JMX Metrics",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10149,6 +10397,7 @@
     ],
     "description": "Provides a flexible way to capture telemetry at the method level in JVM applications. By weaving instrumentation into targeted methods at runtime based on the \"otel.instrumentation.methods.include\" configuration property, it measures entry and exit points, execution duration and exception occurrences. The resulting data is automatically translated into OpenTelemetry traces.",
     "display_name": "Methods",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10174,6 +10423,7 @@
     ],
     "description": "Instruments methods annotated with OpenTelemetry extension annotations, such as @WithSpan and @SpanAttribute.",
     "display_name": "OpenTelemetry Extension Annotations",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10199,6 +10449,7 @@
     ],
     "description": "Instruments methods annotated with OpenTelemetry instrumentation annotations, such as @WithSpan and @SpanAttribute.",
     "display_name": "OpenTelemetry Instrumentation Annotations",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
