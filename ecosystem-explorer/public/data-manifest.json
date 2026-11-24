@@ -15,11 +15,11 @@
       "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
     },
     "javaagent": {
-      "release_tag": "data-javaagent-1487f1a6dcc5",
+      "release_tag": "data-javaagent-5a447c1bda96",
       "asset": "javaagent.tar.gz",
-      "content_digest": "1487f1a6dcc54a1cb8bfb518da263c9d597f79d52641b451f852774ba2e724cd",
-      "archive_sha256": "f52bc6f16522e80ab128e7ee861ca224887e145163bcb70542a96dde07c4d69d",
-      "registry_commit": "776c9c35897c27fa27a11ccfec735f778bd8cfc1"
+      "content_digest": "5a447c1bda9655ab3b87238250fd07df8b34799ee9b38d2b4889b924d73107df",
+      "archive_sha256": "6e5c8ab3da9340cf513a664a4bcae26d30d8619571a06f048f7b3703e29260cc",
+      "registry_commit": "6efe92d14419f325a4375afd1250635037718570"
     },
     "javascript": {
       "release_tag": "data-javascript-68c9b7c652ef",

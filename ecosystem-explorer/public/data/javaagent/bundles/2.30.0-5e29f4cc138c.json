@@ -33,6 +33,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the ActiveJ HTTP server.",
     "display_name": "ActiveJ",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -53,6 +54,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -68,6 +70,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -185,7 +188,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -197,6 +200,7 @@
       "HTTP_ROUTE",
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -216,8 +220,7 @@
     "_is_custom": false,
     "configurations": [
       {
-        "declarative_name": "general.stability_opt_in_list",
-        "declarative_type": "string",
+        "declarative_name": "general.semconv_stability.opt_in",
         "default": "",
         "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
         "name": "otel.semconv-stability.opt-in",
@@ -226,6 +229,7 @@
     ],
     "description": "The Alibaba Druid instrumentation generates database connection pool metrics for druid data sources.",
     "display_name": "Alibaba Druid",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -242,39 +246,16 @@
     "_is_custom": false,
     "configurations": [
       {
-        "declarative_name": "java.apache_commons_pool.enabled",
-        "default": false,
-        "description": "Enables the Apache Commons Pool instrumentation.",
-        "name": "otel.instrumentation.apache-commons-pool.enabled",
-        "type": "boolean"
-      }
-    ],
-    "description": "This instrumentation enables object pool metrics for Apache Commons Pool GenericObjectPool and GenericKeyedObjectPool instances.",
-    "disabled_by_default": true,
-    "display_name": "Apache Commons Pool",
-    "has_javaagent": true,
-    "has_metrics": true,
-    "has_spans": false,
-    "has_standalone_library": true,
-    "name": "apache-commons-pool-2.0",
-    "scope": {
-      "name": "io.opentelemetry.apache-commons-pool-2.0"
-    }
-  },
-  {
-    "_is_custom": false,
-    "configurations": [
-      {
-        "declarative_name": "general.stability_opt_in_list",
-        "declarative_type": "string",
+        "declarative_name": "general.semconv_stability.opt_in",
         "default": "",
         "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
         "name": "otel.semconv-stability.opt-in",
         "type": "list"
       }
     ],
-    "description": "This instrumentation enables database connection pools metrics for Apache DBCP.\nThe auto-instrumentation registers metrics when the connection pool is initialized (`BasicDataSource.startPoolMaintenance()`) or when `BasicDataSource.preRegister(...)` is invoked during MBean registration, whichever comes first, and unregisters them when the `BasicDataSource` is closed. JMX registration is not required. When a JMX `ObjectName` is available, its `name` property is used as the pool name; if the property is absent, the full `ObjectName` is used. Otherwise, the JDBC URL and connection properties are used to derive `server.address[:server.port][/db.namespace]`. If neither server address nor database namespace is available, `apache-dbcp2` is used. A pool registered as an MBean after it has already started switches from the derived name to the `ObjectName`-based name.",
+    "description": "This instrumentation enables database connection pools metrics for Apache DBCP.\nThe instrumentation uses `MBeanRegistration` methods for lifecycle detection, therefore it only activates if the `BasicDataSource` is registered to an `MBeanServer`. If using Spring Boot, this happens automatically as all Spring beans that support JMX registration are automatically registered by default.",
     "display_name": "Apache DBCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -318,6 +299,7 @@
     ],
     "description": "The Apache Dubbo instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for Apache Dubbo RPC calls.",
     "display_name": "Apache Dubbo",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -345,6 +327,7 @@
     ],
     "description": "This instrumentation enables spans for Apache ElasticJob job executions.",
     "display_name": "Apache ElasticJob",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -441,7 +424,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -449,6 +432,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Apache HttpAsyncClient.",
     "display_name": "Apache HttpAsyncClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -550,7 +534,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -558,6 +542,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for versions 2 and 3 of the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -659,7 +644,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -667,6 +652,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for version 4 of the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -684,6 +670,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration that enables HTTP client spans and HTTP client metrics for the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -785,7 +772,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -793,6 +780,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for version 5 of the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -810,6 +798,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration that enables HTTP client spans and HTTP client metrics for the Apache HttpClient.",
     "display_name": "Apache HttpClient",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -839,6 +828,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -956,7 +946,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -967,6 +957,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -987,6 +978,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client spans and metrics for the Armeria gRPC client, and RPC server spans and metrics for the Armeria gRPC server.",
     "display_name": "Armeria gRPC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1083,7 +1075,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -1091,6 +1083,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
     "display_name": "AsyncHttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1192,7 +1185,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -1200,6 +1193,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
     "display_name": "AsyncHttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1301,7 +1295,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -1309,6 +1303,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
     "display_name": "AsyncHttpClient",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1329,6 +1324,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1350,6 +1346,7 @@
     ],
     "description": "Provides lightweight instrumentation of the Lambda core library, supporting all versions. It generates FaaS server spans with the `faas.invocation_id` attribute. Use this package if you only use `RequestStreamHandler` or know you don't use any event classes from `aws-lambda-java-events`. This also includes when you are using `aws-serverless-java-container` to run e.g., a Spring Boot application on Lambda.\nFor custom wrappers when using library instrumentation, you can configure the `OTEL_INSTRUMENTATION_AWS_LAMBDA_HANDLER` environment variable to contain your lambda handler method (in the format `package.ClassName::methodName`) and use one of wrappers as your lambda `Handler`.",
     "display_name": "AWS Lambda Core",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1382,8 +1379,9 @@
     ],
     "description": "This instrumentation enables FaaS spans and messaging spans for AWS Lambda functions handling event types.",
     "display_name": "AWS Lambda Events",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "aws-lambda-events-2.2",
     "scope": {
@@ -1407,7 +1405,8 @@
     ],
     "description": "This library instrumentation provides FaaS spans and messaging spans for AWS Lambda functions handling event types.",
     "display_name": "AWS Lambda Events",
-    "has_metrics": true,
+    "has_events": false,
+    "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
     "name": "aws-lambda-events-3.11",
@@ -1430,20 +1429,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.aws_sdk.experimental_span_attributes/development",
         "default": false,
         "description": "Enables the experimental span attributes `aws.agent`, `aws.queue.name`, `aws.lambda.function.arn` and `aws.lambda.function.name` for AWS SDK instrumentation.",
@@ -1460,6 +1445,7 @@
     ],
     "description": "This instrumentation covers the AWS SDK 1.11+ client library, enabling messaging and client spans and metrics for calls to AWS services including DynamoDB, EC2, Kinesis, Lambda, RDS, S3, secrets manager, SNS/SQS and step functions.",
     "display_name": "AWS SDK",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1485,20 +1471,6 @@
         "default": "",
         "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
         "name": "otel.instrumentation.messaging.experimental.capture-headers",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
         "type": "list"
       },
       {
@@ -1539,6 +1511,7 @@
     ],
     "description": "This instrumentation covers the AWS SDK 2.2+ client library, enabling messaging and client spans and metrics for calls to AWS services including DynamoDB, EC2, Kinesis, Lambda, RDS, S3, SNS/SQS and Bedrock.",
     "display_name": "AWS SDK",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1564,6 +1537,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1580,6 +1554,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1596,6 +1571,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1612,6 +1588,7 @@
       "CONTEXT_PROPAGATION",
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -1624,6 +1601,7 @@
     "_is_custom": false,
     "description": "The c3p0 instrumentation provides connection pool metrics for c3p0 data sources.",
     "display_name": "c3p0",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -1652,6 +1630,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1686,6 +1665,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
     "display_name": "Cassandra Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1711,6 +1691,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
     "display_name": "Cassandra Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1743,6 +1724,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
     "display_name": "Cassandra Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1769,6 +1751,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the ClickHouse Java Client.",
     "display_name": "ClickHouse Java Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1794,6 +1777,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the ClickHouse Java Client.",
     "display_name": "ClickHouse Java Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1826,6 +1810,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Couchbase 2.0 operations. It automatically traces key-value operations (get, upsert, replace, remove), view queries, N1QL queries, and cluster management operations.",
     "display_name": "Couchbase Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1858,6 +1843,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Couchbase 2.6 operations. It automatically traces key-value operations (get, upsert, replace, remove), view queries, N1QL queries, and cluster management operations.",
     "display_name": "Couchbase Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -1886,6 +1872,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1913,6 +1900,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1940,6 +1928,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1967,6 +1956,7 @@
     "features": [
       "AUTO_INSTRUMENTATION_SHIM"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -1992,6 +1982,7 @@
     "description": "The dropwizard-metrics instrumentation for the dropwizard/codahale metrics library produces OpenTelemetry compliant versions of the metrics generated by the Dropwizard MetricRegistry.\nThe Dropwizard metrics API does not have a concept of metric labels/tags/attributes, thus the data produced by this integration might be of very low quality, depending on how the API is used in the instrumented application.",
     "disabled_by_default": true,
     "display_name": "Dropwizard Metrics",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2016,6 +2007,7 @@
     "features": [
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2026,8 +2018,9 @@
   },
   {
     "_is_custom": false,
-    "description": "This instrumentation enriches Elasticsearch database client spans generated by the elasticsearch-rest-7.0 instrumentation by adding `db.operation.parameter.id` and `db.operation.parameter.index` attributes, or the deprecated `db.elasticsearch.path_parts.id` and `db.elasticsearch.path_parts.index` attributes when the old database semantic conventions are in use. It does not emit any telemetry on its own. Versions 7.17.20 and later on the 7.x line, and versions 8.10 and later, have native OpenTelemetry support.",
+    "description": "This instrumentation enriches Elasticsearch database client spans generated by the elasticsearch-rest-7.0 instrumentation by adding `db.elasticsearch.path_parts.id` and `db.elasticsearch.path_parts.index` attributes. It does not emit any telemetry on its own. Versions 8.10 and later of the Elasticsearch Java client have native OpenTelemetry support.",
     "display_name": "Elasticsearch API Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2056,6 +2049,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
     "display_name": "Elasticsearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2088,6 +2082,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
     "display_name": "Elasticsearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2120,6 +2115,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
     "display_name": "Elasticsearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2146,6 +2142,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch transport client requests. Each call produces a span named after the Elasticsearch action, enriched with transport-specific attributes.",
     "display_name": "Elasticsearch Transport Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2171,6 +2168,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch transport client requests. Each call produces a span named after the Elasticsearch action, enriched with transport-specific attributes.",
     "display_name": "Elasticsearch Transport Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2196,6 +2194,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch transport client requests. Each call produces a span named after the Elasticsearch action, enriched with transport-specific attributes.",
     "display_name": "Elasticsearch Transport Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2235,6 +2234,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2247,6 +2247,7 @@
     "_is_custom": false,
     "description": "This standalone instrumentation enables metrics for Failsafe circuit breakers.",
     "display_name": "Failsafe",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": false,
     "has_standalone_library": true,
@@ -2262,6 +2263,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2287,6 +2289,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2308,6 +2311,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Apache Geode cache operations.",
     "display_name": "Apache Geode",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2408,7 +2412,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -2416,6 +2420,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Google HTTP Client.",
     "display_name": "Google HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2446,6 +2451,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2481,6 +2487,7 @@
     ],
     "description": "This instrumentation enables spans for GraphQL operations.",
     "display_name": "GraphQL Java",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2534,6 +2541,7 @@
     ],
     "description": "This instrumentation enables spans for GraphQL operations.",
     "display_name": "GraphQL Java",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2580,6 +2588,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Grizzly.",
     "display_name": "Eclipse Grizzly",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2599,36 +2608,19 @@
       {
         "declarative_name": "java.grpc.capture_metadata.client.request",
         "default": "",
-        "description": "Deprecated: use `otel.instrumentation.grpc.client.request-metadata.included` instead. A comma-separated list of request metadata keys to capture on client spans. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal metadata key.",
+        "description": "A comma-separated list of request metadata keys. gRPC client instrumentation will capture metadata values corresponding to configured keys as span attributes.",
+        "examples": [
+          "custom-request-header",
+          "my-metadata-key,another-metadata-key"
+        ],
         "name": "otel.instrumentation.grpc.capture-metadata.client.request",
         "type": "list"
       },
       {
         "declarative_name": "java.grpc.capture_metadata.server.request",
         "default": "",
-        "description": "Deprecated: use `otel.instrumentation.grpc.server.request-metadata.included` instead. A comma-separated list of request metadata keys to capture on server spans. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal metadata key.",
+        "description": "A comma-separated list of request metadata keys. gRPC server instrumentation will capture metadata values corresponding to configured keys as span attributes.",
         "name": "otel.instrumentation.grpc.capture-metadata.server.request",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.grpc.client.request_metadata.excluded",
-        "default": "",
-        "description": "A comma-separated list of ASCII request metadata key patterns to exclude from client spans. Excluded patterns take precedence over included patterns. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded ASCII metadata is captured, which may expose sensitive information.",
-        "examples": [
-          "authorization,*-token"
-        ],
-        "name": "otel.instrumentation.grpc.client.request-metadata.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.grpc.client.request_metadata.included",
-        "default": "",
-        "description": "A comma-separated list of ASCII request metadata key patterns to capture on client spans. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters.",
-        "examples": [
-          "custom-request-header",
-          "my-*-key,another-metadata-key"
-        ],
-        "name": "otel.instrumentation.grpc.client.request-metadata.included",
         "type": "list"
       },
       {
@@ -2644,31 +2636,11 @@
         "description": "Enable the capture of experimental span attributes `grpc.received.message_count`, `grpc.sent.message_count` and `grpc.canceled`.",
         "name": "otel.instrumentation.grpc.experimental-span-attributes",
         "type": "boolean"
-      },
-      {
-        "declarative_name": "java.grpc.server.request_metadata.excluded",
-        "default": "",
-        "description": "A comma-separated list of ASCII request metadata key patterns to exclude from server spans. Excluded patterns take precedence over included patterns. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded ASCII metadata is captured, which may expose sensitive information.",
-        "examples": [
-          "authorization,*-token"
-        ],
-        "name": "otel.instrumentation.grpc.server.request-metadata.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.grpc.server.request_metadata.included",
-        "default": "",
-        "description": "A comma-separated list of ASCII request metadata key patterns to capture on server spans. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters.",
-        "examples": [
-          "custom-request-header",
-          "my-*-key,another-metadata-key"
-        ],
-        "name": "otel.instrumentation.grpc.server.request-metadata.included",
-        "type": "list"
       }
     ],
     "description": "This instrumentation enables RPC client and RPC server spans and metrics for gRPC.",
     "display_name": "gRPC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2700,6 +2672,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2713,6 +2686,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC server spans for GWT RPC requests.",
     "display_name": "GWT",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2728,22 +2702,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for the Apache HBase client.",
     "display_name": "HBase Client",
-    "has_javaagent": true,
-    "has_metrics": true,
-    "has_spans": true,
-    "name": "hbase-client-1.0",
-    "scope": {
-      "name": "io.opentelemetry.hbase-client-1.0"
-    },
-    "semantic_conventions": [
-      "DATABASE_CLIENT_SPANS",
-      "DATABASE_CLIENT_METRICS"
-    ]
-  },
-  {
-    "_is_custom": false,
-    "description": "This instrumentation enables database client spans and database client metrics for the Apache HBase client.",
-    "display_name": "HBase Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2760,6 +2719,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for the Apache HBase client.",
     "display_name": "HBase Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2809,6 +2769,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -2836,6 +2797,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate ORM operations.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2857,6 +2819,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate ORM operations.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2878,6 +2841,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate ORM operations.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2899,6 +2863,7 @@
     ],
     "description": "This instrumentation enables spans for Hibernate stored procedure calls.",
     "display_name": "Hibernate",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -2914,6 +2879,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -2926,6 +2892,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database connection pool metrics for HikariCP.",
     "display_name": "HikariCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -3026,7 +2993,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -3034,6 +3001,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for requests made using java.net.HttpURLConnection.",
     "display_name": "HttpURLConnection",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3060,6 +3028,7 @@
     ],
     "description": "This instrumentation enables spans for Hystrix command executions and fallbacks.",
     "display_name": "Netflix Hystrix",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3072,6 +3041,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a standalone library integration that enables metrics for Apache Iceberg table scans.",
     "display_name": "Apache Iceberg",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": false,
     "has_standalone_library": true,
@@ -3089,17 +3059,11 @@
         "description": "Enables query sanitization for database queries.",
         "name": "otel.instrumentation.common.db.query-sanitization.enabled",
         "type": "boolean"
-      },
-      {
-        "declarative_name": "java.influxdb.query_sanitization.enabled",
-        "default": true,
-        "description": "Enables query sanitization for InfluxDB queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
-        "name": "otel.instrumentation.influxdb.query-sanitization.enabled",
-        "type": "boolean"
       }
     ],
     "description": "This instrumentation enables database client spans and metrics for the InfluxDB Java client.",
     "display_name": "InfluxDB Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3200,7 +3164,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -3208,6 +3172,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for requests made using the Java HTTP client.",
     "display_name": "Java HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3281,6 +3246,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the Java HTTP server.",
     "display_name": "Java HTTP Server",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3325,6 +3291,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3340,6 +3307,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3355,6 +3323,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3381,6 +3350,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3414,6 +3384,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3446,6 +3417,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3478,6 +3450,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3510,6 +3483,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3542,6 +3516,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3575,6 +3550,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3607,6 +3583,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3639,6 +3616,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3663,6 +3641,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3688,6 +3667,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3713,6 +3693,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3738,6 +3719,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3763,6 +3745,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -3791,7 +3774,11 @@
       {
         "declarative_name": "java.jboss_logmanager.capture_mdc_attributes/development",
         "default": "",
-        "description": "Deprecated: use `otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.included` instead. Entries are matched as exact MDC keys rather than as glob patterns, except that a list containing only `*` captures all MDC attributes; in a multi-entry list, `*` and `?` are literal characters. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
+        "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
+        "examples": [
+          "custom-mdc-key",
+          "key1,key2,key3"
+        ],
         "name": "otel.instrumentation.jboss-logmanager.experimental.capture-mdc-attributes",
         "type": "list"
       },
@@ -3801,27 +3788,6 @@
         "description": "Enables the capture of the log message template (if arguments are provided).",
         "name": "otel.instrumentation.jboss-logmanager.experimental.capture-template",
         "type": "boolean"
-      },
-      {
-        "declarative_name": "java.jboss_logmanager.mdc_attributes/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. `*` matches any number of characters and `?` matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included or excluded pattern, or the deprecated setting, is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.jboss_logmanager.mdc_attributes/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. `*` matches any number of characters and `?` matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included or excluded pattern, or the deprecated setting, is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
-        "examples": [
-          "custom-mdc-key",
-          "request.*,user-?"
-        ],
-        "name": "otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.included",
-        "type": "list"
       }
     ],
     "description": "This instrumentation bridges JBoss LogManager log events to OpenTelemetry logs.",
@@ -3829,6 +3795,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3841,6 +3808,7 @@
     "_is_custom": false,
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the JBoss LogManager MDC, it does not emit any telemetry on its own.",
     "display_name": "JBoss Log Manager",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -3922,6 +3890,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for JDBC operations. There is also a datasource instrumentation that creates spans for datasource connections (disabled by default). Note: The instrumentation unwraps pooled connections to cache metadata against the underlying physical connection; without proper unwrapping, repeated metadata extraction can cause performance degradation.",
     "display_name": "JDBC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -3973,6 +3942,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4023,6 +3993,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4073,6 +4044,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4098,6 +4070,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
     "display_name": "Jedis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4147,6 +4120,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4194,6 +4168,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Jetty.",
     "display_name": "Eclipse Jetty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4241,6 +4216,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Jetty.",
     "display_name": "Eclipse Jetty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4342,7 +4318,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -4350,6 +4326,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jetty HTTP Client.",
     "display_name": "Eclipse Jetty HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4452,7 +4429,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -4460,6 +4437,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jetty HTTP Client.",
     "display_name": "Eclipse Jetty HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4491,6 +4469,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4510,20 +4489,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -4533,8 +4498,9 @@
     ],
     "description": "This instrumentation enables messaging spans for JMS (Java Message Service) message producers and consumers.",
     "display_name": "JMS (Java Message Service)",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "jms-1.1",
     "scope": {
@@ -4555,20 +4521,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -4578,8 +4530,9 @@
     ],
     "description": "This instrumentation enables messaging spans for Jakarta JMS (Java Message Service) message producers and consumers.",
     "display_name": "JMS (Java Message Service)",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "jms-3.0",
     "scope": {
@@ -4677,7 +4630,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -4685,6 +4638,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jodd HTTP.",
     "display_name": "Jodd HTTP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -4714,6 +4668,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4738,6 +4693,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4762,6 +4718,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4786,6 +4743,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4817,6 +4775,7 @@
     "features": [
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -4833,20 +4792,6 @@
         "default": "",
         "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
         "name": "otel.instrumentation.messaging.experimental.capture-headers",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
         "type": "list"
       },
       {
@@ -4873,8 +4818,9 @@
     ],
     "description": "This instrumentation enables messaging spans for Kafka producers and consumers, and collects internal Kafka client metrics.",
     "display_name": "Apache Kafka Client",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "kafka-clients-0.11",
     "scope": {
@@ -4888,7 +4834,8 @@
     "_is_custom": false,
     "description": "This standalone instrumentation enables messaging spans for Kafka producers and consumers, and collects internal Kafka client metrics.",
     "display_name": "Apache Kafka Client",
-    "has_metrics": true,
+    "has_events": false,
+    "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
     "name": "kafka-clients-2.6",
@@ -4903,9 +4850,10 @@
     "_is_custom": false,
     "description": "This instrumentation enables messaging spans for Kafka Connect sink tasks.",
     "display_name": "Apache Kafka Connect",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
-    "has_spans": false,
+    "has_spans": true,
     "name": "kafka-connect-2.6",
     "scope": {
       "name": "io.opentelemetry.kafka-connect-2.6"
@@ -4925,20 +4873,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.kafka.experimental_span_attributes/development",
         "default": false,
         "description": "Enables the capture of the experimental consumer attributes `kafka.record.queue_time_ms` and `messaging.kafka.bootstrap.servers`.",
@@ -4955,8 +4889,9 @@
     ],
     "description": "This instrumentation enables messaging spans for Kafka Streams processing.",
     "display_name": "Apache Kafka Streams",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "kafka-streams-0.11",
     "scope": {
@@ -4973,6 +4908,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -4985,6 +4921,7 @@
     "_is_custom": false,
     "description": "This instrumentation adds support for @WithSpan annotations on methods that return Kotlin Flow.",
     "display_name": "Kotlin Coroutines Flow",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5000,6 +4937,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -5122,7 +5060,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -5133,6 +5071,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5258,7 +5197,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -5269,6 +5208,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5380,7 +5320,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -5388,6 +5328,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Kubernetes Client for Java.",
     "display_name": "Kubernetes Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5446,6 +5387,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
     "display_name": "Lettuce",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5510,6 +5452,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
     "display_name": "Lettuce",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5542,6 +5485,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
     "display_name": "Lettuce",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -5596,34 +5540,14 @@
       {
         "declarative_name": "java.servlet.capture_request_parameters/development",
         "default": "",
-        "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
+        "description": "List of request parameter names to capture as span attributes.",
         "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "request-id",
-          "user-*,search-?"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
         "type": "list"
       }
     ],
     "description": "This instrumentation enables HTTP server spans and metrics for IBM WebSphere Liberty application server.",
     "display_name": "Liberty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5670,6 +5594,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and metrics for the IBM WebSphere Liberty HTTP dispatcher layer.",
     "display_name": "Liberty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5702,34 +5627,12 @@
       {
         "declarative_name": "java.log4j_appender.capture_mdc_attributes/development",
         "default": "",
-        "description": "Deprecated include-only alias for otel.instrumentation.log4j-appender.experimental.mdc-attributes.included. It does not support glob patterns: a list containing only \"*\" captures all MDC attributes, and otherwise every entry, including one containing \"*\" or \"?\", is matched as a literal MDC key. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
+        "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
         "examples": [
           "custom-mdc-key",
           "key1,key2,key3"
         ],
         "name": "otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.log4j_appender.mdc_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.log4j_appender.mdc_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
-        "examples": [
-          "custom-mdc-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.included",
         "type": "list"
       }
     ],
@@ -5738,6 +5641,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5773,7 +5677,7 @@
       {
         "declarative_name": "java.log4j_appender.capture_map_message_attributes/development",
         "default": false,
-        "description": "Deprecated boolean alias for otel.instrumentation.log4j-appender.experimental.map-message-attributes.included, where true captures all MapMessage attributes and false captures none. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
+        "description": "Enables the capture of attributes from Log4j MapMessage instances.",
         "name": "otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes",
         "type": "boolean"
       },
@@ -5787,7 +5691,7 @@
       {
         "declarative_name": "java.log4j_appender.capture_mdc_attributes/development",
         "default": "",
-        "description": "Deprecated include-only alias for otel.instrumentation.log4j-appender.experimental.mdc-attributes.included. It does not support glob patterns: a list containing only \"*\" captures all context data attributes, and otherwise every entry, including one containing \"*\" or \"?\", is matched as a literal context data key. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
+        "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
         "examples": [
           "*",
           "key1,key2"
@@ -5801,50 +5705,6 @@
         "description": "Enables the capture of the log message template (if arguments are provided).",
         "name": "otel.instrumentation.log4j-appender.experimental.capture-template",
         "type": "boolean"
-      },
-      {
-        "declarative_name": "java.log4j_appender.map_message_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for MapMessage keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.log4j-appender.experimental.map-message-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.log4j_appender.map_message_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for MapMessage keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
-        "examples": [
-          "custom-map-message-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.log4j-appender.experimental.map-message-attributes.included",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.log4j_appender.mdc_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for context data keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No context data attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all context data attributes that do not match them. Captured context data attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.log4j_appender.mdc_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for context data keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No context data attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all context data attributes that do not match them. Captured context data attributes may contain sensitive information.",
-        "examples": [
-          "custom-context-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.included",
-        "type": "list"
       }
     ],
     "description": "This instrumentation bridges Log4j log events to OpenTelemetry logs.",
@@ -5852,6 +5712,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5902,6 +5763,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to Log4j's ThreadContext, it does not emit any telemetry on its own.",
     "display_name": "Log4j",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5951,6 +5813,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to Log4j's ThreadContext, it does not emit any telemetry on its own.",
     "display_name": "Log4j",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -5993,6 +5856,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the Log4j MDC, it does not emit any telemetry on its own.",
     "display_name": "Log4j",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -6028,28 +5892,28 @@
       {
         "declarative_name": "java.logback_appender.capture_key_value_pair_attributes/development",
         "default": false,
-        "description": "Deprecated setting that enables the capture of all attributes from Logback key value pairs. It is ignored when otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included or otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included instead.",
+        "description": "Enables the capture of attributes from Logback key-value pairs.",
         "name": "otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes",
         "type": "boolean"
       },
       {
         "declarative_name": "java.logback_appender.capture_logger_context_attributes/development",
         "default": false,
-        "description": "Deprecated setting that enables the capture of all attributes from the Logback logger context. It is ignored when otel.instrumentation.logback-appender.experimental.logger-context-attributes.included or otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logger-context-attributes.included instead.",
+        "description": "Enables the capture of attributes from the Logback logger context.",
         "name": "otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes",
         "type": "boolean"
       },
       {
         "declarative_name": "java.logback_appender.capture_logstash_marker_attributes/development",
         "default": false,
-        "description": "Deprecated setting that enables the capture of all attributes from Logstash markers, supported are those added to logs via Markers.append(), Markers.appendEntries(), Markers.appendArray() and Markers.appendRaw() methods. It is ignored when otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included instead.",
+        "description": "Enables the capture of attributes from Logstash markers.",
         "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes",
         "type": "boolean"
       },
       {
         "declarative_name": "java.logback_appender.capture_logstash_structured_arguments/development",
         "default": false,
-        "description": "Deprecated setting that enables the capture of all attributes from Logstash structured arguments (e.g., StructuredArguments.v() and StructuredArguments.keyValue()). It is ignored when otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included instead.",
+        "description": "Enables the capture of attributes from Logstash structured arguments.",
         "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments",
         "type": "boolean"
       },
@@ -6063,7 +5927,7 @@
       {
         "declarative_name": "java.logback_appender.capture_mdc_attributes/development",
         "default": "",
-        "description": "Deprecated comma-separated list of MDC keys to capture as log attributes. Keys are matched literally, including \"*\" and \"?\", except that the single value \"*\" captures all MDC attributes. It is ignored when otel.instrumentation.logback-appender.experimental.mdc-attributes.included or otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.mdc-attributes.included instead.",
+        "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
         "examples": [
           "custom-mdc-key",
           "key1,key2,key3"
@@ -6077,116 +5941,6 @@
         "description": "Enables the capture of the log message template before parameter substitution.",
         "name": "otel.instrumentation.logback-appender.experimental.capture-template",
         "type": "boolean"
-      },
-      {
-        "declarative_name": "java.logback_appender.key_value_pair_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.key_value_pair_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all key value pair attributes. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
-        "examples": [
-          "custom-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.logger_context_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logback logger context property keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No logger context attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes setting is configured; configuring only excluded patterns captures all logger context attributes that do not match them. Captured logger context attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.logger_context_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logback logger context property keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all logger context attributes. Excluded patterns take precedence over included patterns. No logger context attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes setting is configured; configuring only excluded patterns captures all logger context attributes that do not match them. Captured logger context attributes may contain sensitive information.",
-        "examples": [
-          "app.version",
-          "app.*,deployment-?"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.included",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.logstash_marker_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.logstash_marker_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash marker attributes. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
-        "examples": [
-          "custom-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash structured argument attributes. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
-        "examples": [
-          "custom-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.mdc_attributes/development.excluded",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
-        "examples": [
-          "*-secret",
-          "password,token"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.logback_appender.mdc_attributes/development.included",
-        "default": "",
-        "description": "Comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all MDC attributes. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
-        "examples": [
-          "custom-mdc-key",
-          "request-*,user-?"
-        ],
-        "name": "otel.instrumentation.logback-appender.experimental.mdc-attributes.included",
-        "type": "list"
       }
     ],
     "description": "This instrumentation bridges Logback log events to OpenTelemetry logs.",
@@ -6194,6 +5948,7 @@
     "features": [
       "LOGGING_BRIDGE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -6244,6 +5999,7 @@
     ],
     "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the Logback MDC, it does not emit any telemetry on its own.",
     "display_name": "Logback",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -6268,16 +6024,9 @@
         "type": "string"
       },
       {
-        "declarative_name": "java.micrometer.histogram_gauges/development.enabled",
-        "default": false,
-        "description": "Enables gauge-based Micrometer histograms for DistributionSummary and Timer instruments.",
-        "name": "otel.instrumentation.micrometer.experimental.histogram-gauges.enabled",
-        "type": "boolean"
-      },
-      {
         "declarative_name": "java.micrometer.histogram_gauges.enabled",
         "default": false,
-        "description": "Deprecated alias for `otel.instrumentation.micrometer.experimental.histogram-gauges.enabled`. It will be removed in 3.0.",
+        "description": "Enables gauge-based Micrometer histograms for DistributionSummary and Timer instruments.",
         "name": "otel.instrumentation.micrometer.histogram-gauges.enabled",
         "type": "boolean"
       },
@@ -6292,6 +6041,7 @@
     "description": "This instrumentation enables a Micrometer MeterRegistry that bridges Micrometer metrics to the OpenTelemetry Metrics SDK. It is disabled by default because it may produce metrics that overlap with metrics already captured by other instrumentations.",
     "disabled_by_default": true,
     "display_name": "Micrometer",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -6321,6 +6071,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
     "display_name": "MongoDB Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6354,6 +6105,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
     "display_name": "MongoDB Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6386,6 +6138,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
     "display_name": "MongoDB Driver",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6418,6 +6171,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the MongoDB async Java driver.",
     "display_name": "MongoDB Driver (Async)",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6435,6 +6189,7 @@
     "description": "This instrumentation enables spans for MyBatis mapper method executions.",
     "disabled_by_default": true,
     "display_name": "MyBatis",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -6452,26 +6207,13 @@
         "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
         "name": "otel.instrumentation.messaging.experimental.capture-headers",
         "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
       }
     ],
     "description": "This instrumentation enables messaging spans for NATS message producers and consumers.",
     "display_name": "NATS Client",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
     "name": "nats-2.17",
@@ -6591,7 +6333,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -6599,6 +6341,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework.",
     "display_name": "Netty HTTP codec",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6737,7 +6480,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -6745,6 +6488,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework.",
     "display_name": "Netty HTTP codec",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6883,7 +6627,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -6891,6 +6635,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework. Does not currently support capturing HTTP/2 traffic.",
     "display_name": "Netty HTTP codec",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -6995,7 +6740,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -7003,6 +6748,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for OkHttp.",
     "display_name": "OkHttp",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7104,7 +6850,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -7112,6 +6858,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for OkHttp.",
     "display_name": "OkHttp",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7139,6 +6886,7 @@
     ],
     "description": "This instrumentation enables Gen AI client spans and metrics for the OpenAI Java SDK.",
     "display_name": "OpenAI Java SDK",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7165,6 +6913,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for the OpenSearch Java client.",
     "display_name": "OpenSearch Java Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7181,6 +6930,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for OpenSearch REST clients.",
     "display_name": "OpenSearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7197,6 +6947,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for OpenSearch REST clients.",
     "display_name": "OpenSearch REST Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7213,6 +6964,7 @@
     "_is_custom": false,
     "description": "The Oracle Universal Connection Pool (UCP) instrumentation enables database connection pool metrics for Oracle UCP data sources.",
     "display_name": "Oracle UCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -7238,6 +6990,7 @@
     ],
     "description": "When the OSHI library is detected on the classpath, this instrumentation enables system metrics for memory, disk, and network operations.",
     "display_name": "OSHI",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -7254,6 +7007,7 @@
     "_is_custom": false,
     "description": "This instrumentation prevents Payara's built-in OpenTracing integration from interfering with OpenTelemetry server spans, it does not emit any telemetry on its own.",
     "display_name": "Payara",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7269,6 +7023,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7386,7 +7141,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -7398,6 +7153,7 @@
       "HTTP_ROUTE",
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7430,6 +7186,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7455,6 +7212,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7551,7 +7309,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -7559,6 +7317,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Play WS.",
     "display_name": "Play WS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7660,7 +7419,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -7668,6 +7427,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Play WS.",
     "display_name": "Play WS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7769,7 +7529,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -7777,6 +7537,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Play WS.",
     "display_name": "Play WS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7803,6 +7564,7 @@
     ],
     "description": "This instrumentation enables spans for PowerJob job processor executions.",
     "display_name": "PowerJob",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7822,20 +7584,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -7852,6 +7600,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Apache Pulsar message producers and consumers.",
     "display_name": "Apache Pulsar Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7870,6 +7619,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -7891,6 +7641,7 @@
     ],
     "description": "This instrumentation enables spans for Quartz job execution.",
     "display_name": "Quartz",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -7952,6 +7703,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for R2DBC (Reactive Relational Database Connectivity).",
     "display_name": "R2DBC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -7976,23 +7728,9 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
-        "description": "Enables consumer spans for RabbitMQ `basicGet` receive operations when legacy messaging semantic conventions are emitted. Stable messaging semantic conventions emit these spans regardless of this setting.",
+        "description": "Enables the creation of consumer spans on messaging receive operations. These spans will measure the time between receiving a message and the consumer processing that message.",
         "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
         "type": "boolean"
       },
@@ -8006,8 +7744,9 @@
     ],
     "description": "This instrumentation enables messaging spans for RabbitMQ message producers and consumers.",
     "display_name": "RabbitMQ",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "rabbitmq-2.7",
     "scope": {
@@ -8064,6 +7803,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8188,7 +7928,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -8200,6 +7940,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8232,6 +7973,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8248,6 +7990,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8267,20 +8010,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.kafka.experimental_span_attributes/development",
         "default": false,
         "description": "Enables the capture of the experimental consumer attribute `kafka.record.queue_time_ms`.",
@@ -8297,8 +8026,9 @@
     ],
     "description": "This instrumentation enables messaging spans for Reactor Kafka message consumers.",
     "display_name": "Reactor Kafka",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "reactor-kafka-1.0",
     "scope": {
@@ -8315,6 +8045,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8418,7 +8149,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -8426,6 +8157,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Reactor Netty HTTP client.",
     "display_name": "Reactor Netty",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8443,6 +8175,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for Rediscala.",
     "display_name": "Rediscala",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8459,6 +8192,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for Redisson Redis client operations.",
     "display_name": "Redisson",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8475,6 +8209,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables database client spans and database client metrics for Redisson Redis client operations.",
     "display_name": "Redisson",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8485,31 +8220,6 @@
     "semantic_conventions": [
       "DATABASE_CLIENT_SPANS",
       "DATABASE_CLIENT_METRICS"
-    ]
-  },
-  {
-    "_is_custom": false,
-    "configurations": [
-      {
-        "declarative_name": "general.stability_opt_in_list",
-        "declarative_type": "string",
-        "default": "",
-        "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
-        "name": "otel.semconv-stability.opt-in",
-        "type": "list"
-      }
-    ],
-    "description": "This instrumentation enables database connection pool metrics for Redisson.",
-    "display_name": "Redisson",
-    "has_javaagent": true,
-    "has_metrics": true,
-    "has_spans": false,
-    "name": "redisson-metrics-3.26",
-    "scope": {
-      "name": "io.opentelemetry.redisson-metrics-3.26"
-    },
-    "semantic_conventions": [
-      "DATABASE_POOL_METRICS"
     ]
   },
   {
@@ -8527,6 +8237,7 @@
     "features": [
       "RESOURCE_DETECTOR"
     ],
+    "has_events": false,
     "has_metrics": false,
     "has_spans": false,
     "has_standalone_library": true,
@@ -8572,6 +8283,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8623,6 +8335,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8641,6 +8354,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client spans and RPC server spans for Java RMI (Remote Method Invocation).",
     "display_name": "RMI (Remote Method Invocation)",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8664,20 +8378,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.rocketmq_client.experimental_span_attributes/development",
         "default": false,
         "description": "Enables capturing experimental span attributes `messaging.rocketmq.message.tag`, `messaging.rocketmq.broker_address`, `messaging.rocketmq.send_result`, `messaging.rocketmq.queue_id`, and `messaging.rocketmq.queue_offset`.",
@@ -8687,6 +8387,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Apache RocketMQ message producers and consumers using the Remoting Protocol.",
     "display_name": "Apache RocketMQ Client - Remoting Protocol",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -8710,20 +8411,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -8733,8 +8420,9 @@
     ],
     "description": "This instrumentation enables messaging spans for Apache RocketMQ message producers and consumers using the gRPC/Protobuf Protocol.",
     "display_name": "Apache RocketMQ Client - gRPC Protocol",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "rocketmq-client-5.0",
     "scope": {
@@ -8762,26 +8450,6 @@
         "type": "boolean"
       },
       {
-        "declarative_name": "java.runtime_telemetry.jfr_metrics/development.excluded",
-        "default": "",
-        "description": "Excludes JVM runtime metrics from JFR on Java 17+ using exact names or glob patterns with * and ?. Excluded patterns take precedence over included patterns, including over shorthand and legacy selections. Configuring this property without included selects all metrics except those excluded.",
-        "examples": [
-          "jvm.memory.allocation,jvm.network.*"
-        ],
-        "name": "otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.runtime_telemetry.jfr_metrics/development.included",
-        "default": "",
-        "description": "Selects JVM runtime metrics to source from JFR on Java 17+. Supports exact names and glob patterns with * and ?. Configuring either JFR metric selector property activates JFR. Use * to select all metrics.",
-        "examples": [
-          "jvm.memory.*,jvm.cpu.longlock"
-        ],
-        "name": "otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.runtime_telemetry.package_emitter/development.enabled",
         "default": false,
         "description": "Enables creating events for JAR libraries used by the application.",
@@ -8798,13 +8466,14 @@
       {
         "declarative_name": "java.runtime_telemetry.prefer_jfr/development",
         "default": false,
-        "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included` instead. Prefer JFR over JMX for metrics available from both sources, on Java 17+.",
+        "description": "Prefer JFR over JMX for metrics available from both sources, on Java 17+. When enabled, overlapping metrics are collected via JFR and the corresponding JMX metrics are suppressed.",
         "name": "otel.instrumentation.runtime-telemetry.experimental.prefer-jfr",
         "type": "boolean"
       }
     ],
     "description": "This instrumentation enables JVM runtime metrics using JMX (Java 8+) and JFR (Java 17+) to monitor classes, CPU, garbage collection, memory, and threads.",
     "display_name": "JVM Runtime Telemetry",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -8833,6 +8502,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8858,6 +8528,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8883,6 +8554,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8896,6 +8568,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables context propagation for Scala fork-join tasks, it does not emit any telemetry on its own.",
     "display_name": "Scala ForkJoinPool",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -8924,29 +8597,8 @@
       {
         "declarative_name": "java.servlet.capture_request_parameters/development",
         "default": "",
-        "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
+        "description": "List of request parameter names to capture as span attributes.",
         "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "request-id",
-          "user-*,search-?"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
         "type": "list"
       },
       {
@@ -8962,6 +8614,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -8998,29 +8651,8 @@
       {
         "declarative_name": "java.servlet.capture_request_parameters/development",
         "default": "",
-        "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
+        "description": "List of request parameter names to capture as span attributes.",
         "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "request-id",
-          "user-*,search-?"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
         "type": "list"
       },
       {
@@ -9036,6 +8668,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9070,29 +8703,8 @@
       {
         "declarative_name": "java.servlet.capture_request_parameters/development",
         "default": "",
-        "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
+        "description": "List of request parameter names to capture as span attributes.",
         "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "request-id",
-          "user-*,search-?"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
         "type": "list"
       },
       {
@@ -9108,6 +8720,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9153,6 +8766,7 @@
     ],
     "description": "The SOFARPC instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for SOFARPC RPC calls.",
     "display_name": "SOFARPC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9175,6 +8789,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9211,6 +8826,7 @@
     "description": "This instrumentation enables spans for Spring Batch job execution, including job, step, and chunk processing.",
     "disabled_by_default": true,
     "display_name": "Spring Batch",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9224,6 +8840,7 @@
     "description": "This instrumentation configures the OpenTelemetry Micrometer bridge to receive metrics from Spring Boot Actuator. It does not produce telemetry on its own.",
     "disabled_by_default": true,
     "display_name": "Spring Boot Actuator Autoconfigure",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9239,6 +8856,7 @@
     "features": [
       "RESOURCE_DETECTOR"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9251,6 +8869,7 @@
     "_is_custom": false,
     "description": "This instrumentation enhances messaging span creation for Spring Cloud AWS SQS. It coordinates with the AWS SDK instrumentation to create spans at the appropriate points in Spring Cloud AWS message handling.",
     "display_name": "Spring Cloud AWS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9275,6 +8894,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9296,6 +8916,7 @@
     ],
     "description": "This instrumentation enhances tracing for Spring Cloud Gateway Server WebMVC. It does not generate any telemetry on its own, but rather enriches existing traces produced by other instrumentations like Spring WebMVC with Spring Cloud Gateway-specific attributes.",
     "display_name": "Spring Cloud Gateway Server WebMVC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9311,6 +8932,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9323,6 +8945,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables spans for Spring Data repository method invocations.",
     "display_name": "Spring Data",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9342,20 +8965,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.spring_integration.global_channel_interceptor_patterns",
         "default": "*",
         "description": "A list of Spring channel name patterns that will be intercepted.",
@@ -9372,17 +8981,15 @@
     ],
     "description": "This instrumentation enables producer and consumer messaging spans for Spring Integration.",
     "display_name": "Spring Integration",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
     "name": "spring-integration-4.1",
     "scope": {
       "name": "io.opentelemetry.spring-integration-4.1"
-    },
-    "semantic_conventions": [
-      "MESSAGING_SPANS"
-    ]
+    }
   },
   {
     "_is_custom": false,
@@ -9395,20 +9002,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -9418,6 +9011,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Spring JMS message consumers.",
     "display_name": "Spring JMS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9440,20 +9034,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -9463,6 +9043,7 @@
     ],
     "description": "This instrumentation enables messaging spans for Spring JMS message consumers.",
     "display_name": "Spring JMS",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9485,20 +9066,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.kafka.experimental_span_attributes/development",
         "default": false,
         "description": "Enables the capture of the experimental consumer attribute `kafka.record.queue_time_ms` and `messaging.kafka.bootstrap.servers`.",
@@ -9515,8 +9082,9 @@
     ],
     "description": "This instrumentation enables consumer messaging spans for Spring Kafka listeners.",
     "display_name": "Spring Kafka",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "has_standalone_library": true,
     "name": "spring-kafka-2.7",
@@ -9538,20 +9106,6 @@
         "type": "list"
       },
       {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
-      },
-      {
         "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
         "default": false,
         "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
@@ -9568,8 +9122,9 @@
     ],
     "description": "This instrumentation enables consumer messaging spans for Spring Pulsar listeners.",
     "display_name": "Spring Pulsar",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "spring-pulsar-1.0",
     "scope": {
@@ -9588,26 +9143,13 @@
         "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
         "name": "otel.instrumentation.messaging.experimental.capture-headers",
         "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
-        "type": "list"
       }
     ],
     "description": "This instrumentation enables consumer messaging spans for Spring RabbitMQ listeners.",
     "display_name": "Spring Rabbit",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "spring-rabbit-1.0",
     "scope": {
@@ -9621,6 +9163,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client and RPC server spans for Spring RMI applications.",
     "display_name": "Spring RMI",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9646,6 +9189,7 @@
     ],
     "description": "This instrumentation enables tracing for Spring Scheduling tasks.",
     "display_name": "Spring Scheduling",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9716,6 +9260,7 @@
     ],
     "description": "This instrumentation does not emit any telemetry on its own. Instead, it captures identity attributes, and is only enabled when at least one common identity configuration is enabled.\nNOTE: The `enduser` attributes have been deprecated. When `otel.instrumentation.common.v3-preview` is enabled, `enduser.id` is emitted as `user.name`, `enduser.role` is emitted as the string array `user.roles`, and `enduser.scope` is not emitted.",
     "display_name": "Spring Security",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9729,6 +9274,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration that enables capturing HTTP client spans and metrics for Spring's RestTemplate.",
     "display_name": "Spring Web",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -9788,6 +9334,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -9813,6 +9360,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -9826,6 +9374,7 @@
     "_is_custom": false,
     "description": "This instrumentation provides a library integration for the Spring WebFlux WebClient and Webflux server versions 5.3+ that enables HTTP client and server spans and metrics.",
     "display_name": "Spring WebFlux",
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -9873,6 +9422,7 @@
       "CONTROLLER_SPANS",
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9888,6 +9438,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_metrics": true,
     "has_spans": true,
     "has_standalone_library": true,
@@ -9933,6 +9484,7 @@
       "CONTROLLER_SPANS",
       "VIEW_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9959,6 +9511,7 @@
     "features": [
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -9980,6 +9533,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Memcached operations using the Spymemcached client.",
     "display_name": "Spymemcached",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10009,6 +9563,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10034,6 +9589,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10059,6 +9615,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10071,6 +9628,7 @@
     "_is_custom": false,
     "description": "This instrumentation enables RPC client and RPC server spans and metrics for Apache Thrift.",
     "display_name": "Apache Thrift",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10127,29 +9685,8 @@
       {
         "declarative_name": "java.servlet.capture_request_parameters/development",
         "default": "",
-        "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
+        "description": "List of request parameter names to capture as span attributes.",
         "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "request-id",
-          "user-*,search-?"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
         "type": "list"
       }
     ],
@@ -10158,6 +9695,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10212,29 +9750,8 @@
       {
         "declarative_name": "java.servlet.capture_request_parameters/development",
         "default": "",
-        "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
+        "description": "List of request parameter names to capture as span attributes.",
         "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "password,*-token"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.servlet.request_parameters/development.included",
-        "default": "",
-        "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
-        "examples": [
-          "request-id",
-          "user-*,search-?"
-        ],
-        "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
         "type": "list"
       }
     ],
@@ -10243,6 +9760,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10260,41 +9778,16 @@
     "_is_custom": false,
     "configurations": [
       {
-        "declarative_name": "general.stability_opt_in_list",
-        "declarative_type": "string",
+        "declarative_name": "general.semconv_stability.opt_in",
         "default": "",
         "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
         "name": "otel.semconv-stability.opt-in",
         "type": "list"
       }
     ],
-    "description": "This instrumentation enables database connection pool metrics for Tomcat DBCP.\nThe auto-instrumentation registers metrics when the connection pool is initialized (`BasicDataSource.startPoolMaintenance()`) or when `BasicDataSource.preRegister(...)` is invoked during MBean registration, whichever comes first, and unregisters them when the `BasicDataSource` is closed. JMX registration is not required. When a JMX `ObjectName` is available, its `name` property is used as the pool name; if the property is absent, the full `ObjectName` is used. Otherwise, the JDBC URL and connection properties are used to derive `server.address[:server.port][/db.namespace]`. If neither server address nor database namespace is available, `tomcat-dbcp` is used. A pool registered as an MBean after it has already started switches from the derived name to the `ObjectName`-based name.",
-    "display_name": "Tomcat DBCP",
-    "has_javaagent": true,
-    "has_metrics": true,
-    "has_spans": false,
-    "name": "tomcat-dbcp-8.0",
-    "scope": {
-      "name": "io.opentelemetry.tomcat-dbcp-8.0"
-    },
-    "semantic_conventions": [
-      "DATABASE_POOL_METRICS"
-    ]
-  },
-  {
-    "_is_custom": false,
-    "configurations": [
-      {
-        "declarative_name": "general.stability_opt_in_list",
-        "declarative_type": "string",
-        "default": "",
-        "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
-        "name": "otel.semconv-stability.opt-in",
-        "type": "list"
-      }
-    ],
-    "description": "This instrumentation enables database connection pool metrics for Tomcat JDBC. When no pool name is explicitly configured, the JDBC URL and connection properties are used to derive `server.address[:server.port][/db.namespace]`. If no server address or database namespace is available, `tomcat-jdbc` is used.",
+    "description": "This instrumentation enables database connection pool metrics for Tomcat JDBC.",
     "display_name": "Tomcat JDBC",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -10319,6 +9812,7 @@
     ],
     "description": "This instrumentation enables client spans for Twilio SDK API calls such as sending messages and making phone calls.",
     "display_name": "Twilio",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10361,6 +9855,7 @@
     ],
     "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Undertow.",
     "display_name": "Undertow",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10391,6 +9886,7 @@
       "HTTP_ROUTE",
       "CONTROLLER_SPANS"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10487,7 +9983,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -10495,6 +9991,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for requests made using the Vert.x HTTP client.",
     "display_name": "Vert.x HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10596,7 +10093,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -10604,6 +10101,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Vert.x HTTP client.",
     "display_name": "Vert.x HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10705,7 +10203,7 @@
       },
       {
         "declarative_name": "general.sanitization.url.sensitive_query_parameters",
-        "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
+        "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
         "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
         "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
         "type": "list"
@@ -10713,6 +10211,7 @@
     ],
     "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Vert.x HTTP client.",
     "display_name": "Vert.x HTTP Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10734,20 +10233,6 @@
         "default": "",
         "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
         "name": "otel.instrumentation.messaging.experimental.capture-headers",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.excluded",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
-        "name": "otel.instrumentation.messaging.experimental.headers.excluded",
-        "type": "list"
-      },
-      {
-        "declarative_name": "java.common.messaging.headers/development.included",
-        "default": "",
-        "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
-        "name": "otel.instrumentation.messaging.experimental.headers.included",
         "type": "list"
       },
       {
@@ -10775,8 +10260,9 @@
     "description": "This instrumentation enables messaging spans for Kafka consumers using the Vert.x Kafka Client library.",
     "disabled_by_default": true,
     "display_name": "Vert.x Kafka Client",
+    "has_events": false,
     "has_javaagent": true,
-    "has_metrics": true,
+    "has_metrics": false,
     "has_spans": true,
     "name": "vertx-kafka-client-3.6",
     "scope": {
@@ -10824,6 +10310,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Redis operations using the Vert.x Redis Client library.",
     "display_name": "Vert.x Redis Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10843,6 +10330,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10864,6 +10352,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Vert.x SQL Client operations.",
     "display_name": "Vert.x SQL Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10889,6 +10378,7 @@
     ],
     "description": "This instrumentation enables database client spans and database client metrics for Vert.x SQL Client operations.",
     "display_name": "Vert.x SQL Client",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": true,
@@ -10908,6 +10398,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10918,8 +10409,9 @@
   },
   {
     "_is_custom": false,
-    "description": "This instrumentation enables database connection pool metrics for Vibur DBCP data sources. When no pool name is explicitly configured, the JDBC URL and connection properties are used to derive `server.address[:server.port][/db.namespace]`. If no server address or database namespace is available, `vibur-dbcp` is used.",
+    "description": "This instrumentation enables database connection pool metrics for Vibur DBCP data sources.",
     "display_name": "Vibur DBCP",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": true,
     "has_spans": false,
@@ -10939,6 +10431,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -10960,6 +10453,7 @@
     ],
     "description": "This instrumentation enables spans for XXL-Job task executions.",
     "display_name": "XXL-Job",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -10981,6 +10475,7 @@
     ],
     "description": "This instrumentation enables spans for XXL-Job task executions.",
     "display_name": "XXL-Job",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -11002,6 +10497,7 @@
     ],
     "description": "This instrumentation enables spans for XXL-Job task executions.",
     "display_name": "XXL-Job",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": true,
@@ -11017,6 +10513,7 @@
     "features": [
       "CONTEXT_PROPAGATION"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -11032,6 +10529,7 @@
     "features": [
       "HTTP_ROUTE"
     ],
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -11068,6 +10566,7 @@
     ],
     "description": "The external-annotations instrumentation acts as a \"shim\" that automatically instruments methods annotated with custom or third-party tracing annotations. This is particularly useful if you have existing annotations (such as a custom @Trace or third-party annotation) that you want to leverage with OpenTelemetry. At runtime, this module recognizes those annotations and applies the appropriate OpenTelemetry instrumentation logic, including span creation and context propagation. Covers many common vendor annotations by default, and additional annotations can be targeted using the configuration property \"otel.instrumentation.external-annotations.include\".",
     "display_name": "External Annotations",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -11110,6 +10609,7 @@
     ],
     "description": "Collects and reports metrics exposed through Java Management Extensions (JMX). It can be configured to extract JVM and application-level telemetry data from JMX MBeans such as memory usage, thread counts, and garbage collection statistics, and translate these measurements into OpenTelemetry metrics.",
     "display_name": "JMX Metrics",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -11136,6 +10636,7 @@
     ],
     "description": "Provides a flexible way to capture telemetry at the method level in JVM applications. By weaving instrumentation into targeted methods at runtime based on the \"otel.instrumentation.methods.include\" configuration property, it measures entry and exit points, execution duration and exception occurrences. The resulting data is automatically translated into OpenTelemetry traces.",
     "display_name": "Methods",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -11161,6 +10662,7 @@
     ],
     "description": "Instruments methods annotated with OpenTelemetry extension annotations, such as @WithSpan and @SpanAttribute.",
     "display_name": "OpenTelemetry Extension Annotations",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
@@ -11186,6 +10688,7 @@
     ],
     "description": "Instruments methods annotated with OpenTelemetry instrumentation annotations, such as @WithSpan and @SpanAttribute.",
     "display_name": "OpenTelemetry Instrumentation Annotations",
+    "has_events": false,
     "has_javaagent": true,
     "has_metrics": false,
     "has_spans": false,
