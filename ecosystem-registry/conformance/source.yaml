@@ -1,5 +1,5 @@
 repository: open-telemetry/semantic-conventions-conformance
-revision: 7717042a360f66e774deca4b00e50332db6c4a0a
+revision: 65781818cf534d30836c890f642fc8b820e4033a
 report_path: docs/data/conformance.json
 schema_version: 1
-digest: sha256:5c360ffb1d0d362405b2756e6ea4378a5e2416694dbf132a12d9686a2c5c485b
+digest: sha256:f5a2713cfb60632c7e0e8771912ad1dcc05c6584b35e2100fdd06c578ce6f251
