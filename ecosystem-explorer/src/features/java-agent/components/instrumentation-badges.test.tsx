@@ -23,6 +23,7 @@ import { FILTER_STYLES } from "../styles/filter-styles";
 const allFalse: BadgeInfo = {
   hasSpans: false,
   hasMetrics: false,
+  hasEvents: false,
   hasJavaAgentTarget: false,
   hasLibraryTarget: false,
 };
@@ -30,6 +31,7 @@ const allFalse: BadgeInfo = {
 const allTrue: BadgeInfo = {
   hasSpans: true,
   hasMetrics: true,
+  hasEvents: true,
   hasJavaAgentTarget: true,
   hasLibraryTarget: true,
 };
@@ -130,6 +132,15 @@ describe("TelemetryBadges", () => {
     expect(screen.getByLabelText("Has metric telemetry")).toBeInTheDocument();
   });
 
+  it("renders Events badge when hasEvents is true", () => {
+    render(
+      <TelemetryBadges badges={{ ...allFalse, hasEvents: true }} activeFilters={defaultFilters} />
+    );
+    expect(screen.getByText("Events")).toBeInTheDocument();
+    expect(screen.getByLabelText("Has event telemetry")).toBeInTheDocument();
+    expect(screen.getByText("Events").className).toContain(FILTER_STYLES.telemetry.events.inactive);
+  });
+
   it("highlights Spans badge when spans filter is active", () => {
     const filters: FilterState = {
       search: "",
@@ -152,5 +163,17 @@ describe("TelemetryBadges", () => {
     };
     render(<TelemetryBadges badges={{ ...allFalse, hasMetrics: true }} activeFilters={filters} />);
     expect(screen.getByText("Metrics").className).toContain(FILTER_STYLES.telemetry.metrics.active);
+  });
+
+  it("highlights Events badge when events filter is active", () => {
+    const filters: FilterState = {
+      search: "",
+      telemetry: new Set(["events"]),
+      target: new Set(),
+      semantic: [],
+      features: [],
+    };
+    render(<TelemetryBadges badges={{ ...allFalse, hasEvents: true }} activeFilters={filters} />);
+    expect(screen.getByText("Events").className).toContain(FILTER_STYLES.telemetry.events.active);
   });
 });

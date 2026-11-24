@@ -100,6 +100,42 @@ describe("InstrumentationFilterBar", () => {
     });
   });
 
+  it("toggles events telemetry filter on button click", async () => {
+    const user = userEvent.setup();
+    const onFiltersChange = vi.fn();
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
+
+    const eventsButton = screen.getByRole("button", { name: "Events" });
+    expect(eventsButton).toHaveAttribute("aria-pressed", "false");
+    expect(eventsButton.className).toContain(FILTER_STYLES.telemetry.events.inactive);
+    await user.click(eventsButton);
+
+    expect(onFiltersChange).toHaveBeenCalledWith({
+      ...defaultFilters,
+      telemetry: new Set(["events"]),
+    });
+  });
+
+  it("applies active style to the events filter when selected", () => {
+    render(
+      <InstrumentationFilterBar
+        filters={{ ...defaultFilters, telemetry: new Set(["events"]) }}
+        onFiltersChange={vi.fn()}
+        instrumentations={[]}
+      />
+    );
+
+    const eventsButton = screen.getByRole("button", { name: "Events" });
+    expect(eventsButton).toHaveAttribute("aria-pressed", "true");
+    expect(eventsButton.className).toContain(FILTER_STYLES.telemetry.events.active);
+  });
+
   it("removes telemetry filter when clicking active filter", async () => {
     const user = userEvent.setup();
     const onFiltersChange = vi.fn();

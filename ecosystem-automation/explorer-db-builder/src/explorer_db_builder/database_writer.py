@@ -194,7 +194,7 @@ class DatabaseWriter:
         ``instrumentations/`` remain for detail/deep-link pages.
 
         Entries are the slim shape produced by ``make_list_instrumentation`` (the
-        fields the list/catalog page reads, with ``has_spans``/``has_metrics``
+        fields the list/catalog page reads, with ``has_spans``/``has_metrics``/``has_events``
         precomputed in place of the heavy ``telemetry`` array) — not full detail.
 
         Args:

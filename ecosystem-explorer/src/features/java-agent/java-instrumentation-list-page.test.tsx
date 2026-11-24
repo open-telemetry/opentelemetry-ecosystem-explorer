@@ -79,6 +79,7 @@ const mockInstrumentations: InstrumentationListEntry[] = [
     has_standalone_library: true,
     has_metrics: true,
     has_spans: false,
+    has_events: true,
     _is_custom: false,
     semantic_conventions: ["db"],
   },
@@ -150,6 +151,17 @@ describe("JavaInstrumentationListPage - URL Persistence", () => {
       expect(screen.getByText("Kafka Client")).toBeInTheDocument();
       expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
     });
+  });
+
+  it("reads events telemetry filter from URL on mount", async () => {
+    renderPage("/java-agent/instrumentation?telemetry=events");
+
+    await waitFor(() => {
+      expect(screen.getByText("JDBC")).toBeInTheDocument();
+      expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+      expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole("button", { name: "Events" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("writes telemetry filter to URL when toggled", async () => {
@@ -332,6 +344,21 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
     expect(screen.queryByText("Spring Web")).not.toBeInTheDocument();
     expect(screen.getByText("Showing 2 of 4 instrumentations")).toBeInTheDocument();
+  });
+
+  it("filters by events telemetry", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const eventsButton = await screen.findByRole("button", { name: "Events" });
+    await user.click(eventsButton);
+
+    expect(screen.getByText("JDBC")).toBeInTheDocument();
+    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+    expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
+    expect(screen.queryByText("Spring Web")).not.toBeInTheDocument();
+    expect(screen.getByText("Showing 1 of 4 instrumentations")).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("telemetry=events");
   });
 
   it("filters by both spans and metrics (AND logic)", async () => {
