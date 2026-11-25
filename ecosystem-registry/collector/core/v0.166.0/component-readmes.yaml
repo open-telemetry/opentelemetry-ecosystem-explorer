@@ -1,0 +1,12 @@
+batchprocessor: batchprocessor-c0822f91eabb.md
+debugexporter: debugexporter-61a0217afe06.md
+forwardconnector: forwardconnector-691f911b2898.md
+memorylimiterextension: memorylimiterextension-6f5285dee17a.md
+memorylimiterprocessor: memorylimiterprocessor-fe70fa154113.md
+nopexporter: nopexporter-0369e7497b0c.md
+nopreceiver: nopreceiver-4656287b01bd.md
+otlpexporter: otlpexporter-fad3f7e9c40c.md
+otlphttpexporter: otlphttpexporter-2149349399fc.md
+otlpreceiver: otlpreceiver-48bd5ce43c5b.md
+queuebatchprocessor: queuebatchprocessor-f3fab9f1e372.md
+zpagesextension: zpagesextension-23b462a61b1a.md
