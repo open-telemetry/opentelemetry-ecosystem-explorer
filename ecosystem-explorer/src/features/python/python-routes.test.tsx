@@ -18,7 +18,6 @@ import { act, cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "@/theme-context";
 import { LegacyApp } from "@/LegacyApp";
-import { V1App } from "@/v1/V1App";
 import { packagesByName, pythonIndex } from "@/test/python-fixtures";
 
 vi.mock("@/hooks/use-python-data", () => ({
@@ -30,17 +29,11 @@ import { usePythonIndex, usePythonPackage } from "@/hooks/use-python-data";
 
 const FLASK = "opentelemetry-instrumentation-flask";
 
-/** Both apps keep one route table each; the Python routes must exist, identically, in both. */
-const APPS = [
-  ["LegacyApp", LegacyApp],
-  ["V1App", V1App],
-] as const;
-
-async function renderApp(App: typeof LegacyApp, path: string) {
+async function renderApp(path: string) {
   render(
     <ThemeProvider>
       <MemoryRouter initialEntries={[path]}>
-        <App />
+        <LegacyApp />
       </MemoryRouter>
     </ThemeProvider>
   );
@@ -68,9 +61,9 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe.each(APPS)("%s Python routes", (_name, App) => {
+describe("LegacyApp Python routes", () => {
   it("serves the catalogue at /python/instrumentation", async () => {
-    await renderApp(App, "/python/instrumentation");
+    await renderApp("/python/instrumentation");
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Python instrumentation" })
@@ -79,19 +72,19 @@ describe.each(APPS)("%s Python routes", (_name, App) => {
   });
 
   it("serves a package at /python/instrumentation/:name", async () => {
-    await renderApp(App, `/python/instrumentation/${FLASK}`);
+    await renderApp(`/python/instrumentation/${FLASK}`);
 
     expect(screen.getByRole("heading", { level: 1, name: FLASK })).toBeInTheDocument();
   });
 
   it("passes the route's name and ?version= to the package loader", async () => {
-    await renderApp(App, `/python/instrumentation/${FLASK}?version=0.66b1`);
+    await renderApp(`/python/instrumentation/${FLASK}?version=0.66b1`);
 
     expect(usePythonPackage).toHaveBeenLastCalledWith(FLASK, "0.66b1");
   });
 
   it("has no separate /python landing page: it is the not-found page", async () => {
-    await renderApp(App, "/python");
+    await renderApp("/python");
 
     expect(
       screen.queryByRole("heading", { name: "Python instrumentation" })
@@ -100,7 +93,7 @@ describe.each(APPS)("%s Python routes", (_name, App) => {
   });
 
   it("does not match deeper paths", async () => {
-    await renderApp(App, `/python/instrumentation/${FLASK}/extra`);
+    await renderApp(`/python/instrumentation/${FLASK}/extra`);
 
     expect(screen.queryByRole("heading", { level: 1, name: FLASK })).not.toBeInTheDocument();
   });
@@ -108,7 +101,7 @@ describe.each(APPS)("%s Python routes", (_name, App) => {
 
 describe("LegacyApp header", () => {
   it("links to the Python catalogue", async () => {
-    await renderApp(LegacyApp, "/");
+    await renderApp("/");
 
     expect(screen.getAllByRole("link", { name: "Python" })[0]).toHaveAttribute(
       "href",

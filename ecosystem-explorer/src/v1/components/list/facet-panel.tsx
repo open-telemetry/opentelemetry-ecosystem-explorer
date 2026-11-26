@@ -34,7 +34,7 @@
  */
 
 import { X } from "lucide-react";
-import { useEffect, useEffectEvent, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useRef, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
@@ -116,20 +116,15 @@ function withCounts<T extends string>(
   return options.map((opt) => ({ ...opt, count: counts[opt.value] }));
 }
 
-export interface FacetPanelShellProps {
-  /** Mobile: when true the panel is rendered inside a drawer overlay. */
-  isOpen?: boolean;
-  onClose?: () => void;
-  children: ReactNode;
-}
-
-/**
- * The rail-or-drawer behaviour shared by every list page's facet panel: complementary rail on
- * desktop, modal drawer (scrim, focus trap, Escape, scroll lock) on mobile. The caller supplies the
- * facets as children.
- */
-export function FacetPanelShell({ isOpen = false, onClose, children }: FacetPanelShellProps) {
-  const { t } = useTranslation("list");
+export function FacetPanel({
+  filters,
+  onChange,
+  versions,
+  counts,
+  isOpen = false,
+  onClose,
+}: FacetPanelProps) {
+  const { t } = useTranslation(["list", "collector"]);
   const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const isDesktop = useSyncExternalStore(subscribeViewport, isDesktopViewport, () => true);
@@ -208,6 +203,27 @@ export function FacetPanelShell({ isOpen = false, onClose, children }: FacetPane
     };
   }, [isDrawer]);
 
+  // Every facet edit resets pagination: a new filter set is a new result set.
+  const change = (next: Partial<ListFilters>) => onChange({ ...next, page: 1 });
+
+  // Signal's vocabulary lives in the `list` namespace (it's ecosystem-agnostic,
+  // defined by `list-filters.ts`'s SIGNALS array); type/stability/distribution
+  // are collector-domain terms and stay in `collector`.
+  function facetOptions<T extends string>(
+    facet: "type" | "signal" | "stability" | "distribution",
+    values: readonly T[],
+    swatches?: Record<T, string>
+  ): FacetOption<T>[] {
+    return values.map((value) => ({
+      value,
+      swatch: swatches?.[value],
+      label:
+        facet === "signal"
+          ? t(`facets.signal.options.${value}`)
+          : t(`listV1.facets.${facet}.options.${value}`, { ns: "collector" }),
+    }));
+  }
+
   return (
     <>
       {isDrawer && <div className="td-facet-panel__scrim" aria-hidden="true" onClick={onClose} />}
@@ -233,94 +249,57 @@ export function FacetPanelShell({ isOpen = false, onClose, children }: FacetPane
           </button>
         )}
 
-        {children}
+        <SearchFacet
+          title={t("facets.search.title")}
+          placeholder={t("facets.search.placeholder")}
+          value={filters.q}
+          onChange={(q) => change({ q })}
+        />
+
+        <CheckboxFacet
+          title={t("facets.type.title")}
+          options={withCounts(facetOptions("type", TYPES, TYPE_STRIPE_COLORS), counts?.types)}
+          selected={filters.types}
+          onChange={(types) => change({ types })}
+        />
+
+        <CheckboxFacet
+          title={t("facets.signal.title")}
+          options={withCounts(facetOptions("signal", SIGNALS), counts?.signals)}
+          selected={filters.signals}
+          onChange={(signals) => change({ signals })}
+        />
+
+        <CheckboxFacet
+          title={t("facets.stability.title")}
+          options={withCounts(
+            facetOptions("stability", STABILITIES, STABILITY_SWATCHES),
+            counts?.stabilities
+          )}
+          selected={filters.stabilities}
+          onChange={(stabilities) => change({ stabilities })}
+        />
+
+        <CheckboxFacet
+          title={t("facets.distribution.title")}
+          options={withCounts(facetOptions("distribution", DISTRIBUTIONS), counts?.distributions)}
+          selected={filters.distributions}
+          onChange={(distributions) => change({ distributions })}
+        />
+
+        {versions && versions.length > 0 && (
+          <SelectFacet
+            title={t("facets.version.title")}
+            options={versions.map((v) => ({
+              value: v,
+              label: v === "deprecated" ? t("facets.version.deprecated") : v,
+            }))}
+            value={filters.version}
+            onChange={(version) => change({ version })}
+            emptyLabel={t("facets.version.latest")}
+          />
+        )}
       </div>
     </>
-  );
-}
-
-export function FacetPanel({
-  filters,
-  onChange,
-  versions,
-  counts,
-  isOpen = false,
-  onClose,
-}: FacetPanelProps) {
-  const { t } = useTranslation(["list", "collector"]);
-  // Every facet edit resets pagination: a new filter set is a new result set.
-  const change = (next: Partial<ListFilters>) => onChange({ ...next, page: 1 });
-
-  // Signal's vocabulary lives in the `list` namespace (it's ecosystem-agnostic,
-  // defined by `list-filters.ts`'s SIGNALS array); type/stability/distribution
-  // are collector-domain terms and stay in `collector`.
-  function facetOptions<T extends string>(
-    facet: "type" | "signal" | "stability" | "distribution",
-    values: readonly T[],
-    swatches?: Record<T, string>
-  ): FacetOption<T>[] {
-    return values.map((value) => ({
-      value,
-      swatch: swatches?.[value],
-      label:
-        facet === "signal"
-          ? t(`facets.signal.options.${value}`)
-          : t(`listV1.facets.${facet}.options.${value}`, { ns: "collector" }),
-    }));
-  }
-
-  return (
-    <FacetPanelShell isOpen={isOpen} onClose={onClose}>
-      <SearchFacet
-        title={t("facets.search.title")}
-        placeholder={t("facets.search.placeholder")}
-        value={filters.q}
-        onChange={(q) => change({ q })}
-      />
-
-      <CheckboxFacet
-        title={t("facets.type.title")}
-        options={withCounts(facetOptions("type", TYPES, TYPE_STRIPE_COLORS), counts?.types)}
-        selected={filters.types}
-        onChange={(types) => change({ types })}
-      />
-
-      <CheckboxFacet
-        title={t("facets.signal.title")}
-        options={withCounts(facetOptions("signal", SIGNALS), counts?.signals)}
-        selected={filters.signals}
-        onChange={(signals) => change({ signals })}
-      />
-
-      <CheckboxFacet
-        title={t("facets.stability.title")}
-        options={withCounts(
-          facetOptions("stability", STABILITIES, STABILITY_SWATCHES),
-          counts?.stabilities
-        )}
-        selected={filters.stabilities}
-        onChange={(stabilities) => change({ stabilities })}
-      />
-
-      <CheckboxFacet
-        title={t("facets.distribution.title")}
-        options={withCounts(facetOptions("distribution", DISTRIBUTIONS), counts?.distributions)}
-        selected={filters.distributions}
-        onChange={(distributions) => change({ distributions })}
-      />
-
-      {versions && versions.length > 0 && (
-        <SelectFacet
-          title={t("facets.version.title")}
-          options={versions.map((v) => ({
-            value: v,
-            label: v === "deprecated" ? t("facets.version.deprecated") : v,
-          }))}
-          value={filters.version}
-          onChange={(version) => change({ version })}
-          emptyLabel={t("facets.version.latest")}
-        />
-      )}
-    </FacetPanelShell>
   );
 }

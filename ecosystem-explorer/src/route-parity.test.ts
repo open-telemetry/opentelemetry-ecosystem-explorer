@@ -52,6 +52,9 @@ try {
 
 const v1PathSet = new Set(v1Paths);
 
+// The Python catalogue is split into two PRs. Remove these once the V1App PR has merged.
+const PENDING_IN_V1 = new Set(["/python/instrumentation", "/python/instrumentation/:name"]);
+
 describe("LegacyApp routes are present in V1App", () => {
   it("read LegacyApp.tsx and V1App.tsx and extracted route paths without error", () => {
     if (setupError) throw setupError;
@@ -66,7 +69,7 @@ describe("LegacyApp routes are present in V1App", () => {
     expect(v1Paths.length).toBeGreaterThan(0);
   });
 
-  for (const path of legacyPaths) {
+  for (const path of legacyPaths.filter((p) => !PENDING_IN_V1.has(p))) {
     it(`LegacyApp route "${path}" also exists in V1App`, () => {
       expect(v1PathSet.has(path)).toBe(true);
     });

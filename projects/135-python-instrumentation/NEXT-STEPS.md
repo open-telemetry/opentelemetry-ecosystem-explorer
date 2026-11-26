@@ -44,8 +44,8 @@ for the design this implements.
 - [x] Populate database builder with Python ecosystem data (`python` pipeline in
       `explorer-db-builder`; the first data is published by the nightly Build Explorer Database run)
 - [x] Integrate Python instrumentation into the Explorer frontend (catalogue-first: a list and a
-      package page at `/python/instrumentation` in both LegacyApp and V1App, built only from the
-      database's metadata; telemetry, README content and display names remain open)
+      package page at `/python/instrumentation`, built only from the database's metadata; telemetry,
+      README content and display names remain open)
 
 ## Open Questions
 

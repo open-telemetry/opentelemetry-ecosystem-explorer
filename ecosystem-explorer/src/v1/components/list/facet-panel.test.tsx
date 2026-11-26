@@ -24,7 +24,7 @@ import {
   parseFilters,
   serializeFilters,
 } from "@/v1/lib/list-filters";
-import { FacetPanel, FacetPanelShell } from "@/v1/components/list/facet-panel";
+import { FacetPanel } from "@/v1/components/list/facet-panel";
 
 function mockViewport(initialWidth: number) {
   let width = initialWidth;
@@ -503,34 +503,5 @@ describe("FacetPanel", () => {
     resize(992);
     expect(screen.getAllByRole("checkbox")[0]).toHaveFocus();
     expect(document.body.style.overflow).toBe("");
-  });
-});
-
-describe("FacetPanelShell", () => {
-  it("renders its children in the complementary rail on desktop", () => {
-    mockViewport(1280);
-    render(
-      <FacetPanelShell>
-        <p>custom facets</p>
-      </FacetPanelShell>
-    );
-
-    const rail = screen.getByRole("complementary", { name: "Filters" });
-    expect(rail).toHaveTextContent("custom facets");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
-  it("becomes a modal drawer on mobile and closes on Escape", async () => {
-    mockViewport(500);
-    const onClose = vi.fn();
-    render(
-      <FacetPanelShell isOpen onClose={onClose}>
-        <button type="button">first</button>
-      </FacetPanelShell>
-    );
-
-    expect(screen.getByRole("dialog", { name: "Filters" })).toHaveAttribute("aria-modal", "true");
-    await userEvent.keyboard("{Escape}");
-    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

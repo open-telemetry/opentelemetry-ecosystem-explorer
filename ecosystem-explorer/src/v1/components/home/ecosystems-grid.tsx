@@ -15,30 +15,29 @@
  */
 
 /*
- * EcosystemsGrid — three active cards (Collector, Java Agent, Python instrumentation) plus four
+ * EcosystemsGrid — two active cards (Collector, Java Agent) plus four
  * dashed "coming soon" placeholders. Counts are the canonical 2026-05-19
  * values from `projects/84-ui-ux-design/ecosystem-explorer-v1-mockups.html`;
  * they stay hardcoded until the data layer exposes synchronous totals.
  */
 
 import type { ReactNode } from "react";
-import { Boxes, Network, Package } from "lucide-react";
+import { Boxes, Network } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { JavaIcon } from "@/components/icons/java-icon";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 
-export type ActiveEcosystemId = "collector" | "java-agent" | "python";
+export type ActiveEcosystemId = "collector" | "java-agent";
 export type ComingSoonEcosystemId = "python" | "go" | "js" | "dotnet";
 
 export interface ActiveEcosystem {
   id: ActiveEcosystemId;
-  /** Metrics are optional: an ecosystem without a real value for one omits it rather than showing a placeholder. */
-  stability?: Stability;
-  components?: string;
-  version?: string;
-  weeklyDelta?: string;
+  stability: Stability;
+  components: string;
+  version: string;
+  weeklyDelta: string;
   href: string;
   icon: ReactNode;
 }
@@ -65,13 +64,6 @@ const DEFAULT_ACTIVE: ActiveEcosystem[] = [
     weeklyDelta: "8",
     href: "/java-agent",
     icon: <JavaIcon className="td-ecosystem-card__icon-svg" />,
-  },
-  // No counts or version here: the card is static, and the Python database is only known at
-  // runtime. Showing nothing is better than a number that can go stale.
-  {
-    id: "python",
-    href: "/python/instrumentation",
-    icon: <Package className="td-ecosystem-card__icon-svg" aria-hidden />,
   },
 ];
 
@@ -124,13 +116,6 @@ export function EcosystemsGrid({
             const tagline = t(`homeV1.ecosystems.active.${eco.id}.tagline`);
             const description = t(`homeV1.ecosystems.active.${eco.id}.description`);
             const unit = t(`homeV1.ecosystems.active.${eco.id}.unit`);
-            const metrics = (
-              [
-                [eco.components, unit],
-                [eco.version, t("homeV1.ecosystems.metricLabels.latest")],
-                [eco.weeklyDelta, t("homeV1.ecosystems.metricLabels.updatedThisWeek")],
-              ] as const
-            ).filter(([value]) => Boolean(value));
             return (
               <Link
                 key={eco.id}
@@ -151,19 +136,23 @@ export function EcosystemsGrid({
                       <p className="td-ecosystem-card__tagline">{tagline}</p>
                     </div>
                   </div>
-                  {eco.stability && <StatusPill stability={eco.stability} />}
+                  <StatusPill stability={eco.stability} />
                 </div>
                 <p className="td-ecosystem-card__description">{description}</p>
-                {metrics.length > 0 && (
-                  <div className="td-ecosystem-card__metrics">
-                    {metrics.map(([value, label]) => (
-                      <span key={label}>
-                        <span className="td-ecosystem-card__metric-value">{value}</span>{" "}
-                        <span className="td-ecosystem-card__metric-label">{label}</span>
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="td-ecosystem-card__metrics">
+                  {(
+                    [
+                      [eco.components, unit],
+                      [eco.version, t("homeV1.ecosystems.metricLabels.latest")],
+                      [eco.weeklyDelta, t("homeV1.ecosystems.metricLabels.updatedThisWeek")],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <span key={label}>
+                      <span className="td-ecosystem-card__metric-value">{value}</span>{" "}
+                      <span className="td-ecosystem-card__metric-label">{label}</span>
+                    </span>
+                  ))}
+                </div>
               </Link>
             );
           })}

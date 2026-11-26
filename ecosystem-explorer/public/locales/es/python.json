@@ -1,122 +1,122 @@
 {
   "breadcrumb": {
-    "explorer": "Explorer",
+    "explorer": "Explorador",
     "python": "Python",
-    "instrumentation": "Instrumentation"
+    "instrumentation": "Instrumentación"
   },
   "metrics": {
-    "label": "Metrics",
-    "supported": "Supports metrics",
-    "unsupported": "No metrics",
-    "unknown": "Not specified"
+    "label": "Métricas",
+    "supported": "Admite métricas",
+    "unsupported": "Sin métricas",
+    "unknown": "No especificado"
   },
   "semconv": {
-    "label": "Semantic conventions",
-    "migration": "Migration",
-    "unknown": "Not specified"
+    "label": "Convenciones semánticas",
+    "migration": "En migración",
+    "unknown": "No especificado"
   },
   "list": {
-    "title": "Python instrumentation",
-    "titleAccent": "Python",
-    "titleRest": "instrumentation",
-    "description": "Browse the OpenTelemetry Python contrib instrumentation packages.",
-    "loading": "Loading Python packages…",
-    "count": "Showing {{shown}} of {{filtered}} ({{total}} total)",
+    "title": "Instrumentación de Python",
+    "titleAccent": "Instrumentación",
+    "titleRest": "de Python",
+    "description": "Explora los paquetes de instrumentación de OpenTelemetry Python contrib.",
+    "loading": "Cargando paquetes de Python…",
+    "count": "Mostrando {{shown}} de {{filtered}} ({{total}} en total)",
     "error": {
-      "title": "Couldn't load Python packages",
-      "description": "Something went wrong while loading the package list. Try again in a moment."
+      "title": "No se pudieron cargar los paquetes de Python",
+      "description": "Algo salió mal al cargar la lista de paquetes. Inténtalo de nuevo en un momento."
     },
     "empty": {
-      "title": "No packages match",
-      "leadFiltered": "Try a different search or clear the filters.",
-      "leadUnfiltered": "There are no Python packages to show.",
-      "clearAll": "Clear all filters"
+      "title": "Ningún paquete coincide",
+      "leadFiltered": "Prueba con otra búsqueda o borra los filtros.",
+      "leadUnfiltered": "No hay paquetes de Python para mostrar.",
+      "clearAll": "Borrar todos los filtros"
     },
     "filters": {
-      "heading": "Filters",
-      "reset": "Reset filters",
-      "searchLabel": "Search",
-      "searchPlaceholder": "Search packages…",
-      "groupAriaLabel": "Filter packages",
-      "clearSearch": "Clear search",
-      "removeAriaLabel": "Remove filter: {{label}}",
-      "activeAriaLabel": "Active filters",
-      "open": "Filters",
-      "openWithCount_one": "Filters ({{count}} active)",
-      "openWithCount_other": "Filters ({{count}} active)",
-      "close": "Close filters"
+      "heading": "Filtros",
+      "reset": "Restablecer filtros",
+      "searchLabel": "Buscar",
+      "searchPlaceholder": "Buscar paquetes…",
+      "groupAriaLabel": "Filtrar paquetes",
+      "clearSearch": "Borrar búsqueda",
+      "removeAriaLabel": "Quitar filtro: {{label}}",
+      "activeAriaLabel": "Filtros activos",
+      "open": "Filtros",
+      "openWithCount_one": "Filtros ({{count}} activo)",
+      "openWithCount_other": "Filtros ({{count}} activos)",
+      "close": "Cerrar filtros"
     },
     "density": {
-      "ariaLabel": "Layout",
-      "cards": "Cards",
-      "compact": "Compact",
-      "table": "Table"
+      "ariaLabel": "Diseño",
+      "cards": "Tarjetas",
+      "compact": "Compacto",
+      "table": "Tabla"
     },
     "card": {
-      "latest": "Latest {{version}}",
-      "viewAria": "View details for {{name}}",
-      "releases_one": "{{count}} release",
-      "releases_other": "{{count}} releases"
+      "latest": "Última versión {{version}}",
+      "viewAria": "Ver detalles de {{name}}",
+      "releases_one": "{{count}} versión",
+      "releases_other": "{{count}} versiones"
     },
     "table": {
-      "name": "Package",
-      "latest": "Latest",
-      "metrics": "Metrics",
-      "semconv": "Semantic conventions",
-      "releases": "Releases"
+      "name": "Paquete",
+      "latest": "Última",
+      "metrics": "Métricas",
+      "semconv": "Convenciones semánticas",
+      "releases": "Versiones"
     }
   },
   "detail": {
-    "back": "All Python packages",
-    "loading": "Loading package…",
+    "back": "Todos los paquetes de Python",
+    "loading": "Cargando paquete…",
     "error": {
-      "title": "Couldn't load this package",
-      "description": "Something went wrong while loading the package. Try again in a moment."
+      "title": "No se pudo cargar este paquete",
+      "description": "Algo salió mal al cargar el paquete. Inténtalo de nuevo en un momento."
     },
     "notFound": {
-      "title": "Package not found",
-      "description": "There is no Python instrumentation package named \"{{name}}\"."
+      "title": "Paquete no encontrado",
+      "description": "No existe ningún paquete de instrumentación de Python llamado \"{{name}}\"."
     },
-    "invalidVersion": "Version {{version}} was not found for this package. Showing {{latest}}.",
+    "invalidVersion": "No se encontró la versión {{version}} de este paquete. Se muestra la {{latest}}.",
     "overview": {
-      "title": "Overview",
-      "version": "Version",
-      "latest": "Latest",
-      "requiresPython": "Requires Python",
-      "source": "Source",
-      "sourceLink": "View source on GitHub",
-      "notSpecified": "Not specified"
+      "title": "Resumen",
+      "version": "Versión",
+      "latest": "Última",
+      "requiresPython": "Versión de Python requerida",
+      "source": "Código fuente",
+      "sourceLink": "Ver el código fuente en GitHub",
+      "notSpecified": "No especificado"
     },
     "instruments": {
-      "title": "Instrumented libraries",
-      "description": "Libraries this package instruments, with the supported version ranges.",
-      "empty": "No instrumented libraries are listed for this package.",
-      "library": "Library",
-      "versionRange": "Supported versions",
+      "title": "Bibliotecas instrumentadas",
+      "description": "Bibliotecas que instrumenta este paquete, con los rangos de versiones compatibles.",
+      "empty": "No se indica ninguna biblioteca instrumentada para este paquete.",
+      "library": "Biblioteca",
+      "versionRange": "Versiones compatibles",
       "groups": {
-        "instruments": "All of these are expected",
-        "instruments-any": "Any one of these is expected",
-        "other": "Other"
+        "instruments": "Se esperan todas",
+        "instruments-any": "Se espera cualquiera de ellas",
+        "other": "Otras"
       }
     },
     "entryPoints": {
-      "title": "Entry points",
-      "description": "Entry points the package registers.",
-      "empty": "No entry points are listed for this package.",
-      "name": "Name",
-      "value": "Instrumentor"
+      "title": "Puntos de entrada",
+      "description": "Puntos de entrada que registra el paquete.",
+      "empty": "No se indica ningún punto de entrada para este paquete.",
+      "name": "Nombre",
+      "value": "Instrumentador"
     },
     "releases": {
-      "title": "Releases",
-      "description": "Releases of this package, newest first.",
-      "selectLabel": "Release",
-      "viewing": "Viewing",
-      "latestBadge": "Latest",
-      "sameAsLatest": "Same metadata as the latest release",
-      "view": "View {{version}}"
+      "title": "Versiones",
+      "description": "Versiones de este paquete, de la más reciente a la más antigua.",
+      "selectLabel": "Versión",
+      "viewing": "Mostrando",
+      "latestBadge": "Última",
+      "sameAsLatest": "Los mismos metadatos que la versión más reciente",
+      "view": "Ver {{version}}"
     },
-    "siblings": "Python packages",
-    "railLabel": "Package navigation",
-    "rightRailLabel": "Package releases"
+    "siblings": "Paquetes de Python",
+    "railLabel": "Navegación de paquetes",
+    "rightRailLabel": "Versiones del paquete"
   }
 }

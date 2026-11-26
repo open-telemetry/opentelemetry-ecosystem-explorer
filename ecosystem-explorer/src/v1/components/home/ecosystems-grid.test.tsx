@@ -56,26 +56,6 @@ describe("EcosystemsGrid", () => {
     expect(within(card).getByText("v2.10.0")).toBeInTheDocument();
   });
 
-  it("renders the Python instrumentation card linking to the catalogue, with no invented metrics", () => {
-    renderGrid();
-    const card = screen.getByRole("link", { name: /OpenTelemetry Python Instrumentation/i });
-    expect(card).toHaveAttribute("href", "/python/instrumentation");
-    // The card is static and the Python database is only known at runtime, so it shows no
-    // stability, count, version or weekly delta rather than a number that could go stale.
-    expect(within(card).queryByText(/Stable/i)).not.toBeInTheDocument();
-    expect(within(card).queryByText(/latest/i)).not.toBeInTheDocument();
-    expect(within(card).queryByText(/updated this week/i)).not.toBeInTheDocument();
-    expect(card.querySelector(".td-ecosystem-card__metrics")).toBeNull();
-  });
-
-  it("keeps the Collector and Java Agent metrics when other cards omit theirs", () => {
-    renderGrid();
-    for (const name of [/OpenTelemetry Collector/i, /OpenTelemetry Java Agent/i]) {
-      const card = screen.getByRole("link", { name });
-      expect(card.querySelector(".td-ecosystem-card__metrics")).not.toBeNull();
-    }
-  });
-
   it("renders four coming-soon placeholders that are not anchor links", () => {
     renderGrid();
     const placeholders = ["Python SDK", "Go SDK", "JS / Node", ".NET"];
