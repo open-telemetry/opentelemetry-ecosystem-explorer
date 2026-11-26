@@ -1,0 +1,122 @@
+{
+  "breadcrumb": {
+    "explorer": "Explorer",
+    "python": "Python",
+    "instrumentation": "Instrumentation"
+  },
+  "metrics": {
+    "label": "Metrics",
+    "supported": "Supports metrics",
+    "unsupported": "No metrics",
+    "unknown": "Not specified"
+  },
+  "semconv": {
+    "label": "Semantic conventions",
+    "migration": "Migration",
+    "unknown": "Not specified"
+  },
+  "list": {
+    "title": "Python instrumentation",
+    "titleAccent": "Python",
+    "titleRest": "instrumentation",
+    "description": "Browse the OpenTelemetry Python contrib instrumentation packages.",
+    "loading": "Loading Python packages…",
+    "count": "Showing {{shown}} of {{filtered}} ({{total}} total)",
+    "error": {
+      "title": "Couldn't load Python packages",
+      "description": "Something went wrong while loading the package list. Try again in a moment."
+    },
+    "empty": {
+      "title": "No packages match",
+      "leadFiltered": "Try a different search or clear the filters.",
+      "leadUnfiltered": "There are no Python packages to show.",
+      "clearAll": "Clear all filters"
+    },
+    "filters": {
+      "heading": "Filters",
+      "reset": "Reset filters",
+      "searchLabel": "Search",
+      "searchPlaceholder": "Search packages…",
+      "groupAriaLabel": "Filter packages",
+      "clearSearch": "Clear search",
+      "removeAriaLabel": "Remove filter: {{label}}",
+      "activeAriaLabel": "Active filters",
+      "open": "Filters",
+      "openWithCount_one": "Filters ({{count}} active)",
+      "openWithCount_other": "Filters ({{count}} active)",
+      "close": "Close filters"
+    },
+    "density": {
+      "ariaLabel": "Layout",
+      "cards": "Cards",
+      "compact": "Compact",
+      "table": "Table"
+    },
+    "card": {
+      "latest": "Latest {{version}}",
+      "viewAria": "View details for {{name}}",
+      "releases_one": "{{count}} release",
+      "releases_other": "{{count}} releases"
+    },
+    "table": {
+      "name": "Package",
+      "latest": "Latest",
+      "metrics": "Metrics",
+      "semconv": "Semantic conventions",
+      "releases": "Releases"
+    }
+  },
+  "detail": {
+    "back": "All Python packages",
+    "loading": "Loading package…",
+    "error": {
+      "title": "Couldn't load this package",
+      "description": "Something went wrong while loading the package. Try again in a moment."
+    },
+    "notFound": {
+      "title": "Package not found",
+      "description": "There is no Python instrumentation package named \"{{name}}\"."
+    },
+    "invalidVersion": "Version {{version}} was not found for this package. Showing {{latest}}.",
+    "overview": {
+      "title": "Overview",
+      "version": "Version",
+      "latest": "Latest",
+      "requiresPython": "Requires Python",
+      "source": "Source",
+      "sourceLink": "View source on GitHub",
+      "notSpecified": "Not specified"
+    },
+    "instruments": {
+      "title": "Instrumented libraries",
+      "description": "Libraries this package instruments, with the supported version ranges.",
+      "empty": "No instrumented libraries are listed for this package.",
+      "library": "Library",
+      "versionRange": "Supported versions",
+      "groups": {
+        "instruments": "All of these are expected",
+        "instruments-any": "Any one of these is expected",
+        "other": "Other"
+      }
+    },
+    "entryPoints": {
+      "title": "Entry points",
+      "description": "Entry points the package registers.",
+      "empty": "No entry points are listed for this package.",
+      "name": "Name",
+      "value": "Instrumentor"
+    },
+    "releases": {
+      "title": "Releases",
+      "description": "Releases of this package, newest first.",
+      "selectLabel": "Release",
+      "viewing": "Viewing",
+      "latestBadge": "Latest",
+      "sameAsLatest": "Same metadata as the latest release",
+      "view": "View {{version}}"
+    },
+    "siblings": "Python packages",
+    "railLabel": "Package navigation",
+    "rightRailLabel": "Package releases"
+  }
+}

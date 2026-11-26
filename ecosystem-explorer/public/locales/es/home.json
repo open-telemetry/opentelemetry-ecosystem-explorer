@@ -64,6 +64,12 @@
           "tagline": "Auto-instrumentación",
           "description": "Descubre las bibliotecas compatibles, las opciones de configuración y la telemetría emitida para el agente de auto-instrumentación de Java.",
           "unit": "instrumentaciones"
+        },
+        "python": {
+          "name": "Instrumentación de OpenTelemetry Python",
+          "tagline": "Auto-instrumentación",
+          "description": "Explora los paquetes de instrumentación de Python contrib, las bibliotecas compatibles y el estado de sus métricas y convenciones semánticas.",
+          "unit": "paquetes"
         }
       },
       "metricLabels": {

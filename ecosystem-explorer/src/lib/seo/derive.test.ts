@@ -124,4 +124,14 @@ describe("STATIC_ROUTE_META", () => {
     }
     expect(STATIC_ROUTE_META["/"]).toBeDefined();
   });
+
+  it("describes the Python instrumentation catalogue route", () => {
+    const meta = STATIC_ROUTE_META["/python/instrumentation"];
+    expect(meta.title).toContain("Python");
+    expect(meta.description).toContain("Python");
+    // Only the list route is static; package pages are not enumerated in the manifest.
+    expect(Object.keys(STATIC_ROUTE_META).filter((p) => p.startsWith("/python"))).toEqual([
+      "/python/instrumentation",
+    ]);
+  });
 });

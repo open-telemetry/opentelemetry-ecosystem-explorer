@@ -1,0 +1,122 @@
+{
+  "breadcrumb": {
+    "explorer": "Explorador",
+    "python": "Python",
+    "instrumentation": "Instrumentación"
+  },
+  "metrics": {
+    "label": "Métricas",
+    "supported": "Admite métricas",
+    "unsupported": "Sin métricas",
+    "unknown": "No especificado"
+  },
+  "semconv": {
+    "label": "Convenciones semánticas",
+    "migration": "En migración",
+    "unknown": "No especificado"
+  },
+  "list": {
+    "title": "Instrumentación de Python",
+    "titleAccent": "Instrumentación",
+    "titleRest": "de Python",
+    "description": "Explora los paquetes de instrumentación de OpenTelemetry Python contrib.",
+    "loading": "Cargando paquetes de Python…",
+    "count": "Mostrando {{shown}} de {{filtered}} ({{total}} en total)",
+    "error": {
+      "title": "No se pudieron cargar los paquetes de Python",
+      "description": "Algo salió mal al cargar la lista de paquetes. Inténtalo de nuevo en un momento."
+    },
+    "empty": {
+      "title": "Ningún paquete coincide",
+      "leadFiltered": "Prueba con otra búsqueda o borra los filtros.",
+      "leadUnfiltered": "No hay paquetes de Python para mostrar.",
+      "clearAll": "Borrar todos los filtros"
+    },
+    "filters": {
+      "heading": "Filtros",
+      "reset": "Restablecer filtros",
+      "searchLabel": "Buscar",
+      "searchPlaceholder": "Buscar paquetes…",
+      "groupAriaLabel": "Filtrar paquetes",
+      "clearSearch": "Borrar búsqueda",
+      "removeAriaLabel": "Quitar filtro: {{label}}",
+      "activeAriaLabel": "Filtros activos",
+      "open": "Filtros",
+      "openWithCount_one": "Filtros ({{count}} activo)",
+      "openWithCount_other": "Filtros ({{count}} activos)",
+      "close": "Cerrar filtros"
+    },
+    "density": {
+      "ariaLabel": "Diseño",
+      "cards": "Tarjetas",
+      "compact": "Compacto",
+      "table": "Tabla"
+    },
+    "card": {
+      "latest": "Última versión {{version}}",
+      "viewAria": "Ver detalles de {{name}}",
+      "releases_one": "{{count}} versión",
+      "releases_other": "{{count}} versiones"
+    },
+    "table": {
+      "name": "Paquete",
+      "latest": "Última",
+      "metrics": "Métricas",
+      "semconv": "Convenciones semánticas",
+      "releases": "Versiones"
+    }
+  },
+  "detail": {
+    "back": "Todos los paquetes de Python",
+    "loading": "Cargando paquete…",
+    "error": {
+      "title": "No se pudo cargar este paquete",
+      "description": "Algo salió mal al cargar el paquete. Inténtalo de nuevo en un momento."
+    },
+    "notFound": {
+      "title": "Paquete no encontrado",
+      "description": "No existe ningún paquete de instrumentación de Python llamado \"{{name}}\"."
+    },
+    "invalidVersion": "No se encontró la versión {{version}} de este paquete. Se muestra la {{latest}}.",
+    "overview": {
+      "title": "Resumen",
+      "version": "Versión",
+      "latest": "Última",
+      "requiresPython": "Versión de Python requerida",
+      "source": "Código fuente",
+      "sourceLink": "Ver el código fuente en GitHub",
+      "notSpecified": "No especificado"
+    },
+    "instruments": {
+      "title": "Bibliotecas instrumentadas",
+      "description": "Bibliotecas que instrumenta este paquete, con los rangos de versiones compatibles.",
+      "empty": "No se indica ninguna biblioteca instrumentada para este paquete.",
+      "library": "Biblioteca",
+      "versionRange": "Versiones compatibles",
+      "groups": {
+        "instruments": "Se esperan todas",
+        "instruments-any": "Se espera cualquiera de ellas",
+        "other": "Otras"
+      }
+    },
+    "entryPoints": {
+      "title": "Puntos de entrada",
+      "description": "Puntos de entrada que registra el paquete.",
+      "empty": "No se indica ningún punto de entrada para este paquete.",
+      "name": "Nombre",
+      "value": "Instrumentador"
+    },
+    "releases": {
+      "title": "Versiones",
+      "description": "Versiones de este paquete, de la más reciente a la más antigua.",
+      "selectLabel": "Versión",
+      "viewing": "Mostrando",
+      "latestBadge": "Última",
+      "sameAsLatest": "Los mismos metadatos que la versión más reciente",
+      "view": "Ver {{version}}"
+    },
+    "siblings": "Paquetes de Python",
+    "railLabel": "Navegación de paquetes",
+    "rightRailLabel": "Versiones del paquete"
+  }
+}
