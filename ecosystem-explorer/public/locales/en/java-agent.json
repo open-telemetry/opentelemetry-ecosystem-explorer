@@ -48,6 +48,10 @@
         "title": "Configuration options",
         "description": "Discover options for configuring the Java Agent and instrumentation."
       },
+      "contrib": {
+        "title": "Contrib components",
+        "description": "Libraries and agent extensions from opentelemetry-java-contrib."
+      },
       "getting-started": {
         "title": "Getting started",
         "description": "Set up the Java Agent with the zero-code instrumentation guide."
@@ -79,6 +83,10 @@
     "releases": {
       "title": "Releases",
       "description": "Compare Java Agent versions to see changes in telemetry and configuration."
+    },
+    "contrib": {
+      "title": "Contrib Components",
+      "description": "Browse libraries, agent extensions, and standalone tools from opentelemetry-java-contrib."
     }
   },
   "explore": {
@@ -657,6 +665,90 @@
       "RESOURCE_DETECTOR": {
         "label": "Resource Detector",
         "description": "Sets resource attributes based on certain conditions."
+      }
+    }
+  },
+  "contrib": {
+    "componentType": {
+      "library": "Library",
+      "agent-extension": "Agent extension",
+      "standalone": "Standalone"
+    },
+    "minJava": "Java {{version}}+",
+    "list": {
+      "title": "Java Contrib Components",
+      "description": "Libraries, Java agent extensions, and standalone tools from opentelemetry-java-contrib, with how to use and configure each one.",
+      "cardAriaLabel": "View details for {{name}}",
+      "search": {
+        "ariaLabel": "Search contrib components",
+        "placeholder": "Search by name, description, or artifact..."
+      },
+      "filters": {
+        "componentType": "Component type",
+        "stability": "Stability",
+        "javaVersion": "Java runtime",
+        "anyJava": "Any Java version",
+        "runsOnJava": "Runs on Java {{version}}",
+        "distribution": "Distribution"
+      },
+      "loading": "Loading components...",
+      "error": "Failed to load components",
+      "found_one": "{{count}} component",
+      "found_other": "{{count}} components",
+      "empty": "No components match the current filters."
+    },
+    "problems": {
+      "count_one": "{{count}} schema problem",
+      "count_other": "{{count}} schema problems",
+      "heading_one": "{{count}} schema problem in this metadata.yaml (dev builds only)",
+      "heading_other": "{{count}} schema problems in this metadata.yaml (dev builds only)"
+    },
+    "detail": {
+      "loading": "Loading component...",
+      "notFound": "Component \"{{name}}\" was not found",
+      "backToList": "Back to all contrib components",
+      "seoTitle": "{{name}} — Java Contrib — OpenTelemetry Ecosystem Explorer",
+      "links": {
+        "docs": "Documentation",
+        "source": "Source code"
+      },
+      "usage": "Usage",
+      "install": {
+        "heading": "Installation",
+        "gradle": "Gradle",
+        "maven": "Maven",
+        "mavenCentral": "View releases on Maven Central"
+      },
+      "configuration": {
+        "heading": "Configuration",
+        "none": "This component has no configuration methods.",
+        "noSettings": "This method has no component-specific settings.",
+        "example": "Example",
+        "settings_one": "Settings ({{count}})",
+        "settings_other": "Settings ({{count}})",
+        "type": "Type",
+        "default": "Default",
+        "notSet": "not set",
+        "fullPath": "Full path",
+        "unit": "Unit",
+        "allowedValues": "Allowed values:",
+        "location": "Location",
+        "componentKey": "Component key"
+      },
+      "deprecated": {
+        "replacedBy": "This component is deprecated. Use <replacement>{{name}}</replacement> instead.",
+        "noReplacement": "This component is deprecated."
+      },
+      "distributions": {
+        "heading": "Distributions",
+        "description": "These distributions already include this component, so their users don't need to add the dependency. Being bundled does not mean it is enabled; see Usage for activation."
+      }
+    },
+    "distribution": {
+      "javaagent": {
+        "badge": "Bundled in Java agent",
+        "filter": "Bundled in Java agent",
+        "name": "OpenTelemetry Java agent"
       }
     }
   }

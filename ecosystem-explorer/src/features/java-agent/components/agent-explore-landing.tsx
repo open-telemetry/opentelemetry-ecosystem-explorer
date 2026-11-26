@@ -18,7 +18,7 @@ import { ConfigurationIcon } from "@/components/icons/configuration-icon";
 import { ReleaseIcon } from "@/components/icons/release-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
 import { useTranslation } from "react-i18next";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Package } from "lucide-react";
 
 const RESOURCES = [
   {
@@ -64,6 +64,12 @@ export function AgentExploreLanding() {
             description={t("landing.releases.description")}
             href="/java-agent/releases"
             icon={<ReleaseIcon className="h-20 w-20" />}
+          />
+          <NavigationCard
+            title={t("landing.contrib.title")}
+            description={t("landing.contrib.description")}
+            href="/java-agent/contrib"
+            icon={<Package className="text-primary h-16 w-16" aria-hidden="true" />}
           />
         </div>
 
