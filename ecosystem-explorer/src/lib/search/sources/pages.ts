@@ -54,9 +54,9 @@ const PAGE_SEARCH_RESULTS: SearchResult[] = [
     ecosystem: "page",
   },
   {
-    title: "Java Contrib Components",
+    title: "Java Extensions",
     description: "Browse opentelemetry-java-contrib libraries and agent extensions",
-    path: "/java-agent/contrib",
+    path: "/java-agent/extensions",
     type: "section",
     ecosystem: "page",
   },

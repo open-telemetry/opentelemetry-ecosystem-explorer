@@ -36,7 +36,7 @@ import { ContribInstallSnippet } from "./components/contrib-install-snippet";
 import { ContribConfigurationSection } from "./components/contrib-configuration-section";
 
 const CONTRIB_REPO_URL = "https://github.com/open-telemetry/opentelemetry-java-contrib";
-const LIST_PATH = "/java-agent/contrib";
+const LIST_PATH = "/java-agent/extensions";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (

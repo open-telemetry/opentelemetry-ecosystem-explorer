@@ -131,8 +131,8 @@ export function LegacyApp() {
               />
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
               <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
-              <Route path="/java-agent/contrib" element={<JavaContribListPage />} />
-              <Route path="/java-agent/contrib/:name" element={<JavaContribDetailPage />} />
+              <Route path="/java-agent/extensions" element={<JavaContribListPage />} />
+              <Route path="/java-agent/extensions/:name" element={<JavaContribDetailPage />} />
               <Route
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}

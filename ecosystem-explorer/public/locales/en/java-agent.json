@@ -49,7 +49,7 @@
         "description": "Discover options for configuring the Java Agent and instrumentation."
       },
       "contrib": {
-        "title": "Contrib components",
+        "title": "Extensions",
         "description": "Libraries and agent extensions from opentelemetry-java-contrib."
       },
       "getting-started": {
@@ -85,7 +85,7 @@
       "description": "Compare Java Agent versions to see changes in telemetry and configuration."
     },
     "contrib": {
-      "title": "Contrib Components",
+      "title": "Extensions",
       "description": "Browse libraries, agent extensions, and standalone tools from opentelemetry-java-contrib."
     }
   },
@@ -676,11 +676,11 @@
     },
     "minJava": "Java {{version}}+",
     "list": {
-      "title": "Java Contrib Components",
+      "title": "Java Extensions",
       "description": "Libraries, Java agent extensions, and standalone tools from opentelemetry-java-contrib, with how to use and configure each one.",
       "cardAriaLabel": "View details for {{name}}",
       "search": {
-        "ariaLabel": "Search contrib components",
+        "ariaLabel": "Search extensions",
         "placeholder": "Search by name, description, or artifact..."
       },
       "filters": {
@@ -691,11 +691,11 @@
         "runsOnJava": "Runs on Java {{version}}",
         "distribution": "Distribution"
       },
-      "loading": "Loading components...",
-      "error": "Failed to load components",
-      "found_one": "{{count}} component",
-      "found_other": "{{count}} components",
-      "empty": "No components match the current filters."
+      "loading": "Loading extensions...",
+      "error": "Failed to load extensions",
+      "found_one": "{{count}} extension",
+      "found_other": "{{count}} extensions",
+      "empty": "No extensions match the current filters."
     },
     "problems": {
       "count_one": "{{count}} schema problem",
@@ -704,10 +704,10 @@
       "heading_other": "{{count}} schema problems in this metadata.yaml (dev builds only)"
     },
     "detail": {
-      "loading": "Loading component...",
-      "notFound": "Component \"{{name}}\" was not found",
-      "backToList": "Back to all contrib components",
-      "seoTitle": "{{name}} — Java Contrib — OpenTelemetry Ecosystem Explorer",
+      "loading": "Loading extension...",
+      "notFound": "Extension \"{{name}}\" was not found",
+      "backToList": "Back to all extensions",
+      "seoTitle": "{{name}} — Java Extensions — OpenTelemetry Ecosystem Explorer",
       "links": {
         "docs": "Documentation",
         "source": "Source code"
@@ -721,8 +721,8 @@
       },
       "configuration": {
         "heading": "Configuration",
-        "none": "This component has no configuration methods.",
-        "noSettings": "This method has no component-specific settings.",
+        "none": "This extension has no configuration methods.",
+        "noSettings": "This method has no extension-specific settings.",
         "example": "Example",
         "settings_one": "Settings ({{count}})",
         "settings_other": "Settings ({{count}})",
@@ -736,12 +736,12 @@
         "componentKey": "Component key"
       },
       "deprecated": {
-        "replacedBy": "This component is deprecated. Use <replacement>{{name}}</replacement> instead.",
-        "noReplacement": "This component is deprecated."
+        "replacedBy": "This extension is deprecated. Use <replacement>{{name}}</replacement> instead.",
+        "noReplacement": "This extension is deprecated."
       },
       "distributions": {
         "heading": "Distributions",
-        "description": "These distributions already include this component, so their users don't need to add the dependency. Being bundled does not mean it is enabled; see Usage for activation."
+        "description": "These distributions already include this extension, so their users don't need to add the dependency. Being bundled does not mean it is enabled; see Usage for activation."
       }
     },
     "distribution": {

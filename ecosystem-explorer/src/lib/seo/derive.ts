@@ -169,10 +169,10 @@ export const STATIC_ROUTE_META: Record<string, SeoMeta> = {
       "Compare OpenTelemetry Java agent releases to see which instrumentations and telemetry " +
       "changed between versions.",
   },
-  "/java-agent/contrib": {
-    title: "Java Contrib Components — OpenTelemetry Ecosystem Explorer",
+  "/java-agent/extensions": {
+    title: "Java Extensions — OpenTelemetry Ecosystem Explorer",
     description:
-      "Browse components from opentelemetry-java-contrib: libraries, Java agent extensions, and " +
+      "Browse extensions from opentelemetry-java-contrib: libraries, Java agent extensions, and " +
       "standalone tools, with their configuration options.",
   },
   "/semantic-conventions": {

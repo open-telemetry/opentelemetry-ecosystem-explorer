@@ -107,8 +107,8 @@ function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="/java-agent/contrib" element={<JavaContribListPage />} />
-        <Route path="/java-agent/contrib/:name" element={<JavaContribDetailPage />} />
+        <Route path="/java-agent/extensions" element={<JavaContribListPage />} />
+        <Route path="/java-agent/extensions/:name" element={<JavaContribDetailPage />} />
       </Routes>
     </MemoryRouter>
   );
@@ -120,29 +120,29 @@ describe("JavaContribListPage", () => {
   });
 
   it("lists every component linking to its detail page", () => {
-    renderAt("/java-agent/contrib");
-    expect(screen.getByText("2 components")).toBeInTheDocument();
+    renderAt("/java-agent/extensions");
+    expect(screen.getByText("2 extensions")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View details for Inferred Spans" })).toHaveAttribute(
       "href",
-      "/java-agent/contrib/inferred-spans"
+      "/java-agent/extensions/inferred-spans"
     );
   });
 
   it("filters by component type with a pressed toggle", async () => {
     const user = userEvent.setup();
-    renderAt("/java-agent/contrib");
+    renderAt("/java-agent/extensions");
     const toggle = screen.getByRole("button", { name: "Agent extension" });
     await user.click(toggle);
     expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("1 component")).toBeInTheDocument();
+    expect(screen.getByText("1 extension")).toBeInTheDocument();
     expect(screen.queryByText("Span Stacktrace Capture")).not.toBeInTheDocument();
   });
 
   it("filters by distribution", async () => {
     const user = userEvent.setup();
-    renderAt("/java-agent/contrib");
+    renderAt("/java-agent/extensions");
     await user.click(screen.getByRole("button", { name: "Bundled in Java agent" }));
-    expect(screen.getByText("1 component")).toBeInTheDocument();
+    expect(screen.getByText("1 extension")).toBeInTheDocument();
     expect(screen.getByText("Inferred Spans")).toBeInTheDocument();
   });
 
@@ -152,7 +152,7 @@ describe("JavaContribListPage", () => {
       loading: false,
       error: new Error("boom"),
     });
-    renderAt("/java-agent/contrib");
+    renderAt("/java-agent/extensions");
     expect(screen.getByText("boom")).toBeInTheDocument();
   });
 });
@@ -165,7 +165,7 @@ describe("JavaContribDetailPage", () => {
       error: null,
     });
     const user = userEvent.setup();
-    renderAt("/java-agent/contrib/span-stacktrace");
+    renderAt("/java-agent/extensions/span-stacktrace");
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Span Stacktrace Capture" })
@@ -187,7 +187,7 @@ describe("JavaContribDetailPage", () => {
         "tracer_provider.processors[].stacktrace/development.min_duration"
       )
     ).toBeInTheDocument();
-    expect(screen.queryByText(/This component is deprecated/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/This extension is deprecated/)).not.toBeInTheDocument();
   });
 
   it("shows deprecation with a link to the replacement, and bundled distributions", () => {
@@ -196,13 +196,13 @@ describe("JavaContribDetailPage", () => {
       loading: false,
       error: null,
     });
-    renderAt("/java-agent/contrib/inferred-spans");
+    renderAt("/java-agent/extensions/inferred-spans");
     expect(screen.getByRole("note")).toHaveTextContent(
-      "This component is deprecated. Use span-stacktrace instead."
+      "This extension is deprecated. Use span-stacktrace instead."
     );
     expect(screen.getByRole("link", { name: "span-stacktrace" })).toHaveAttribute(
       "href",
-      "/java-agent/contrib/span-stacktrace"
+      "/java-agent/extensions/span-stacktrace"
     );
     expect(screen.getByText("Bundled in Java agent")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "OpenTelemetry Java agent" })).toHaveAttribute(
@@ -217,9 +217,9 @@ describe("JavaContribDetailPage", () => {
       loading: false,
       error: null,
     });
-    renderAt("/java-agent/contrib/inferred-spans");
+    renderAt("/java-agent/extensions/inferred-spans");
     expect(screen.queryByRole("heading", { name: "Installation" })).not.toBeInTheDocument();
-    expect(screen.getByText("This component has no configuration methods.")).toBeInTheDocument();
+    expect(screen.getByText("This extension has no configuration methods.")).toBeInTheDocument();
   });
 
   it("shows a not-found state when loading fails", () => {
@@ -228,7 +228,7 @@ describe("JavaContribDetailPage", () => {
       loading: false,
       error: new Error("Failed to load contrib component nope: 404"),
     });
-    renderAt("/java-agent/contrib/nope");
-    expect(screen.getByText('Component "nope" was not found')).toBeInTheDocument();
+    renderAt("/java-agent/extensions/nope");
+    expect(screen.getByText('Extension "nope" was not found')).toBeInTheDocument();
   });
 });

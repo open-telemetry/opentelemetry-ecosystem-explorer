@@ -68,7 +68,7 @@ export function AgentExploreLanding() {
           <NavigationCard
             title={t("landing.contrib.title")}
             description={t("landing.contrib.description")}
-            href="/java-agent/contrib"
+            href="/java-agent/extensions"
             icon={<Package className="text-primary h-16 w-16" aria-hidden="true" />}
           />
         </div>

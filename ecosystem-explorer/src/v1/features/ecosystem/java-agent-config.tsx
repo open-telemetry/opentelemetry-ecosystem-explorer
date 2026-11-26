@@ -146,7 +146,7 @@ export const javaAgentConfig: EcosystemConfig = {
       id: "contrib",
       title: "landingV1.quickEntries.contrib.title",
       description: "landingV1.quickEntries.contrib.description",
-      href: "/java-agent/contrib",
+      href: "/java-agent/extensions",
       icon: <Package className="h-5 w-5" aria-hidden />,
     },
     {

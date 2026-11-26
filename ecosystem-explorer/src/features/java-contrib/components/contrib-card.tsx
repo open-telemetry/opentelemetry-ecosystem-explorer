@@ -31,7 +31,7 @@ export function ContribCard({ entry }: ContribCardProps) {
 
   return (
     <Link
-      to={`/java-agent/contrib/${entry.id}`}
+      to={`/java-agent/extensions/${entry.id}`}
       className="group border-border bg-surface-card shadow-surface hover:border-secondary/40 hover:bg-card-secondary relative flex h-full flex-col gap-3 overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--secondary-hsl)/0.12)]"
       aria-label={t("contrib.list.cardAriaLabel", { name: component.display_name })}
     >
