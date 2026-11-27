@@ -353,6 +353,36 @@ describe("agent-negotiation HTML metadata injection", () => {
     expect(res?.status).toBe(200);
   });
 
+  it("treats a Python package page as known (200) even though it is not in routes.json", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/python/instrumentation/opentelemetry-instrumentation-flask"),
+      htmlContext({ "/": { title: "Home", description: "d" } })
+    );
+    expect(res?.status).toBe(200);
+  });
+
+  it("serves the Python list page its own metadata from the manifest", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/python/instrumentation"),
+      htmlContext({
+        "/python/instrumentation": { title: "Python Instrumentation — X", description: "d" },
+      })
+    );
+    expect(res?.status).toBe(200);
+    expect(await res!.text()).toContain("<title>Python Instrumentation — X</title>");
+  });
+
+  it("still returns a real 404 for paths under /python that are not Python routes", async () => {
+    const handler = await freshHandler();
+    const context = htmlContext({ "/": { title: "Home", description: "d" } });
+    const bare = await handler(get("/python"), context);
+    expect(bare?.status).toBe(404);
+    const deep = await handler(get("/python/instrumentation/flask/extra"), context);
+    expect(deep?.status).toBe(404);
+  });
+
   it("normalizes /index.html and trailing slashes to the canonical route", async () => {
     const routes = {
       "/": { title: "Home", description: "d" },

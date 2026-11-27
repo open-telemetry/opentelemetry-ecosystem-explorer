@@ -72,6 +72,12 @@ const ConfigurationBuilderPage = lazy(() =>
     default: m.ConfigurationBuilderPage,
   }))
 );
+const PythonListPage = lazy(() =>
+  import("@/features/python/python-list-page").then((m) => ({ default: m.PythonListPage }))
+);
+const PythonDetailPage = lazy(() =>
+  import("@/features/python/python-detail-page").then((m) => ({ default: m.PythonDetailPage }))
+);
 const AboutPage = lazy(() =>
   import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
 );
@@ -136,6 +142,8 @@ export function LegacyApp() {
                 path="/collector/components/:distribution/:name/diff"
                 element={<CollectorDiffPage />}
               />
+              <Route path="/python/instrumentation" element={<PythonListPage />} />
+              <Route path="/python/instrumentation/:name" element={<PythonDetailPage />} />
               <Route path="/semantic-conventions" element={<SemanticConventionsPage />} />
               <Route
                 path="/semantic-conventions/timeline"

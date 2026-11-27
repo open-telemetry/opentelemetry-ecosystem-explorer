@@ -53,7 +53,7 @@ globally, so do not duplicate it per page. A new static route also needs an entr
 
   ```bash
   tmp=$(mktemp -d)
-  mv public/data/javaagent public/data/collector public/data/configuration public/data/javascript "$tmp"/
+  mv public/data/javaagent public/data/collector public/data/configuration public/data/javascript public/data/python "$tmp"/
   (
     trap 'mv "$tmp"/* public/data/' EXIT
     bun run typecheck && bun run test

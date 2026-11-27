@@ -79,6 +79,11 @@ re-parses it with a minimal converter — see below.
 - `dist/sitemap.xml` — the full crawlable URL set (app routes plus machine-readable doc resources
   such as `llms.txt` and the schemas), absolute against the production origin.
 
+Python package pages (`/python/instrumentation/:name`) are not enumerated in `routes.json`. The edge
+function recognises them with a pattern in `isDynamicKnownRoute`, so a direct load returns 200
+instead of a 404, but they carry only the default metadata and have no Markdown or sitemap entries
+yet. Only the list route, `/python/instrumentation`, is a static route.
+
 ## Client-side SEO
 
 `src/components/seo/seo.tsx` (`<Seo>`) imperatively syncs the document title, description, canonical
