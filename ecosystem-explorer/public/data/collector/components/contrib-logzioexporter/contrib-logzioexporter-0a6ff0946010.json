@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Logz.io Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-logzioexporter",
+  "markdown_hash": "d2fe0874e6e4",
+  "name": "logzioexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "emeritus": [
+        "yotamloe"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "unmaintained": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

@@ -1,0 +1,121 @@
+> :information_source: Requires Docker API version 1.25+
+
+## Platform support
+
+Linux and Windows Docker hosts are supported. On Windows the daemon exposes a smaller
+set of stats, so these metrics are never emitted there: all `container.blockio.*`
+metrics, `container.cpu.logical.count`, `container.cpu.throttling_data.*`, `container.cpu.usage.percpu`,
+`container.cpu.usage.system`, `container.memory.*` other than
+`container.memory.usage.total`, `container.network.io.usage.rx_errors`,
+`container.network.io.usage.tx_errors` and `container.pids.*`.
+
+## Configuration
+
+The following settings are optional:
+
+- `endpoint` (default = `unix:///var/run/docker.sock` (Linux) , default = `npipe:////./pipe/docker_engine` (Windows) ): Address to reach the desired Docker daemon.
+- `collection_interval` (default = `10s`): The interval at which to gather container stats.
+- `initial_delay` (default = `1s`): defines how long this receiver waits before starting.
+- `container_labels_to_resource_attributes` (no default): A list of filters selecting container
+labels to record as resource attributes. A label is recorded if its key matches any filter. Each
+filter sets either `strict` (exact match) or `regexp` (a [Go regular expression](https://pkg.go.dev/regexp)).
+Matching labels are recorded as `container.label.<key>`, following the
+[container resource semantic conventions](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/resource/container.md).
+Each matching label adds a resource attribute, so broad patterns such as `.*` can significantly increase
+cardinality; prefer `strict` filters for only the labels you need.
+- `container_labels_to_metric_labels` (no default, **deprecated**): A map of Docker container label names whose label values to use
+as the specified metric label key. Use `container_labels_to_resource_attributes` instead, which follows the
+semantic conventions. Note that it records labels under `container.label.<key>` rather than a custom name;
+use the `transform` processor if you need to rename them.
+- `env_vars_to_metric_labels` (no default): A map of Docker container environment variables whose values to use
+as the specified metric label key.
+- `excluded_images` (no default, all running containers monitored): A list of strings,
+[regexes](https://golang.org/pkg/regexp/), or [globs](https://github.com/gobwas/glob) whose referent container image
+names will not be among the queried containers. `!`-prefixed negations are possible for all item types to signify that
+only unmatched container image names should be excluded.
+    - Regexes must be placed between `/` characters: `/my?egex/`.  Negations are to be outside the forward slashes:
+    `!/my?egex/` will exclude all containers whose name doesn't match the compiled regex `my?egex`.
+    - Globs are non-regex items (e.g. `/items/`) containing any of the following: `*[]{}?`.  Negations are supported:
+    `!my*container` will exclude all containers whose image name doesn't match the blob `my*container`.
+- `timeout` (default = `5s`): The request timeout for any docker daemon query.
+- `api_version` (default = auto-negotiate): The Docker client API version (must be 1.25+). When not specified, the client automatically negotiates the highest mutually supported API version with the Docker daemon. To pin a specific version, set it as a string, not a float (e.g. `"1.44"` instead of `1.44`). [Docker API versions](https://docs.docker.com/engine/api/).
+- `metrics` (defaults at [./documentation.md](./documentation.md)): Enables/disables individual metrics. See [./documentation.md](./documentation.md) for full detail.
+  - Note on `container.state.status`: Enabling this metric adds a full `ContainerList(All: true)` call per scrape to count containers across all states (including paused and non-running). On hosts with very high container counts, this may have a non-trivial performance cost.
+
+Example:
+
+```yaml
+receivers:
+  docker_stats:
+    endpoint: http://example.com/
+    collection_interval: 2s
+    timeout: 20s
+    api_version: "1.25"
+    container_labels_to_resource_attributes:
+      - strict: my.container.label
+      - regexp: my.container.prefix.*
+    env_vars_to_metric_labels:
+      MY_ENVIRONMENT_VARIABLE: my-metric-label
+      MY_OTHER_ENVIRONMENT_VARIABLE: my-other-metric-label
+    excluded_images:
+      - undesired-container
+      - /.*undesired.*/
+      - another-*-container
+    metrics:
+      container.cpu.usage.percpu:
+        enabled: true
+      container.network.io.usage.tx_dropped:
+        enabled: false
+```
+
+The full list of settings exposed for this receiver are documented in [config.go](./config.go)
+with detailed sample configurations in [testdata/config.yaml](./testdata/config.yaml).
+
+## Docker Socket Permissions
+
+### Requirements
+
+This receiver requires access to the Docker daemon socket to query container statistics. The Docker socket requires specific permissions:
+
+- **Linux** (`/var/run/docker.sock`): Accessible by `root` user or members of the `docker` group
+- **Windows** (`npipe:////./pipe/docker_engine`): Requires appropriate named pipe permissions
+
+Since version 0.40.0, official OpenTelemetry Collector images run as a non-root user for security. This creates a permission conflict when accessing the Docker socket.
+
+### Permission Solutions
+
+#### Grant Docker Group Access
+
+On Linux, grant the collector process access to the `docker` group by adding the host's docker group ID as a supplementary group to the container process:
+
+```bash
+# Get the docker group ID on your host
+getent group docker
+
+# Linux example - Run with docker group (replace 999 with your docker group GID from above)
+docker run --group-add 999 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  otel/opentelemetry-collector-contrib:latest
+```
+
+**Note:** The `--group-add` flag adds the host's group ID as a supplementary group to the container process. This works because the mounted socket retains the host's group ownership. If you have user namespaces enabled in Docker, additional configuration may be required.
+
+#### Run as Root
+
+If running as root is acceptable for your environment:
+
+```bash
+# Linux example
+docker run -u 0 -v /var/run/docker.sock:/var/run/docker.sock \
+  otel/opentelemetry-collector-contrib:latest
+```
+
+**Note:** Running as root is not recommended for production environments.
+
+#### Alternative Approaches
+
+For enhanced security, consider:
+- Using a Docker API proxy (e.g. [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)) that restricts access to only required endpoints
+- Running this receiver in an isolated collector instance with elevated privileges that only exports data (does not expose receiver ports like OTLP or Zipkin), forwarding metrics to your main collector via OTLP. This reduces the attack surface and RCE risk on the privileged container.
+
+For more information, see [issue #11791](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/11791).

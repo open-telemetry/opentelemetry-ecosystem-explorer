@@ -1,0 +1,32 @@
+{
+  "description": "This receiver supports opening a Unix Named Pipe (aka FIFO), and reading logs from it.",
+  "display_name": "Named Pipe Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-namedpipereceiver",
+  "markdown_hash": "92ec6bc31e82",
+  "name": "namedpipereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "emeritus": [
+        "djaglowski",
+        "sinkingpoint"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "unmaintained": [
+        "logs"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
+  },
+  "type": "receiver"
+}
