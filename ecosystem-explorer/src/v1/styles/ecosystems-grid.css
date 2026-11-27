@@ -154,6 +154,12 @@ a.td-ecosystem-card:focus-visible {
   background-color: hsl(var(--otel-orange-hsl) / 0.12);
 }
 
+/* Python instrumentation uses a neutral lucide icon, so the tile carries the colour. */
+.td-ecosystem-card__icon--python {
+  background-color: hsl(var(--otel-blue-hsl) / 0.15);
+  color: hsl(var(--otel-blue-hsl));
+}
+
 .td-ecosystem-card__name {
   font-size: var(--td-fs-h5);
   font-weight: 700;

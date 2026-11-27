@@ -43,4 +43,5 @@ export const NAMESPACES = [
   "list",
   "detail",
   "semantic-conventions",
+  "python",
 ] as const;
