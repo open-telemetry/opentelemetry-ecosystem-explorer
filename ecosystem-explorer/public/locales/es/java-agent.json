@@ -48,6 +48,10 @@
         "title": "Opciones de configuración",
         "description": "Descubre las opciones para configurar el Java Agent y la instrumentación."
       },
+      "contrib": {
+        "title": "Extensiones",
+        "description": "Bibliotecas y extensiones del agente de opentelemetry-java-contrib."
+      },
       "getting-started": {
         "title": "Primeros pasos",
         "description": "Configura el Java Agent con la guía de instrumentación sin código."
@@ -79,6 +83,10 @@
     "releases": {
       "title": "Versiones",
       "description": "Compara versiones del Java Agent para ver cambios en telemetría y configuración."
+    },
+    "contrib": {
+      "title": "Extensiones",
+      "description": "Explora bibliotecas, extensiones del agente y herramientas independientes de opentelemetry-java-contrib."
     }
   },
   "explore": {
@@ -663,6 +671,90 @@
       "RESOURCE_DETECTOR": {
         "label": "Detector de recursos",
         "description": "Establece atributos de recursos según ciertas condiciones."
+      }
+    }
+  },
+  "contrib": {
+    "componentType": {
+      "library": "Biblioteca",
+      "agent-extension": "Extensión del agente",
+      "standalone": "Independiente"
+    },
+    "minJava": "Java {{version}}+",
+    "list": {
+      "title": "Extensiones de Java",
+      "description": "Bibliotecas, extensiones del agente de Java y herramientas independientes de opentelemetry-java-contrib, con instrucciones de uso y configuración para cada una.",
+      "cardAriaLabel": "Ver detalles de {{name}}",
+      "search": {
+        "ariaLabel": "Buscar extensiones",
+        "placeholder": "Buscar por nombre, descripción o artefacto..."
+      },
+      "filters": {
+        "componentType": "Tipo de componente",
+        "stability": "Estabilidad",
+        "javaVersion": "Entorno de Java",
+        "anyJava": "Cualquier versión de Java",
+        "runsOnJava": "Funciona en Java {{version}}",
+        "distribution": "Distribución"
+      },
+      "loading": "Cargando extensiones...",
+      "error": "No se pudieron cargar las extensiones",
+      "found_one": "{{count}} extensión",
+      "found_other": "{{count}} extensiones",
+      "empty": "Ninguna extensión coincide con los filtros actuales."
+    },
+    "problems": {
+      "count_one": "{{count}} problema de esquema",
+      "count_other": "{{count}} problemas de esquema",
+      "heading_one": "{{count}} problema de esquema en este metadata.yaml (solo en desarrollo)",
+      "heading_other": "{{count}} problemas de esquema en este metadata.yaml (solo en desarrollo)"
+    },
+    "detail": {
+      "loading": "Cargando extensión...",
+      "notFound": "No se encontró la extensión \"{{name}}\"",
+      "backToList": "Volver a todas las extensiones",
+      "seoTitle": "{{name}} — Extensiones de Java — OpenTelemetry Ecosystem Explorer",
+      "links": {
+        "docs": "Documentación",
+        "source": "Código fuente"
+      },
+      "usage": "Uso",
+      "install": {
+        "heading": "Instalación",
+        "gradle": "Gradle",
+        "maven": "Maven",
+        "mavenCentral": "Ver versiones en Maven Central"
+      },
+      "configuration": {
+        "heading": "Configuración",
+        "none": "Esta extensión no tiene métodos de configuración.",
+        "noSettings": "Este método no tiene ajustes propios de la extensión.",
+        "example": "Ejemplo",
+        "settings_one": "Ajustes ({{count}})",
+        "settings_other": "Ajustes ({{count}})",
+        "type": "Tipo",
+        "default": "Predeterminado",
+        "notSet": "sin definir",
+        "fullPath": "Ruta completa",
+        "unit": "Unidad",
+        "allowedValues": "Valores permitidos:",
+        "location": "Ubicación",
+        "componentKey": "Clave del componente"
+      },
+      "deprecated": {
+        "replacedBy": "Esta extensión está obsoleta. Usa <replacement>{{name}}</replacement> en su lugar.",
+        "noReplacement": "Esta extensión está obsoleta."
+      },
+      "distributions": {
+        "heading": "Distribuciones",
+        "description": "Estas distribuciones ya incluyen esta extensión, por lo que sus usuarios no necesitan añadir la dependencia. Estar incluido no significa que esté habilitado; consulta Uso para activarlo."
+      }
+    },
+    "distribution": {
+      "javaagent": {
+        "badge": "Incluido en el agente de Java",
+        "filter": "Incluido en el agente de Java",
+        "name": "Agente de Java de OpenTelemetry"
       }
     }
   }

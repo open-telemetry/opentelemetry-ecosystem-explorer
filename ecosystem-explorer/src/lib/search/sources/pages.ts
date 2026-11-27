@@ -54,6 +54,13 @@ const PAGE_SEARCH_RESULTS: SearchResult[] = [
     ecosystem: "page",
   },
   {
+    title: "Java Extensions",
+    description: "Browse opentelemetry-java-contrib libraries and agent extensions",
+    path: "/java-agent/extensions",
+    type: "section",
+    ecosystem: "page",
+  },
+  {
     title: "Configuration Builder",
     description: "Build custom OpenTelemetry configurations",
     path: "/java-agent/configuration/builder",

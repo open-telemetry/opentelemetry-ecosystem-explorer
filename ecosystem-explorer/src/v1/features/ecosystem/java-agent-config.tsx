@@ -29,7 +29,7 @@
  * deltas (version-only). The pipeline renders as a no-flow grid of categories.
  */
 
-import { BookOpen, Box, FileText, GitCompare, Layers, Settings } from "lucide-react";
+import { BookOpen, Box, FileText, GitCompare, Layers, Package, Settings } from "lucide-react";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import { JavaIcon } from "@/components/icons/java-icon";
 import type { EcosystemConfig } from "./types";
@@ -141,6 +141,13 @@ export const javaAgentConfig: EcosystemConfig = {
       description: "landingV1.quickEntries.configuration.description",
       href: "/java-agent/configuration",
       icon: <Settings className="h-5 w-5" aria-hidden />,
+    },
+    {
+      id: "contrib",
+      title: "landingV1.quickEntries.contrib.title",
+      description: "landingV1.quickEntries.contrib.description",
+      href: "/java-agent/extensions",
+      icon: <Package className="h-5 w-5" aria-hidden />,
     },
     {
       id: "getting-started",

@@ -67,6 +67,16 @@ const JavaReleaseComparisonPage = lazy(() =>
   }))
 );
 
+const JavaContribListPage = lazy(() =>
+  import("@/features/java-contrib/java-contrib-list-page").then((m) => ({
+    default: m.JavaContribListPage,
+  }))
+);
+const JavaContribDetailPage = lazy(() =>
+  import("@/features/java-contrib/java-contrib-detail-page").then((m) => ({
+    default: m.JavaContribDetailPage,
+  }))
+);
 const ConfigurationBuilderPage = lazy(() =>
   import("@/features/java-agent/configuration/configuration-builder-page").then((m) => ({
     default: m.ConfigurationBuilderPage,
@@ -121,6 +131,8 @@ export function LegacyApp() {
               />
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
               <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
+              <Route path="/java-agent/extensions" element={<JavaContribListPage />} />
+              <Route path="/java-agent/extensions/:name" element={<JavaContribDetailPage />} />
               <Route
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}

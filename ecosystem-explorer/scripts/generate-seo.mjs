@@ -56,6 +56,7 @@ const STATIC_SITEMAP_HINTS = {
   "/java-agent/configuration": { changefreq: "weekly", priority: "0.7" },
   "/java-agent/configuration/builder": { changefreq: "weekly", priority: "0.6" },
   "/java-agent/releases": { changefreq: "weekly", priority: "0.7" },
+  "/java-agent/extensions": { changefreq: "weekly", priority: "0.7" },
   "/about": { changefreq: "monthly", priority: "0.5" },
 };
 const DETAIL_SITEMAP_HINT = { changefreq: "weekly", priority: "0.6" };
