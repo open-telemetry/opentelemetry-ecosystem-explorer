@@ -1,0 +1,68 @@
+{
+  "description": "This receiver fetches stats from an SNMP enabled host using a [golang snmp client](https://github.com/gosnmp/gosnmp). Metrics are collected based upon different configurations in the config file. Optionally, SNMP notifications are received over UDP and emitted as logs.",
+  "display_name": "SNMP Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-snmpreceiver",
+  "markdown_hash": "505b52a57111",
+  "name": "snmpreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "ajimenez1503",
+        "svencowart"
+      ],
+      "emeritus": [
+        "StefanKurek",
+        "tamir-michaeli"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "snmp_traps_engine_cache_entries": {
+        "description": "Number of authenticated SNMPv3 engines currently tracked in the notification engine cache.",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{engine}"
+      },
+      "snmp_traps_engine_cache_expirations": {
+        "description": "Number of authenticated SNMPv3 engine cache entries removed after the configured idle timeout.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{engine}"
+      },
+      "snmp_traps_engine_limit_rejections": {
+        "description": "Number of SNMP notifications rejected because the engine cache reached capacity.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{notification}"
+      }
+    }
+  },
+  "type": "receiver"
+}

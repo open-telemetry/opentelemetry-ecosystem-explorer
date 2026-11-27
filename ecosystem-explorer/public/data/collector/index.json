@@ -158,7 +158,7 @@
       "signals": [
         "extension"
       ],
-      "stability": "development",
+      "stability": "unmaintained",
       "type": "extension"
     },
     {
@@ -1367,6 +1367,7 @@
       "name": "googlecloudstorageexporter",
       "signals": [
         "traces",
+        "metrics",
         "logs"
       ],
       "stability": "alpha",
@@ -1924,7 +1925,7 @@
         "traces",
         "logs"
       ],
-      "stability": "beta",
+      "stability": "unmaintained",
       "type": "exporter"
     },
     {
@@ -2098,7 +2099,7 @@
       "signals": [
         "logs"
       ],
-      "stability": "alpha",
+      "stability": "unmaintained",
       "type": "receiver"
     },
     {
@@ -2702,7 +2703,7 @@
     },
     {
       "description": null,
-      "display_name": null,
+      "display_name": "Rolling Span Latency Processor",
       "distribution": "contrib",
       "has_readme": true,
       "id": "contrib-rollingspanlatencyprocessor",
@@ -2864,6 +2865,7 @@
       "id": "contrib-signingprocessor",
       "name": "signingprocessor",
       "signals": [
+        "traces",
         "logs"
       ],
       "stability": "development",
@@ -2936,14 +2938,15 @@
       "type": "connector"
     },
     {
-      "description": "This receiver fetches stats from an SNMP enabled host using a [golang snmp client](https://github.com/gosnmp/gosnmp). Metrics are collected based upon different configurations in the config file.",
+      "description": "This receiver fetches stats from an SNMP enabled host using a [golang snmp client](https://github.com/gosnmp/gosnmp). Metrics are collected based upon different configurations in the config file. Optionally, SNMP notifications are received over UDP and emitted as logs.",
       "display_name": "SNMP Receiver",
       "distribution": "contrib",
       "has_readme": true,
       "id": "contrib-snmpreceiver",
       "name": "snmpreceiver",
       "signals": [
-        "metrics"
+        "metrics",
+        "logs"
       ],
       "stability": "alpha",
       "type": "receiver"
@@ -2971,7 +2974,7 @@
       "signals": [
         "traces"
       ],
-      "stability": "beta",
+      "stability": "unmaintained",
       "type": "receiver"
     },
     {
@@ -3393,7 +3396,7 @@
       "signals": [
         "logs"
       ],
-      "stability": "alpha",
+      "stability": "beta",
       "type": "processor"
     },
     {

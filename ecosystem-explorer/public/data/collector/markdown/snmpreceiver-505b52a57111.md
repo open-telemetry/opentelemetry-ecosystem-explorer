@@ -1,0 +1,452 @@
+## Purpose
+
+The receiver polls SNMP devices for metrics and can listen for incoming SNMP
+notifications to produce logs. Polling and notification collection use separate
+settings and run independently. Configure polling with the receiver's top-level
+settings and notification collection with the optional `traps` block.
+Notification collection is in development.
+
+Configure the optional `traps` block and enable the receiver in a logs pipeline
+to collect notifications. A receiver instance can serve both a metrics pipeline
+and a logs pipeline. A configuration used only in a logs pipeline does not need
+metric definitions or a remote polling endpoint.
+
+A metrics pipeline activates polling; a logs pipeline activates notification
+collection. Configuring both and referencing the receiver in both pipelines
+starts one scraper and one listener, with independent credentials and lifecycles.
+
+If one of the specified SNMP data values cannot be loaded on startup, a
+warning will be printed, but the application will not fail fast.
+
+## Prerequisites
+
+This receiver supports SNMP versions:
+
+- v1
+- v2c
+- v3
+
+## Local Simulation
+
+See the [local simulation guide](examples/simulation/README.md) to run polling
+and traps against SNMP Simulator and inspect the exported metrics and logs.
+
+## Configuration
+
+### Polling Configuration
+
+Polling settings are configured at the receiver's top level: connection and
+security options, `collection_interval`, `timeout`, `initial_delay`, `metrics`, `attributes`, and
+`resource_attributes`. Configure at least one metric and enable the receiver in
+a metrics pipeline to collect metrics. A receiver used only in a logs pipeline
+does not need metric definitions or a remote polling endpoint.
+
+#### Connection Configuration
+
+These top-level options configure the connection to an SNMP host.
+
+- `collection_interval`: (default = `10s`): This receiver collects metrics on an interval. This value must be a string readable by Golang's [time.ParseDuration](https://pkg.go.dev/time#ParseDuration). Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`.
+- `timeout`: (default: `5s`): Timeout for each SNMP request. This value must be a string readable by Golang's [time.ParseDuration](https://pkg.go.dev/time#ParseDuration). Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`.
+- `initial_delay`: (default: `0s`): Delay before the first polling collection. Uses the same duration format as `collection_interval`.
+- `endpoint` (default: `udp://localhost:161`): SNMP endpoint to connect to in the form of `[udp|tcp][://]{host}[:{port}]`
+  - If no scheme is supplied, a default of `udp` is assumed
+  - If no port is supplied, a default of `161` is assumed
+- `version`: (default = `v2c`): SNMP version options are
+  - `v1`: SNMP version 1
+  - `v2c`: SNMP version 2c
+  - `v3`: SNMP version 3
+- `community`: (default = `public`): The community string for the SNMP connection. This is not available for SNMP version `v3`.
+- `user`: The user for the SNMP connection. This is only available for SNMP version `v3`.
+- `security_level`: (default = `no_auth_no_priv`): The security requirements of the SNMP connection. This is only available for SNMP version `v3`. SNMP `security_level` options are
+  - `no_auth_no_priv`: No authentication protocol and no privacy protocol used
+  - `auth_no_priv`: Authentication protocol is used but no privacy protocol used
+  - `auth_priv`: Both authentication and privacy protocols are used
+- `auth_type`: (default = `MD5`): The authentication protocol used for the SNMP connection. This is only available if `security_level` is not set to `no_auth_no_priv`. SNMP `auth_type` options are
+  - `MD5`
+  - `SHA`
+  - `SHA224`
+  - `SHA256`
+  - `SHA384`
+  - `SHA512`
+- `auth_password`: The authentication password used for the SNMP connection. This is only available if `security_level` is not set to `no_auth_no_priv`.
+- `privacy_type`: (default = `DES`): The privacy protocol used for the SNMP connection. This is only available if `security_level` is set to `auth_priv`. SNMP `privacy_type` options are
+  - `DES`
+  - `AES`
+  - `AES192`
+  - `AES256`
+  - `AES192c`
+  - `AES256c`
+- `privacy_password`: The privacy password used for the SNMP connection. This is only available if `security_level` is set to `auth_priv`.
+- `max_repetitions`: (default = `25`): The maximum number of iterations over the repeating variable list for GETBULK requests. Only used for SNMP versions `v2c` and `v3`.
+
+### Trap Configuration
+
+The optional `traps` block configures a UDP listener. Its `listen_address` is a
+local bind address; the top-level `endpoint` identifies the remote device to poll.
+Omitting `traps` disables notification collection. To use the receiver in a logs
+pipeline, supply a `traps` block, which may be empty to use its defaults.
+
+| Field | Description | Default |
+| -- | -- | -- |
+| `listen_address` | Local UDP `host:port` to bind. Use an address reachable by sending devices for remote collection. | `localhost:1620` |
+| `versions` | Nonempty list of allowed incoming versions: `v1`, `v2c`, and `v3`. Names are case sensitive and duplicates are rejected. Include `v3` explicitly to enable it. | `[v1, v2c]` |
+| `communities` | Allowed nonempty v1/v2c community strings. An empty list accepts all communities. Does not apply to v3. | `[]` |
+| `include_community` | Include the v1/v2c community string in each log record. | `false` |
+| `queue_size` | Maximum number of notifications waiting for downstream consumption. Must be positive. | `1024` |
+| `attributes` | Additional string attributes attached to each log record. Empty keys and keys beginning with `snmp.` or `network.peer.` are rejected. | `{}` |
+| `v3` | Credentials for one USM user. Required when `versions` contains `v3`. | unset |
+
+Community strings and v3 passwords are treated as opaque credentials. Use
+environment variable substitution or another Collector configuration provider to
+supply these values. Keep `include_community` disabled to avoid adding community
+credentials to telemetry.
+
+The listener supports v1, v2c, and v3 traps, and v2c informs. SNMPv3 informs are
+unsupported. A single listener can accept multiple protocol versions when they
+are listed in `versions`; the community allowlist only filters v1 and v2c.
+The default loopback bind address accepts local traffic. For devices on another
+host, configure a reachable address such as `0.0.0.0:1620`. Listening on the
+standard UDP port `162` may require additional operating system privileges.
+
+Rejected notifications produce internal Collector debug logs with the UDP peer
+address and a bounded rejection reason, such as `authentication_failed`. Set
+`service.telemetry.logs.level` to `debug` to enable them. These entries are
+sampled to at most one per second per receiver across all senders and reasons.
+Credentials and packet contents are excluded. Receiver rejection counters
+include every rejected notification, including those whose debug entries are
+sampled out.
+
+#### Trap SNMPv3 Configuration
+
+The `traps.v3` settings are independent of the top-level polling credentials.
+
+| Field | Description | Default |
+| -- | -- | -- |
+| `user` | USM username. Required; at most 32 bytes. | unset |
+| `security_level` | `no_auth_no_priv`, `auth_no_priv`, or `auth_priv`. | `auth_priv` |
+| `auth_type` | Authentication protocol. Uses the same supported protocol names as polling. | `SHA256` |
+| `auth_password` | Required for `auth_no_priv` and `auth_priv`; must contain at least 8 bytes. | unset |
+| `privacy_type` | Privacy protocol. Uses the same supported protocol names as polling. | `AES` |
+| `privacy_password` | Required for `auth_priv`; must contain at least 8 bytes. | unset |
+| `engine.cache.max_entries` | Maximum number of authenticated engine identities retained by this receiver. Must be positive. | `4096` |
+| `engine.cache.idle_timeout` | Duration since the last successfully validated notification before an engine's keys and time state expire. Must be nonnegative; `0s` disables expiration. | `24h` |
+
+The listener validates v3 engine identities, usernames, and security levels
+before deriving keys. It authenticates messages before deriving privacy keys.
+Keys remain local to the receiver; trap parsing does not use GoSNMP's global
+password cache.
+
+Authenticated v3 traps synchronize device engine times using the USM 150-second
+window. The receiver retains keys and time synchronization state together in a
+bounded cache. Idle entries expire after `engine.cache.idle_timeout`, including
+when no notifications arrive. Successfully validated notifications refresh
+activity even if the delivery queue is full. Failed authentication, invalid
+notifications, and rejected old packets do not refresh activity. If the cache is
+full and no entries have expired, existing engines continue working and new
+identities are refused.
+
+Expiration forgets the engine's previous time baseline. The next authenticated
+notification from that engine establishes a new baseline, so a previously
+captured valid packet can become acceptable again after expiration. A timeout
+longer than 150 seconds does not preserve that forgotten replay history. Set
+`engine.cache.idle_timeout: 0s` to retain state until restart. State is not
+persisted, so initial synchronization and receiver restarts also establish new
+baselines. Idle expiration recovers capacity after inactive identities stop
+sending; it does not prevent a credential holder from keeping identities active.
+
+Internal Collector metrics expose the current cache occupancy
+(`otelcol_snmp_traps_engine_cache_entries`), idle expirations
+(`otelcol_snmp_traps_engine_cache_expirations`), and notifications rejected at
+capacity (`otelcol_snmp_traps_engine_limit_rejections`). These metrics use the
+receiver instance as an attribute and include no engine IDs or peer addresses.
+Capacity rejections are counted independently of debug-log sampling.
+
+```yaml
+receivers:
+  snmp:
+    traps:
+      listen_address: localhost:1620
+      versions: [v3]
+      v3:
+        user: otel
+        security_level: auth_priv
+        auth_type: SHA256
+        auth_password: ${env:SNMP_TRAP_AUTH_PASSWORD}
+        privacy_type: AES
+        privacy_password: ${env:SNMP_TRAP_PRIVACY_PASSWORD}
+        engine:
+          cache:
+            max_entries: 4096
+            idle_timeout: 24h
+```
+
+#### Notification Logs and Delivery
+
+Each accepted notification produces one log record with a structured body.
+Numeric OIDs and all variable bindings are retained, including their SNMP types
+and values. `Counter64` values are decimal strings, preserving values that exceed
+the signed 64-bit integer range. Octet strings remain bytes, preserving binary
+data. The listener does not load MIB files or resolve symbolic OID names.
+
+Log attributes include `snmp.version`, `snmp.pdu.type`, `snmp.trap.oid`,
+`network.peer.address`, and `network.peer.port`. The structured body contains
+`version`, `pdu_type`, `trap_oid`, `sys_up_time`, and `varbinds`. Each `varbinds`
+entry contains `oid`, `type`, and `value`. Uptime is in hundredths of a second.
+SNMPv1 logs also retain `enterprise`, `agent_address`, `generic_trap`, and
+`specific_trap`; SNMPv3 logs retain `context_engine_id` and `context_name`.
+When `include_community` is enabled, the body also contains `community`.
+`ObservedTimestamp` records local receipt time. `Timestamp` is left unset because
+device uptime does not specify a wall-clock event time.
+
+The receiver places notifications in a bounded local queue. A full queue drops
+new notifications. A v2c inform is acknowledged after admission to that queue;
+the acknowledgment confirms local admission, not delivery to a backend.
+Downstream failures are reported without automatic retries. During shutdown the
+receiver stops accepting packets and drains admitted notifications until the
+shutdown context expires. Pending notifications can be lost when that deadline
+is reached. Exporter queues and retries can be configured separately for backend
+delivery.
+
+#### Logs Pipeline Example
+
+This configuration only listens for notifications. It does not poll a device:
+
+```yaml
+receivers:
+  snmp:
+    traps:
+      listen_address: 127.0.0.1:1620
+      versions: [v1, v2c]
+      communities: [public]
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [snmp]
+      exporters: [debug]
+```
+
+See [traps.yaml](./examples/traps.yaml) for the complete configuration and
+[traps-and-metrics.yaml](./examples/traps-and-metrics.yaml) for a single receiver
+ID used in both logs and metrics pipelines. Combining the pipelines starts one
+notification listener and one metric scraper for that receiver ID.
+
+#### Sending Local Notifications
+
+Run a Collector build containing this receiver with the logs example above.
+With the [Net-SNMP tools](https://www.net-snmp.org/docs/man/snmptrap.html)
+installed, send a v2c `linkDown` trap for interface index `2`:
+
+```sh
+snmptrap -v 2c -c public udp:127.0.0.1:1620 12345 \
+  .1.3.6.1.6.3.1.1.5.3 \
+  .1.3.6.1.2.1.2.2.1.1.2 i 2 \
+  .1.3.6.1.2.1.2.2.1.8.2 i 2
+```
+
+Send the same event as a v2c inform to request acknowledgment. The following
+command waits up to two seconds and disables sender retries:
+
+```sh
+snmpinform -v 2c -c public -t 2 -r 0 udp:127.0.0.1:1620 12345 \
+  .1.3.6.1.6.3.1.1.5.3 \
+  .1.3.6.1.2.1.2.2.1.1.2 i 2 \
+  .1.3.6.1.2.1.2.2.1.8.2 i 2
+```
+
+Inspect the debug exporter output for one log record per admitted notification,
+the numeric trap OID `1.3.6.1.6.3.1.1.5.3`, and the interface variable bindings.
+These commands use numeric OIDs, so no MIB installation is required.
+
+### Metric/Attribute Configuration
+
+These top-level options determine which metrics and attributes are created from
+SNMP data.
+
+- `resource_attributes`: This may be configured with one or more key value pairs of resource attribute names and resource attribute configurations.
+- `attributes` This may be configured with one or more key value pairs of attribute names and attribute configurations
+- `metrics`: Required when the receiver is used in a metrics pipeline. Configure one or more key value pairs of metric names and metric configuration.
+
+#### Resource Attribute Configuration
+Resource attribute configurations are used to define what resource attributes will be used in a collection.
+
+| Field Name           | Description                              | Value        |
+| --                   | --                                       | --           |
+| `oid`                  | Required if no `scalar_oid` or `indexed_value_prefix`. This is the column OID in a SNMP table which will use the returned indexed SNMP data to create resource attribute values for unique resources. Metric configurations will reference these resource attribute configurations in order to assign metrics data to resources | string       |
+| `scalar_oid` | Required if no `oid` or `indexed_value_prefix`. This is the scalar OID which will return non-indexed SNMP data to create resource attribute values for unique resources. Metric configurations will reference these resource attribute configurations in order to assign metrics data to resources | string |
+| `indexed_value_prefix` | Required if no `scalar_oid` or `oid`. This is a string prefix which will be added to the indices of returned metric indexed SNMP data to create resource attribute values for unique resources. Metric configurations will reference these resource attribute configurations in order to assign metrics data to resources | string       |
+| `description`          | Definition of what the resource attribute represents  | string       |
+
+#### Attribute Configuration
+Attribute configurations are used to define what resource attributes will be used in a collection.
+
+| Field Name           | Description                                           | Value                           |
+| --                   | --                                                    | --                              |
+| `oid`                  | Required if no `indexed_value_prefix` or `enum`. This is the column OID in a SNMP table which will use the returned indexed SNMP data to create attribute values for the attribute. Metric configurations will reference these attribute configurations in order to assign these attributes and indexed data values to metrics and their datapoints | string       |
+| `indexed_value_prefix` | Required if no `oid` or `enum`. This is a string prefix which will be added to the indices of returned metric indexed SNMP data to create attribute values the attribute. Metric configurations will reference these attribute configurations in order to assign these attributes and index based value to metrics and their datapoints | string       |
+| `enum`                 | Required if no `oid` or `indexed_value_prefix`. This should be a list of values that are possible for this attribute. Metric configurations will reference these attribute configurations in order to assign these attributes and values to metrics and their datapoints | string[]       |
+| `description`          | Definition of what the attribute represents           | string       |
+
+#### Metric Configuration
+
+| Field Name  | Description                                                    | Value                       | Default |
+| --          | --                                                             | --                          | --      |
+| `unit`        | Required. To display what is actually being measured for this metric | string                | 1       |
+| `gauge`       | Required if no `sum`. Details that this metric is of the gauge type | GaugeMetric              |         |
+| `sum`         | Required if no `gauge`. Details that this metric is of the sum type | SumMetric                |         |
+| `column_oids` | Required if no `scalar_oids`. Details that this metric is made from one or more columns in an SNMP table. The returned indexed SNMP data for these OIDs might either be datapoints on a single metrics, or datapoints across multiple metrics attached to different resources depending on the column OID configurations | ColumnOID[] |        |
+| `scalar_oids` | Required if no `column_oids`. Details that this metric is made from one or more scalard SNMP values (multiple scalar OIDs would represent multiple datapoints within the same metric) | ScalarOID[]       |       |
+| `description` | Definition of what the metric represents                       | string                      |         |
+
+#### GaugeMetric Configuration
+
+| Field Name  | Description                                                    | Value                       | Default |
+| --          | --                                                             | --                          | --      |
+| `value_type`  | The value type of this metric's data. Can be either `int` or `double` | string             | double   |
+
+#### SumMetric Configuration
+
+| Field Name  | Description                                                    | Value                       | Default |
+| --          | --                                                             | --                          | --      |
+| `value_type` | The value type of this metric's data. Can be either `int` or `double` | string              | double   |
+| `monotonic` | Whether this is a monotonic sum or not                         | bool                        | false   |
+| `aggregation` | The aggregation type of this metric's data. Can be either `cumulative` or `delta` | string | cumulative |
+
+#### ScalarOID Configuration
+
+| Field Name  | Description                                                    | Value                       | Default |
+| --          | --                                                             | --                          | --      |
+| `oid`       | The SNMP scalar OID value to grab data from (must end in .0).  | string                      |         |
+| `resource_attributes` | The names of the related resource attribute configurations, allowing scalar oid metrics to be added to resources that have one or more scalar oid resource attributes. Cannot have indexed resource attributes as values. | string[] | | 
+| `attributes` | The names of the related attribute enum configurations as well as the values to attach to this returned SNMP scalar data. This can be used to have a metric config with multiple ScalarOIDs as different datapoints with different attribute values within the same metric | Attribute              |    |
+
+#### ColumnOID Configuration
+
+| Field Name  | Description                                                    | Value                       | Default |
+| --          | --                                                             | --                          | --      |
+| `oid`       | The SNMP scalar OID value to grab data from (must end in .0).  | string                      |         |
+| `attributes` | The names of the related attribute configurations as well as the enum values to attach to this returned SNMP indexed data if the attribute configuration has enum data. This can be used to attach a specific metric SNMP column OID to an attribute. In doing so, multiple datapoints for a single metric will be created for each returned SNMP indexed data value for the metric along with different attribute values to differentiate them. This also can be used to have a metric config with multiple ColumnOIDs as different datapoints with different attribute values within the same metric | Attribute[]            |    |
+| `resource_attributes` | The names of the related resource attribute configurations. This is used to attach a specific metric SNMP column OID to a resource attribute. In doing so, multiple resources will be created for each returned SNMP indexed data value for the metric | string[]              |    |
+
+#### Attribute
+
+| Field Name  | Description                                                    | Value                       | Default |
+| --          | --                                                             | --                          | --      |
+| `name`      | The name of the attribute configuration that this data refers to | string                     |         |
+| `value`     | If the referred to attribute configuration is of enum type, the specific enum value that should be used for this specific attribute | string        |    |
+
+### Example Configuration
+
+The following example configures polling. See [poll.yaml](./examples/poll.yaml)
+for a complete configuration with a metrics pipeline.
+
+```yaml
+receivers:
+  snmp:
+    collection_interval: 60s
+    endpoint: udp://localhost:161
+    version: v3
+    security_level: auth_priv
+    user: otel
+    auth_type: "MD5"
+    auth_password: ${env:SNMP_AUTH_PASSWORD}
+    privacy_type: "DES"
+    privacy_password: ${env:SNMP_PRIVACY_PASSWORD}
+
+    resource_attributes:
+      resource_attr.name.1:
+        indexed_value_prefix: probe
+      resource_attr.name.2:
+        oid: "1.1.1.1"
+
+    attributes:
+      attr.name.1:
+        value: a2_new_key
+        enum:
+          - in
+          - out
+      attr.name.2:
+        indexed_value_prefix: device
+      attr.name.3:
+        oid: "2.2.2.2"
+
+    metrics:
+      # This metric will have multiple datapoints wil 1 attribute on each.
+      # Each datapoint will have a (hopefully) different attribute value
+      metric.name.1:
+        unit: "1"
+        sum:
+          aggregation: cumulative
+          monotonic: true
+          value_type: int
+        column_oids:
+          - oid: "2.2.2.1"
+            attributes:
+              - name: attr.name.3
+      # This metric will have multiple datapoints with 2 attributes on each.
+      # Each datapoint will have a guaranteed different attribute indexed value for 1 of the attributes.
+      # Half of the datapoints will have the other attribute with a value of "in".
+      # The other half will have the other attribute with a value of "out".
+      metric.name.2:
+        unit: "By"
+        gauge:
+          value_type: int
+        column_oids:
+          - oid: "3.3.3.3"
+            attributes:
+              - name: attr.name.2
+              - name: attr.name.1
+                value: in
+          - oid: "2"
+            attributes:
+              - name: attr.name.2
+              - name: attr.name.1
+                value: out
+      # This metric will have 2 datapoints with 1 attribute on each
+      # One datapoints will have an attribute value of "in".
+      # The other will have an attribute value of "out".
+      metric.name.3:
+        unit: "By"
+        sum:
+          aggregation: delta
+          monotonic: false
+          value_type: double
+        scalar_oids:
+          - oid: "4.4.4.4.0"
+            attributes:
+              - name: attr.name.1
+                value: in
+          - oid: "4.4.4.5.0"
+            attributes:
+              - name: attr.name.1
+                value: out
+      # This metric will have metrics created with each attached to a different resource.
+      # Each resource will have a resource attribute with a guaranteed unique value based on the index.
+      metric.name.4:
+        unit: "By"
+        gauge:
+          value_type: int
+        column_oids:
+          - oid: "5.5.5.5"
+            resource_attributes:
+              - resource_attr.name.1
+      # This metric will have metrics created with each attached to a different resource.
+      # Each resource will have a resource attribute with a hopefully unique value.
+      metric.name.5:
+        unit: "By"
+        gauge:
+          value_type: int
+        column_oids:
+          - oid: "1.1.1.2"
+            resource_attributes:
+              - resource_attr.name.2
+
+```
+
+The full list of settings exposed for this receiver is documented in
+[config.go](./config.go). Complete configurations are available in
+[examples](./examples), including polling, traps, and combined collection.
