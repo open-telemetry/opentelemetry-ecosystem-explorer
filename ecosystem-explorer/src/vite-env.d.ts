@@ -16,3 +16,6 @@
 interface ImportMetaEnv {
   readonly DATA_CONTENT_ID: string;
 }
+
+/** Short commit SHA of the build (Netlify `COMMIT_REF`), or "dev". Set via `define` in vite.config.ts. */
+declare const __APP_VERSION__: string;

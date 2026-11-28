@@ -37,6 +37,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type { SearchResult, SearchResultEcosystem } from "@/lib/search";
+import { trackEvent } from "@/lib/telemetry";
 import { useSearch } from "@/v1/hooks/use-search";
 import { INTEGRATIONS_STAT_VALUE } from "@/v1/lib/home-stats";
 
@@ -183,11 +184,16 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
 
   const selectResult = useCallback(
     (path: string) => {
+      trackEvent("search", {
+        source: "global",
+        query: query.trim(),
+        selected: path,
+      });
       if (onSelect) onSelect(path);
       else void navigate(path);
       setIsOpen(false);
     },
-    [navigate, onSelect]
+    [navigate, onSelect, query]
   );
 
   const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
