@@ -27,6 +27,12 @@ export const FILTER_STYLES = {
       inactive:
         "bg-green-500/5 border-green-500/20 text-green-700 dark:text-green-400/70 hover:border-green-500/50 hover:bg-green-500/10",
     },
+    events: {
+      active:
+        "bg-amber-500/40 border-amber-400 text-amber-900 dark:text-amber-100 shadow-[0_0_15px_rgba(245,158,11,0.3)] ring-1 ring-amber-400/50",
+      inactive:
+        "bg-amber-500/5 border-amber-500/20 text-amber-700 dark:text-amber-400/70 hover:border-amber-500/50 hover:bg-amber-500/10",
+    },
   },
   target: {
     javaagent: {
@@ -44,7 +50,10 @@ export const FILTER_STYLES = {
   },
 } as const;
 
-export function getTelemetryFilterClasses(type: "spans" | "metrics", isActive: boolean): string {
+export function getTelemetryFilterClasses(
+  type: "spans" | "metrics" | "events",
+  isActive: boolean
+): string {
   const styles = FILTER_STYLES.telemetry[type];
   return isActive ? styles.active : styles.inactive;
 }

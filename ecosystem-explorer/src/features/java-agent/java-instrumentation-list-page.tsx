@@ -21,6 +21,7 @@ import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 import { useLazyPagination } from "@/hooks/use-lazy-pagination";
 import {
   type FilterState,
+  type TelemetrySignal,
   InstrumentationFilterBar,
 } from "@/features/java-agent/components/instrumentation-filter-bar.tsx";
 import { useMemo, useState, useEffect } from "react";
@@ -101,10 +102,10 @@ export function JavaInstrumentationListPage() {
     const semanticParam = searchParams.get("semantic");
     const featuresParam = searchParams.get("features");
 
-    const telemetry = new Set<"spans" | "metrics">();
+    const telemetry = new Set<TelemetrySignal>();
     if (telemetryParam) {
       telemetryParam.split(",").forEach((v) => {
-        if (v === "spans" || v === "metrics") telemetry.add(v);
+        if (v === "spans" || v === "metrics" || v === "events") telemetry.add(v);
       });
     }
 
@@ -195,6 +196,9 @@ export function JavaInstrumentationListPage() {
           return false;
         }
         if (filters.telemetry.has("metrics") && !instr.has_metrics) {
+          return false;
+        }
+        if (filters.telemetry.has("events") && !instr.has_events) {
           return false;
         }
       }

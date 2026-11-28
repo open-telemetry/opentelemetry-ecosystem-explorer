@@ -256,6 +256,7 @@
     },
     "spans": "Spans",
     "metrics": "Métricas",
+    "events": "Eventos",
     "javaAgent": "Java Agent",
     "standalone": "Independiente",
     "status": {
@@ -286,6 +287,11 @@
       "label": "Métricas",
       "tooltip": "Produce telemetría de métricas para monitoreo.",
       "ariaLabel": "Tiene telemetría de métricas"
+    },
+    "events": {
+      "label": "Eventos",
+      "tooltip": "Produce eventos con nombre, emitidos como registros de log.",
+      "ariaLabel": "Tiene telemetría de eventos"
     }
   },
   "attributeTable": {

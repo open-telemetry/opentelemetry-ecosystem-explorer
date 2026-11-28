@@ -23,9 +23,11 @@ import { getSemanticConventionInfo, getFeatureInfo } from "../utils/format";
 
 import type { InstrumentationListEntry } from "@/types/javaagent";
 
+export type TelemetrySignal = "spans" | "metrics" | "events";
+
 export interface FilterState {
   search: string;
-  telemetry: Set<"spans" | "metrics">;
+  telemetry: Set<TelemetrySignal>;
   target: Set<"javaagent" | "library">;
   semantic: string[];
   features: string[];
@@ -43,7 +45,7 @@ export function InstrumentationFilterBar({
   instrumentations,
 }: InstrumentationFilterBarProps) {
   const { t } = useTranslation("java-agent");
-  const toggleTelemetry = (type: "spans" | "metrics") => {
+  const toggleTelemetry = (type: TelemetrySignal) => {
     const newTelemetry = new Set(filters.telemetry);
     if (newTelemetry.has(type)) {
       newTelemetry.delete(type);
@@ -187,6 +189,16 @@ export function InstrumentationFilterBar({
                 )}`}
               >
                 {t("filter.metrics")}
+              </button>
+              <button
+                onClick={() => toggleTelemetry("events")}
+                aria-pressed={filters.telemetry.has("events")}
+                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTelemetryFilterClasses(
+                  "events",
+                  filters.telemetry.has("events")
+                )}`}
+              >
+                {t("filter.events")}
               </button>
             </div>
           </div>

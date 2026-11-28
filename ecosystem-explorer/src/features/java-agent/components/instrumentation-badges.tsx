@@ -68,6 +68,7 @@ export function TelemetryBadges({
   const { t } = useTranslation("java-agent");
   const isSpansFilterActive = activeFilters?.telemetry.has("spans") ?? false;
   const isMetricsFilterActive = activeFilters?.telemetry.has("metrics") ?? false;
+  const isEventsFilterActive = activeFilters?.telemetry.has("events") ?? false;
 
   return (
     <>
@@ -88,6 +89,16 @@ export function TelemetryBadges({
           ariaLabel={t("badges.metrics.ariaLabel")}
           active={isMetricsFilterActive}
           styles={FILTER_STYLES.telemetry.metrics}
+          size={size}
+        />
+      )}
+      {badges.hasEvents && (
+        <SignalBadge
+          label={t("badges.events.label")}
+          tooltip={t("badges.events.tooltip")}
+          ariaLabel={t("badges.events.ariaLabel")}
+          active={isEventsFilterActive}
+          styles={FILTER_STYLES.telemetry.events}
           size={size}
         />
       )}

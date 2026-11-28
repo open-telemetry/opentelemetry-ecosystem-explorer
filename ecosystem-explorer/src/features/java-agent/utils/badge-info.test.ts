@@ -35,6 +35,7 @@ describe("getBadgeInfo", () => {
     expect(info).toEqual({
       hasSpans: false,
       hasMetrics: false,
+      hasEvents: false,
       hasJavaAgentTarget: false,
       hasLibraryTarget: false,
     });
@@ -57,6 +58,18 @@ describe("getBadgeInfo", () => {
     expect(info.hasSpans).toBe(false);
   });
 
+  it("detects events", () => {
+    const info = getBadgeInfo(makeInstr({ name: "with-events", has_events: true }));
+    expect(info.hasEvents).toBe(true);
+    expect(info.hasSpans).toBe(false);
+    expect(info.hasMetrics).toBe(false);
+  });
+
+  it("treats a missing has_events flag as no events", () => {
+    const info = getBadgeInfo(makeInstr({ name: "older-bundle" }));
+    expect(info.hasEvents).toBe(false);
+  });
+
   it("detects javaagent target", () => {
     const info = getBadgeInfo(makeInstr({ name: "agent", has_javaagent: true }));
     expect(info.hasJavaAgentTarget).toBe(true);
@@ -73,6 +86,7 @@ describe("getAggregatedBadgeInfo", () => {
     expect(getAggregatedBadgeInfo([])).toEqual({
       hasSpans: false,
       hasMetrics: false,
+      hasEvents: false,
       hasJavaAgentTarget: false,
       hasLibraryTarget: false,
     });
@@ -82,13 +96,14 @@ describe("getAggregatedBadgeInfo", () => {
     const instrumentations = [
       makeInstr({ name: "a", has_spans: true }),
       makeInstr({ name: "b", has_standalone_library: true, has_metrics: true }),
-      makeInstr({ name: "c", has_javaagent: true }),
+      makeInstr({ name: "c", has_javaagent: true, has_events: true }),
     ];
 
     const info = getAggregatedBadgeInfo(instrumentations);
     expect(info).toEqual({
       hasSpans: true,
       hasMetrics: true,
+      hasEvents: true,
       hasJavaAgentTarget: true,
       hasLibraryTarget: true,
     });
@@ -101,6 +116,7 @@ describe("getAggregatedBadgeInfo", () => {
     expect(info).toEqual({
       hasSpans: false,
       hasMetrics: false,
+      hasEvents: false,
       hasJavaAgentTarget: false,
       hasLibraryTarget: false,
     });

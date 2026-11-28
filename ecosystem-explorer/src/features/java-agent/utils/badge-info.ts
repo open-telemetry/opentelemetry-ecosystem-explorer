@@ -18,6 +18,7 @@ import type { InstrumentationListEntry } from "@/types/javaagent";
 export interface BadgeInfo {
   hasSpans: boolean;
   hasMetrics: boolean;
+  hasEvents: boolean;
   hasJavaAgentTarget: boolean;
   hasLibraryTarget: boolean;
 }
@@ -26,11 +27,13 @@ export interface BadgeInfo {
  * Computes badge presence flags for a single instrumentation. Slim list entries
  * always carry the precomputed `has_spans`/`has_metrics` flags (the bundle and
  * the fan-out projection both set them), so no telemetry scan is needed.
+ * `has_events` may be missing from older bundles and counts as false.
  */
 export function getBadgeInfo(instrumentation: InstrumentationListEntry): BadgeInfo {
   return {
     hasSpans: instrumentation.has_spans === true,
     hasMetrics: instrumentation.has_metrics === true,
+    hasEvents: instrumentation.has_events === true,
     hasJavaAgentTarget: instrumentation.has_javaagent === true,
     hasLibraryTarget: instrumentation.has_standalone_library === true,
   };
@@ -44,6 +47,7 @@ export function getAggregatedBadgeInfo(instrumentations: InstrumentationListEntr
   return {
     hasSpans: instrumentations.some((i) => i.has_spans === true),
     hasMetrics: instrumentations.some((i) => i.has_metrics === true),
+    hasEvents: instrumentations.some((i) => i.has_events === true),
     hasJavaAgentTarget: instrumentations.some((i) => i.has_javaagent === true),
     hasLibraryTarget: instrumentations.some((i) => i.has_standalone_library === true),
   };

@@ -1,0 +1,76 @@
+{
+  "attributes": {
+    "metric_type": {
+      "description": "The kind of series the receiver dropped.",
+      "enum": [
+        "classic_histogram",
+        "summary"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "This receiver implements the [Prometheus Remote Write 2.0 protocol](https://prometheus.io/docs/specs/prw/remote_write_spec_2_0/).",
+  "display_name": "Prometheus Remote Write Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, the prometheusremotewritereceiver will disable the splitting of the job label by '/' to derive service.namespace and service.name, instead mapping the entire job string to service.name.",
+      "from_version": "v0.166.0",
+      "id": "receiver.prometheus_remote_write.disableJobSplit",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/53277",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-prometheusremotewritereceiver",
+  "markdown_hash": "6bf4fc48c8b9",
+  "name": "prometheusremotewritereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "ArthurSens",
+        "perebaj",
+        "himanshu130700"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "receiver_prometheusremotewrite_dropped_series": {
+        "attributes": [
+          "metric_type"
+        ],
+        "description": "Number of classic histogram and summary series dropped because the receiver does not support them. Their samples are still reported as written.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{series}"
+      },
+      "receiver_prometheusremotewrite_resource_cache_evictions": {
+        "description": "Number of job/instance entries evicted from the resource metrics cache because it was full.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{entries}"
+      }
+    }
+  },
+  "type": "receiver"
+}

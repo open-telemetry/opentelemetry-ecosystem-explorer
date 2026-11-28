@@ -117,7 +117,7 @@ export async function loadInstrumentation(
 /**
  * Loads the consolidated per-version list bundle in a single request. The bundle
  * is the slim shape the list page reads (telemetry collapsed to
- * has_spans/has_metrics flags); detail pages still load full per-instrumentation
+ * has_spans/has_metrics/has_events flags); detail pages still load full per-instrumentation
  * files on demand. The bundle is content-addressed (hash in the URL and cache
  * key), so it is immutable — a rebuilt bundle is a fresh cache key.
  */
@@ -153,6 +153,7 @@ function toListEntry(instr: InstrumentationData): InstrumentationListEntry {
     disabled_by_default: instr.disabled_by_default,
     has_spans: instr.telemetry?.some((t) => (t.spans?.length ?? 0) > 0) ?? false,
     has_metrics: instr.telemetry?.some((t) => (t.metrics?.length ?? 0) > 0) ?? false,
+    has_events: instr.telemetry?.some((t) => (t.events?.length ?? 0) > 0) ?? false,
     _is_custom: instr._is_custom ?? false,
   };
 }

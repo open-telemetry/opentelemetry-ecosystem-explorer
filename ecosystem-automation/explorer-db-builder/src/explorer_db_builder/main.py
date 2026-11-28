@@ -141,7 +141,7 @@ def process_version(
 
     # Build the consolidated per-version bundle the frontend list view loads in a
     # single request. Entries are the slim shape the list page reads (telemetry
-    # collapsed to has_spans/has_metrics flags); full detail stays in the
+    # collapsed to has_spans/has_metrics/has_events flags); full detail stays in the
     # per-instrumentation files. _is_custom is injected here (the one place) so
     # list rows match what the singular detail loader produces.
     bundle_items = [make_list_instrumentation(lib, is_custom=False) for lib in libraries] + [

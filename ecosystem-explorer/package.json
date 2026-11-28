@@ -41,20 +41,20 @@
     "@radix-ui/react-tabs": "1.2.1",
     "@radix-ui/react-tooltip": "1.4.1",
     "cmdk": "1.1.1",
-    "i18next": "26.7.1",
+    "i18next": "26.7.2",
     "idb": "8.0.4",
     "js-yaml": "5.5.0",
-    "lucide-react": "1.66.0",
+    "lucide-react": "1.70.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "react-i18next": "17.1.11",
+    "react-i18next": "17.1.13",
     "react-markdown": "10.1.0",
     "react-router-dom": "7.18.5",
     "remark-gfm": "4.0.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
-    "@tailwindcss/postcss": "4.3.3",
+    "@tailwindcss/postcss": "4.3.5",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "14.6.8",
@@ -62,22 +62,22 @@
     "@types/pngjs": "6.0.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "6.1.2",
-    "fake-indexeddb": "6.2.7",
+    "@vitejs/plugin-react": "6.3.0",
+    "fake-indexeddb": "6.2.8",
     "jsdom": "30.1.3",
     "pixelmatch": "8.0.0",
-    "playwright": "1.64.1",
+    "playwright": "1.65.0",
     "pngjs": "7.0.0",
     "postcss": "8.5.32",
-    "tailwindcss": "4.3.3",
+    "tailwindcss": "4.3.5",
     "typescript": "6.0.3",
     "typescript-json-schema": "0.68.0",
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-    "vite-plus": "1.4.0",
-    "vitest": "5.0.5"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
+    "vite-plus": "1.6.0",
+    "vitest": "5.1.0"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-    "vitest": "5.0.5"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
+    "vitest": "5.1.0"
   }
 }

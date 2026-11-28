@@ -366,9 +366,9 @@ def make_list_instrumentation(instrumentation: dict[str, Any], *, is_custom: boo
     The list page consumes every instrumentation for a version at once. Rather
     than fan out one fetch per instrumentation (or ship the full detail), it
     loads a single consolidated bundle of these slim entries. The page reads
-    ``telemetry`` only to decide whether to show spans/metrics badges and to
-    drive the spans/metrics filter, never the span/metric detail — so we
-    precompute ``has_spans``/``has_metrics`` and drop the heavy ``telemetry``
+    ``telemetry`` only to decide whether to show spans/metrics/events badges and
+    to drive the telemetry filter, never the span/metric/event detail — so we
+    precompute ``has_spans``/``has_metrics``/``has_events`` and drop the heavy ``telemetry``
     array entirely. Full detail stays in the content-addressed component files,
     loaded on demand by detail pages.
 
@@ -403,6 +403,7 @@ def make_list_instrumentation(instrumentation: dict[str, Any], *, is_custom: boo
         "disabled_by_default": instrumentation.get("disabled_by_default"),
         "has_spans": any((t.get("spans") or []) for t in telemetry),
         "has_metrics": any((t.get("metrics") or []) for t in telemetry),
+        "has_events": any((t.get("events") or []) for t in telemetry),
         "_is_custom": is_custom,
     }
     # Drop keys that are absent in the source so the bundle stays compact and the

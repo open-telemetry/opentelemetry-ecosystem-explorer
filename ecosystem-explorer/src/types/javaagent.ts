@@ -115,11 +115,13 @@ export interface InstrumentationData {
   has_spans?: boolean;
   /** Precomputed presence flag: whether any telemetry block emits metrics. See `has_spans`. */
   has_metrics?: boolean;
+  /** Precomputed presence flag: whether any telemetry block emits events. See `has_spans`. */
+  has_events?: boolean;
 }
 
 /**
  * The slim per-version list-bundle entry the catalog page and Configuration
- * Builder read. Telemetry is collapsed to `has_spans`/`has_metrics`; the fan-out
+ * Builder read. Telemetry is collapsed to `has_spans`/`has_metrics`/`has_events`; the fan-out
  * fallback projects full detail down to this same shape.
  */
 export interface InstrumentationListEntry {
@@ -147,6 +149,11 @@ export interface InstrumentationListEntry {
   has_spans: boolean;
   /** Whether any telemetry block emits metrics. Required: always set by both paths. */
   has_metrics: boolean;
+  /**
+   * Whether any telemetry block emits events. Optional because bundles built
+   * before this flag existed do not carry it; treat a missing value as false.
+   */
+  has_events?: boolean;
   /** Whether this is a custom (non-upstream) instrumentation. Required: drives the library/custom split. */
   _is_custom: boolean;
 }
